@@ -9,7 +9,7 @@ import (
 
 func init() {
 	// Main page
-	router.Instance().GET("/", router.HandlerFunc(Index))
+	router.Get("/", Index)
 }
 
 func Index(w http.ResponseWriter, r *http.Request) {

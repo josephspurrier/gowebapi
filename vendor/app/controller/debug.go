@@ -7,5 +7,5 @@ import (
 
 func init() {
 	// Enable Pprof
-	router.Instance().GET("/debug/pprof/*pprof", router.HandlerFunc(pprofhandler.Handler))
+	router.Get("/debug/pprof/*pprof", pprofhandler.Handler)
 }

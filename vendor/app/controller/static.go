@@ -12,7 +12,7 @@ func init() {
 	router.Instance().RedirectTrailingSlash = false
 
 	// Serve static files, no directory browsing
-	router.Instance().GET("/static/*filepath", router.HandlerFunc(Static))
+	router.Get("/static/*filepath", Static)
 }
 
 // Static maps static files

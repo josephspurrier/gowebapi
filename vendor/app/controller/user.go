@@ -12,12 +12,12 @@ import (
 
 // Routes
 func init() {
-	router.Instance().POST("/users", router.HandlerFunc(UserOnePOST))
-	router.Instance().GET("/users/:id", router.HandlerFunc(UserOneGET))
-	router.Instance().GET("/users", router.HandlerFunc(UserAllGET))
-	router.Instance().PUT("/users/:id", router.HandlerFunc(UserOnePUT))
-	router.Instance().DELETE("/users/:id", router.HandlerFunc(UserOneDELETE))
-	router.Instance().DELETE("/users", router.HandlerFunc(UserAllDELETE))
+	router.Post("/users", UserOnePOST)
+	router.Get("/users/:id", UserOneGET)
+	router.Get("/users", UserAllGET)
+	router.Put("/users/:id", UserOnePUT)
+	router.Delete("/users/:id", UserOneDELETE)
+	router.Delete("/users", UserAllDELETE)
 }
 
 const (
