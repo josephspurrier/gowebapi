@@ -10,7 +10,7 @@ This project demonstrates how to structure and build an API using the Go languag
 To download, run the following command:
 
 ~~~
-go get github.com/josephspurrier/gowebapp
+go get github.com/josephspurrier/gowebapi
 ~~~
 
 If you are on Go 1.5, you need to set GOVENDOREXPERIMENT to 1. If you are on Go 1.4 or earlier, the code will not work because it uses the vendor folder.
