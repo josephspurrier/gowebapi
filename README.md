@@ -49,7 +49,7 @@ folder and then a quick find and replace will get it working again if you want.
 The files that are probably of most interest to you are these:
 
 * [vendor/app/controller/user.go](https://github.com/josephspurrier/gowebapi/blob/master/vendor/app/controller/user.go) - Controller with the routes for /users
-* [vendor/app/model/user/user.go](https://github.com/josephspurrier/gowebapi/blob/master/vendor/app/controller/user.go) - Model with all the MySQL logic
+* [vendor/app/model/user/user.go](https://github.com/josephspurrier/gowebapi/blob/master/vendor/app/model/user/user.go) - Model with all the MySQL logic
 * [vendor/app/shared/form/form.go](https://github.com/josephspurrier/gowebapi/blob/master/vendor/app/shared/form/form.go) - Functions that automate the interaction between the model struct and forms
 * [vendor/app/shared/response/response.go](https://github.com/josephspurrier/gowebapi/blob/master/vendor/app/shared/response/response.go) - Handles the output of JSON in 3 different formats
 
