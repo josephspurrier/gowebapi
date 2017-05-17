@@ -68,19 +68,16 @@ func (u *Entity) Create() (int, error) {
 	// Create the entity
 	_, err = database.SQL.Exec(fmt.Sprintf(`
 		INSERT INTO %v
-		(id, first_name, last_name, email, password, status_id, created_at, updated_at, deleted_at)
+		(id, first_name, last_name, email, password, status_id)
 		VALUES
-		(?,?,?,?,?,?,?,?,?)
+		(?,?,?,?,?,?)
 		`, tableName),
 		u.ID,
 		u.FirstName,
 		u.LastName,
 		u.Email,
 		u.Password,
-		u.StatusID,
-		u.CreatedAt,
-		u.UpdatedAt,
-		u.DeletedAt)
+		u.StatusID)
 
 	// If error occurred error
 	if err != nil {
