@@ -48,7 +48,7 @@ func UserOnePOST(w http.ResponseWriter, r *http.Request) {
 
 	// Validate the required fields are present
 	err, errMsg := form.Validate(r, m)
-	if err == form.ErrRequiredMissing {
+	if err == form.ErrRequiredMissing || err == form.ErrWrongContentType {
 		response.SendError(w, http.StatusBadRequest, errMsg)
 		return
 	} else if err == form.ErrBadStruct || err == form.ErrNotStruct {

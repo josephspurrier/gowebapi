@@ -10,11 +10,12 @@ import (
 )
 
 var (
-	ErrNotSupported    = errors.New("type not supported for conversion")
-	ErrWrongType       = errors.New("value is wrong type")
-	ErrBadStruct       = errors.New("struct missing json tag")
-	ErrNotStruct       = errors.New("model is not a struct")
-	ErrRequiredMissing = errors.New("required field missing")
+	ErrNotSupported     = errors.New("type not supported for conversion")
+	ErrWrongType        = errors.New("value is wrong type")
+	ErrBadStruct        = errors.New("struct missing json tag")
+	ErrNotStruct        = errors.New("model is not a struct")
+	ErrRequiredMissing  = errors.New("required field missing")
+	ErrWrongContentType = errors.New("content-type of request is incorrect")
 )
 
 // Prevent running on types other than struct
@@ -33,6 +34,10 @@ func Validate(r *http.Request, model interface{}) (error, string) {
 	// Prevent running on types other than struct
 	if !structPtrCheck(model) {
 		return ErrNotStruct, ErrNotStruct.Error()
+	}
+
+	if r.Header.Get("Content-Type") != "application/x-www-form-urlencoded" {
+		return ErrWrongContentType, ErrWrongContentType.Error()
 	}
 
 	// Parse Form
