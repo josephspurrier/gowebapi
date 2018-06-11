@@ -1,21 +1,13 @@
 {
     "Database": {
-        "Type": "MySQL",
-        "MySQL": {
-            "Username": "root",
-            "Password": "",
-            "Name": "webapi",
-            "Hostname": "127.0.0.1",
-            "Port": 3306,
-            "Parameter": "?parseTime=true"
-        }
-    },
-    "Email": {
-        "Username": "",
+        "Username": "root",
         "Password": "",
-        "Hostname": "",
-        "Port": 25,
-        "From": ""
+        "Database": "webapi",
+        "Charset": "utf8mb4",
+        "Collation": "utf8mb4_unicode_ci",
+        "Hostname": "127.0.0.1",
+        "Port": 3306,
+        "Parameter": "parseTime=true&allowNativePasswords=true"
     },
     "Server": {
         "Hostname": "",

@@ -6,32 +6,26 @@ import (
 	"github.com/matryer/way"
 )
 
-var (
-	r Info
-)
-
-const (
-	params = "params"
-)
-
 // Info contains the router.
 type Info struct {
-	Router *way.Router
+	router *way.Router
 }
 
-// Set up the router.
-func init() {
-	r.Router = way.NewRouter()
+// New returns an instance of the router.
+func New() *Info {
+	return &Info{
+		router: way.NewRouter(),
+	}
 }
 
 // ReadConfig returns the information.
-func ReadConfig() Info {
+/*func ReadConfig() Info {
 	return r
-}
+}*/
 
 // Instance returns the router.
-func Instance() *way.Router {
-	return r.Router
+func (r *Info) Instance() *way.Router {
+	return r.router
 }
 
 // Params returns a URL parameter.

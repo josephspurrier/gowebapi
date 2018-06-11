@@ -26,14 +26,21 @@ type Retrieve struct {
 	Results interface{}    `json:"results"`
 }
 
-// SendError calls Send by without a count or results
-func SendError(w http.ResponseWriter, status http.ConnState, message string) {
-	Send(w, status, message, 0, nil)
+// Output is the response object.
+type Output struct{}
+
+// New returns a new output response object.
+func New() *Output {
+	return &Output{}
 }
 
-// Send writes struct to the writer using a format
-func Send(w http.ResponseWriter, status http.ConnState, message string, count int, results interface{}) {
+// SendError calls Send by without a count or results.
+func (o *Output) SendError(w http.ResponseWriter, status http.ConnState, message string) {
+	o.Send(w, status, message, 0, nil)
+}
 
+// Send writes struct to the writer using a format.
+func (o *Output) Send(w http.ResponseWriter, status http.ConnState, message string, count int, results interface{}) {
 	var i interface{}
 
 	// Determine the best format
@@ -65,17 +72,5 @@ func Send(w http.ResponseWriter, status http.ConnState, message string, count in
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(int(status))
-	w.Write(js)
-}
-
-// SendJSON writes a struct to the writer
-func SendJSON(w http.ResponseWriter, i interface{}) {
-	js, err := json.Marshal(i)
-	if err != nil {
-		http.Error(w, "JSON Error: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
 	w.Write(js)
 }

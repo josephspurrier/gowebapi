@@ -1,111 +1,130 @@
 package database
 
 import (
-	"crypto/rand"
 	"database/sql"
-	"fmt"
-	"log"
+	"errors"
+	"reflect"
+	"time"
 
-	_ "github.com/go-sql-driver/mysql" // MySQL driver
 	"github.com/jmoiron/sqlx"
 )
 
-var (
-	// SQL wrapper
-	SQL *sqlx.DB
-	// Database info
-	databases Info
-)
-
-// Type is the type of database from a Type* constant
-type Type string
-
-const (
-	// TypeMySQL is MySQL
-	TypeMySQL Type = "MySQL"
-)
-
-// Info contains the database configurations
-type Info struct {
-	// Database type
-	Type Type
-	// MySQL info if used
-	MySQL MySQLInfo
-}
-
-// MySQLInfo is the details for the database connection
-type MySQLInfo struct {
-	Username  string
-	Password  string
-	Name      string
-	Hostname  string
-	Port      int
-	Parameter string
-}
-
-// Connect to the database
-func Connect(d Info) {
-	var err error
-
-	// Store the config
-	databases = d
-
-	switch d.Type {
-	case TypeMySQL:
-		// Connect to MySQL
-		if SQL, err = sqlx.Connect("mysql", DSN(d.MySQL)); err != nil {
-			log.Println("SQL Driver Error", err)
-		}
-
-		// Check if is alive
-		if err = SQL.Ping(); err != nil {
-			log.Println("Database Error", err)
-		}
-	default:
-		log.Println("No registered database in config")
+// New returns a new database wrapper.
+func New(db *sqlx.DB) *DBW {
+	return &DBW{
+		db: db,
 	}
 }
 
-// ReadConfig returns the database information
-func ReadConfig() Info {
-	return databases
+// DBW is a database wrapper that provides helpful utilities.
+type DBW struct {
+	db *sqlx.DB
 }
 
-// DSN returns the Data Source Name
-func DSN(ci MySQLInfo) string {
-	// Example: root:@tcp(localhost:3306)/test
-	return ci.Username +
-		":" +
-		ci.Password +
-		"@tcp(" +
-		ci.Hostname +
-		":" +
-		fmt.Sprintf("%d", ci.Port) +
-		")/" +
-		ci.Name + ci.Parameter
+// Select using this DB.
+// Any placeholder parameters are replaced with supplied args.
+func (d *DBW) Select(dest interface{}, query string, args ...interface{}) error {
+	return d.db.Select(dest, query, args...)
 }
 
-// AffectedRows returns the number of rows affected by the query
-// Will panic if result does not exist
-func AffectedRows(result sql.Result) int {
-	// If successful, get the number of affected rows
+// Get using this DB.
+// Any placeholder parameters are replaced with supplied args.
+// An error is returned if the result set is empty.
+func (d *DBW) Get(dest interface{}, query string, args ...interface{}) error {
+	return d.db.Get(dest, query, args...)
+}
+
+// Exec executes a query without returning any rows.
+// The args are for any placeholder parameters in the query.
+func (d *DBW) Exec(query string, args ...interface{}) (sql.Result, error) {
+	return d.db.Exec(query, args...)
+}
+
+// LastInsertID returns the last inserted ID.
+func (d *DBW) LastInsertID(r sql.Result, err error) (int64, error) {
+	if err != nil {
+		return 0, err
+	}
+
+	return r.LastInsertId()
+}
+
+// MySQLTimestamp returns a MySQL timestamp.
+func (d *DBW) MySQLTimestamp(t time.Time) string {
+	return t.Format("2006-01-02 15:04:05")
+}
+
+// GoTimestamp returns a Go timestamp.
+func (d *DBW) GoTimestamp(s string) (time.Time, error) {
+	return time.Parse("2006-01-02 15:04:05", s)
+}
+
+// Exists returns the proper ID and other values based on the query results.
+func (d *DBW) Exists(err error, ID int64) (bool, int64, error) {
+	if err == nil {
+		return true, ID, nil
+	} else if err == sql.ErrNoRows {
+		return false, 0, nil
+	}
+	return false, 0, err
+}
+
+// Error will return nil if the error is sql.ErrNoRows.
+func (d *DBW) Error(err error) error {
+	if err == sql.ErrNoRows {
+		return nil
+	}
+	return err
+}
+
+// AffectedRows returns the number of rows affected by the query.
+func (d *DBW) AffectedRows(result sql.Result) int {
+	if result == nil {
+		return 0
+	}
+
+	// If successful, get the number of affected rows.
 	count, err := result.RowsAffected()
-	if err != nil { // Feature not supported
-		// Only show error for admin
-		log.Println(err)
-		return 1
+	if err != nil {
+		return 0
 	}
 
 	return int(count)
 }
 
-// UUID generates UUID for use as an ID
-func UUID() (string, error) {
-	b := make([]byte, 16)
-	_, err := rand.Read(b)
-	if err != nil {
-		return "", err
+// PaginatedResults returns the paginated results of a query.
+func (d *DBW) PaginatedResults(i interface{}, fn func() (interface{}, int,
+	error)) (int, error) {
+	v := reflect.ValueOf(i)
+	if v.Kind() != reflect.Ptr {
+		return 0, errors.New("must pass a pointer, not a value")
 	}
 
-	return fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:]), nil
+	results, d2, d3 := fn()
+	if results == nil {
+		return d2, d3
+	}
+
+	arrPtr := reflect.ValueOf(i)
+	value := arrPtr.Elem()
+	itemPtr := reflect.ValueOf(results)
+	value.Set(itemPtr)
+
+	return d2, d3
+}
+
+// RecordExists returns the ID if a record exists.
+func (d *DBW) RecordExists(fn func() (exists bool, ID int64, err error)) (
+	exists bool, ID int64, err error) {
+	return fn()
+}
+
+// AddRecord returns the ID if the record is created.
+func (d *DBW) AddRecord(fn func() (ID int64, err error)) (ID int64, err error) {
+	return fn()
+}
+
+// ExecQuery returns an error if the query failed.
+func (d *DBW) ExecQuery(fn func() (err error)) (err error) {
+	return fn()
 }

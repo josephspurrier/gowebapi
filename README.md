@@ -17,8 +17,34 @@ then set your GOPATH to the folder that git clone created called `gowebapi`.
 This allows you to easily fork the repository and build your own applications
 without rewritting any import paths.
 
-If you are on Go 1.5, you need to set GOVENDOREXPERIMENT to 1. If you are on Go
-1.4 or earlier, the code will not work because it uses the vendor folder.
+You must use Go 1.7 or newer because it uses the http context.
+
+## Swagger
+
+This projects uses Swagger v2 to document the API:
+https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md
+
+### Install Swagger
+
+This tool will generate the Swagger spec from annotations in the Go code. It
+will read the comments in the code and will pull types from structs.
+
+```bash
+go get -u github.com/go-swagger/go-swagger/cmd/swagger
+```
+
+### Generate Swagger Spec
+
+```bash
+# Change to the proper directory.
+cd src/app/webapi
+
+# Generate the swagger spec.
+swagger generate spec -o ./swagger.json
+
+# Serve the spec for the browser.
+swagger serve -F=swagger ./swagger.json
+```
 
 ## Vendoring
 
@@ -29,6 +55,7 @@ The packages used in this project are:
 - MySQL Driver: github.com/go-sql-driver/mysql
 - SQL to Struct: github.com/jmoiron/sqlx
 - Routing: github.com/matryer/way
+- Request Validation: github.com/go-playground/validator
 
 ## Quick Start with MySQL
 
@@ -51,12 +78,12 @@ supported.
 The following endpoints are available:
 
 ```
-* POST   http://localhost/users      - Create a new user
-* GET	 http://localhost/users/{id} - Retrieve a user by ID
-* GET	 http://localhost/users      - Retrieve a list of all users
-* PUT	 http://localhost/users/{id} - Update a user by ID
-* DELETE http://localhost/users/{id} - Delete a user by ID
-* DELETE http://localhost/users      - Delete all users
+* POST   http://localhost/v1/user           - Create a new user
+* GET	 http://localhost/v1/user/{user_id} - Retrieve a user by ID
+* GET	 http://localhost/v1/user           - Retrieve a list of all users
+* PUT	 http://localhost/v1/user/{user_id} - Update a user by ID
+* DELETE http://localhost/v1/user/{user_id} - Delete a user by ID
+* DELETE http://localhost/v1/user           - Delete all users
 ```
 
 ## Interesting Files
@@ -65,7 +92,6 @@ The files that are the most interesting are:
 
 * [src/app/webapi/controller/user.go](https://github.com/josephspurrier/gowebapi/blob/master/src/app/webapi/controller/user.go) - Controller with the routes for /users
 * [src/app/webapi/model/user/user.go](https://github.com/josephspurrier/gowebapi/blob/master/src/app/webapi/model/user/user.go) - Model with all the MySQL logic
-* [src/app/webapi/pkg/form/form.go](https://github.com/josephspurrier/gowebapi/blob/master/src/app/webapi/pkg/form/form.go) - Functions that automate the interaction between the model struct and forms
 * [src/app/webapi/pkg/response/response.go](https://github.com/josephspurrier/gowebapi/blob/master/src/app/webapi/pkg/response/response.go) - Handles the output of JSON in 3 different formats
 
 ## Rules for Consistency
@@ -98,8 +124,3 @@ Rules for messages:
 * 400 - [field] is missing; [field] needs to be type: [type]
 * 500 - an error occurred, please try again later (should also log error because it's a programming or server issue)
 ```
-
-## My Other Projects
-
-[GoWebApp](https://github.com/josephspurrier/gowebapp) demonstrates how to build a website using the Go language without a framework. Much
-of the structure of this project comes from GoWebApp.
