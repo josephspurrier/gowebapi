@@ -8,12 +8,6 @@
   version = "v1.4.0"
 
 [[projects]]
-  name = "github.com/gorilla/context"
-  packages = ["."]
-  revision = "08b5f424b9271eedf6f9f0ce86cb9396ed337a42"
-  version = "v1.1.1"
-
-[[projects]]
   branch = "master"
   name = "github.com/jmoiron/sqlx"
   packages = [
@@ -23,16 +17,10 @@
   revision = "2aeb6a910c2b94f2d5eb53d9895d80e27264ec41"
 
 [[projects]]
-  name = "github.com/julienschmidt/httprouter"
-  packages = ["."]
-  revision = "8c199fb6259ffc1af525cc3ad52ee60ba8359669"
-  version = "v1.1"
-
-[[projects]]
   branch = "master"
-  name = "github.com/justinas/alice"
+  name = "github.com/matryer/way"
   packages = ["."]
-  revision = "03f45bd4b7dad4734bc4620e46a35789349abb20"
+  revision = "9632d0c407b008073d19d0c4da1e0fc3e9477508"
 
 [[projects]]
   name = "google.golang.org/appengine"
@@ -43,6 +31,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "6ccdc9ba22b5d4cc32af86f3a8e9b81341586a598349a42f1231c528833a1de9"
+  inputs-digest = "e8b59ef74a60daa945530fe3dec064d6b886cf01b2b969226dd71c62d84d4034"
   solver-name = "gps-cdcl"
   solver-version = 1

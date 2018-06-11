@@ -91,8 +91,7 @@ func UserOnePOST(w http.ResponseWriter, r *http.Request) {
 // UserOneGET returns one user.
 func UserOneGET(w http.ResponseWriter, r *http.Request) {
 	// Get the parameter id
-	params := router.Params(r)
-	ID := params.ByName("id")
+	ID := router.Params(r, "id")
 
 	// Get an item
 	entity, err := user.Read(ID)
@@ -130,11 +129,10 @@ func UserAllGET(w http.ResponseWriter, r *http.Request) {
 
 // UserOnePUT updates a user.
 func UserOnePUT(w http.ResponseWriter, r *http.Request) {
-	// Get the parameter id
-	params := router.Params(r)
-	ID := params.ByName("id")
+	// Get the parameter id.
+	ID := router.Params(r, "id")
 
-	// Get an item
+	// Get an item.
 	m, err := user.Read(ID)
 	if err == user.ErrNoResult {
 		response.Send(w, http.StatusOK, itemNotFound, 0, nil)
@@ -145,7 +143,7 @@ func UserOnePUT(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Validate the required fields are present
+	// Validate the required fields are present.
 	errMsg, err := form.Validate(r, m)
 	if err == form.ErrRequiredMissing {
 		response.SendError(w, http.StatusBadRequest, errMsg)
@@ -187,11 +185,10 @@ func UserOnePUT(w http.ResponseWriter, r *http.Request) {
 
 // UserOneDELETE deletes one user.
 func UserOneDELETE(w http.ResponseWriter, r *http.Request) {
-	// Get the parameter id
-	params := router.Params(r)
-	ID := params.ByName("id")
+	// Get the parameter id.
+	ID := router.Params(r, "id")
 
-	// Delete an item
+	// Delete an item.
 	count, err := user.Delete(ID)
 	if err != nil {
 		log.Println(err)

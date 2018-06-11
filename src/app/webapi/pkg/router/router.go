@@ -3,9 +3,7 @@ package router
 import (
 	"net/http"
 
-	"github.com/gorilla/context"
-	"github.com/julienschmidt/httprouter"
-	"github.com/justinas/alice"
+	"github.com/matryer/way"
 )
 
 var (
@@ -18,12 +16,12 @@ const (
 
 // Info contains the router.
 type Info struct {
-	Router *httprouter.Router
+	Router *way.Router
 }
 
 // Set up the router.
 func init() {
-	r.Router = httprouter.New()
+	r.Router = way.NewRouter()
 }
 
 // ReadConfig returns the information.
@@ -32,16 +30,11 @@ func ReadConfig() Info {
 }
 
 // Instance returns the router.
-func Instance() *httprouter.Router {
+func Instance() *way.Router {
 	return r.Router
 }
 
-// Params returns the URL parameters.
-func Params(r *http.Request) httprouter.Params {
-	return context.Get(r, params).(httprouter.Params)
-}
-
-// Chain returns handle with chaining using Alice.
-func Chain(fn http.HandlerFunc, c ...alice.Constructor) httprouter.Handle {
-	return Handler(alice.New(c...).ThenFunc(fn))
+// Params returns a URL parameter.
+func Params(r *http.Request, param string) string {
+	return way.Param(r.Context(), param)
 }

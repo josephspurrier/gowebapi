@@ -6,8 +6,6 @@ import (
 	"app/webapi/middleware/cors"
 	"app/webapi/middleware/logrequest"
 	"app/webapi/pkg/router"
-
-	"github.com/gorilla/context"
 )
 
 // LoadHTTPS will load the HTTP routes and middleware.
@@ -40,9 +38,6 @@ func middleware(h http.Handler) http.Handler {
 
 	// Cors for swagger-ui.
 	h = cors.Handler(h)
-
-	// Clear handler for Gorilla Context.
-	h = context.ClearHandler(h)
 
 	return h
 }

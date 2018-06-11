@@ -8,9 +8,6 @@ import (
 )
 
 func init() {
-	// Required so the trailing slash is not redirected.
-	router.Instance().RedirectTrailingSlash = false
-
 	// Serve static files, no directory browsing.
 	router.Get("/static/*filepath", Static)
 }

@@ -12,10 +12,10 @@ consistent your API is, the easier it will be for other people to interact with 
 [tag](https://github.com/josephspurrier/gowebapi/releases/tag/0.1-alpha).
 The current version is significant refactor following better practices.
 
-You cannot use `go get` with this repository. You perform a `git clone` then set
-your GOPATH to the folder called `gowebapi`. This allows you to easily fork
-the repository and build your own applications without rewritting any import
-paths.
+You cannot use `go get` with this repository. You should perform a `git clone`
+then set your GOPATH to the folder that git clone created called `gowebapi`.
+This allows you to easily fork the repository and build your own applications
+without rewritting any import paths.
 
 If you are on Go 1.5, you need to set GOVENDOREXPERIMENT to 1. If you are on Go
 1.4 or earlier, the code will not work because it uses the vendor folder.
@@ -24,6 +24,11 @@ If you are on Go 1.5, you need to set GOVENDOREXPERIMENT to 1. If you are on Go
 
 This project uses [dep](https://github.com/golang/dep). The `dep init` command
 was run from inside the `src/app/webapi` folder.
+
+The packages used in this project are:
+- MySQL Driver: github.com/go-sql-driver/mysql
+- SQL to Struct: github.com/jmoiron/sqlx
+- Routing: github.com/matryer/way
 
 ## Quick Start with MySQL
 
@@ -38,17 +43,20 @@ http://localhost. You should see the **ok** message and status 200.
 To create a user, send a POST request to http://localhost/user with the
 following fields: first_name, last_name, email, and password.
 
+Currently, only a Content-Type of `application/x-www-form-urlencoded` is
+supported.
+
 ## Available Endpoints
 
 The following endpoints are available:
 
 ```
-* POST   http://localhost/users		 - Create a new user
+* POST   http://localhost/users      - Create a new user
 * GET	 http://localhost/users/{id} - Retrieve a user by ID
-* GET	 http://localhost/users 	 - Retrieve a list of all users
+* GET	 http://localhost/users      - Retrieve a list of all users
 * PUT	 http://localhost/users/{id} - Update a user by ID
 * DELETE http://localhost/users/{id} - Delete a user by ID
-* DELETE http://localhost/users		 - Delete all users
+* DELETE http://localhost/users      - Delete all users
 ```
 
 ## Interesting Files
