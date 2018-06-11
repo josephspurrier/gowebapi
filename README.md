@@ -1,6 +1,7 @@
 # gowebapi
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/josephspurrier/gowebapi)](https://goreportcard.com/report/github.com/josephspurrier/gowebapi)
+[![GoDoc](https://godoc.org/github.com/josephspurrier/gowebapi?status.svg)](https://godoc.org/github.com/josephspurrier/gowebapi) 
 
 This project demonstrates how to structure and build an API using the Go language without a framework.
 The API is still a work-in-progress, but it's designed to be easy to troubleshoot and easy to modify.
