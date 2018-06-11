@@ -22,7 +22,7 @@
         "tags": [
           "root"
         ],
-        "summary": "Displays an ok message.",
+        "summary": "Display an ok message.",
         "operationId": "RootIndex",
         "responses": {
           "200": {
@@ -36,7 +36,7 @@
         "tags": [
           "user"
         ],
-        "summary": "Returns all users in the database.",
+        "summary": "Return all users.",
         "operationId": "UserIndex",
         "responses": {
           "201": {
@@ -57,7 +57,7 @@
         "tags": [
           "user"
         ],
-        "summary": "Add a user to the database.",
+        "summary": "Create a user.",
         "operationId": "UserCreate",
         "parameters": [
           {
@@ -104,7 +104,7 @@
         "tags": [
           "user"
         ],
-        "summary": "Deletes all users from the database.",
+        "summary": "Delete all users.",
         "operationId": "UserDestroyAll",
         "responses": {
           "200": {
@@ -127,7 +127,7 @@
         "tags": [
           "user"
         ],
-        "summary": "Return one user from the database.",
+        "summary": "Return one user.",
         "operationId": "UserShow",
         "parameters": [
           {
@@ -157,7 +157,7 @@
         "tags": [
           "user"
         ],
-        "summary": "Makes changes to a user in the database.",
+        "summary": "Make changes to a user.",
         "operationId": "UserUpdate",
         "parameters": [
           {
@@ -211,7 +211,7 @@
         "tags": [
           "user"
         ],
-        "summary": "Delete a user from the database.",
+        "summary": "Delete a user.",
         "operationId": "UserDestroy",
         "parameters": [
           {

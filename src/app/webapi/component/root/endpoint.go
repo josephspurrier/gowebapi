@@ -7,7 +7,7 @@ import (
 // Index .
 // swagger:route GET /v1 root RootIndex
 //
-// Displays an ok message.
+// Display an ok message.
 //
 // Responses:
 //   200: RootIndexResponse

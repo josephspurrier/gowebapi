@@ -15,7 +15,9 @@ type IDatabase interface {
 	LastInsertID(r sql.Result, err error) (int64, error)
 	MySQLTimestamp(t time.Time) string
 	GoTimestamp(s string) (time.Time, error)
-	Exists(err error, ID int64) (bool, int64, error)
+
+	ExistsID(err error, ID int64) (bool, int64, error)
+	ExistsString(err error, s string) (bool, string, error)
 
 	Error(err error) error
 	AffectedRows(result sql.Result) int

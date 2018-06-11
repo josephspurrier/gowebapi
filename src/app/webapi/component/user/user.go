@@ -2,126 +2,93 @@ package user
 
 import (
 	"database/sql"
-	"errors"
-	"fmt"
 	"time"
 
 	"app/webapi/component"
 	"app/webapi/pkg/uuid"
 )
 
-// Name of the table.
-const tableName = "user"
-
-// Errors.
-var (
-	ErrNoResult = errors.New("no result")
-	ErrExists   = errors.New("already exists")
-	ErrNotExist = errors.New("does not exist")
-)
-
-// Entity information.
-type Entity struct {
-	ID        string    `db:"id" json:"id"`
-	FirstName string    `db:"first_name" json:"first_name" require:"true"`
-	LastName  string    `db:"last_name" json:"last_name" require:"true"`
-	Email     string    `db:"email" json:"email" require:"true"`
-	Password  string    `db:"password" json:"password" require:"true"`
-	StatusID  uint8     `db:"status_id" json:"status_id"`
-	CreatedAt time.Time `db:"created_at" json:"created_at"`
-	UpdatedAt time.Time `db:"updated_at" json:"updated_at"`
-	DeletedAt time.Time `db:"deleted_at" json:"deleted_at"`
-}
-
-// Group of entities.
-type Group []Entity
-
-// NewRecord entity.
-func NewRecord() (*Entity, error) {
-	var err error
-	entity := &Entity{}
-
-	// Set the default parameters.
-	entity.StatusID = 1
-	entity.ID, err = uuid.Generate()
-	// If error on UUID generation.
-	if err != nil {
-		return entity, err
-	}
-
-	return entity, nil
+// TUser is user table that contains users.
+type TUser struct {
+	ID        string     `db:"id" json:"id"`
+	FirstName string     `db:"first_name" json:"first_name" require:"true"`
+	LastName  string     `db:"last_name" json:"last_name" require:"true"`
+	Email     string     `db:"email" json:"email" require:"true"`
+	Password  string     `db:"password" json:"password" require:"true"`
+	StatusID  uint8      `db:"status_id" json:"status_id"`
+	CreatedAt *time.Time `db:"created_at" json:"created_at"`
+	UpdatedAt *time.Time `db:"updated_at" json:"updated_at"`
+	DeletedAt *time.Time `db:"deleted_at" json:"deleted_at"`
 }
 
 // *****************************************************************************
 // Create
 // *****************************************************************************
 
-// Create will add a new entity.
-func (u *Entity) Create(db component.IDatabase) (int, error) {
-	// Check for existing entity.
-	_, err := readOneByField(db, "email", u.Email)
-
-	// If entity exists.
-	if err != ErrNoResult {
-		return 0, ErrExists
+// Create adds a new user.
+func Create(db component.IDatabase, firstName, lastName, email,
+	password string) (string, error) {
+	// Generate a UUID.
+	uuid, err := uuid.Generate()
+	if err != nil {
+		return "", err
 	}
 
-	// Create the entity.
-	_, err = db.Exec(fmt.Sprintf(`
-		INSERT INTO %v
+	// Create the user.
+	_, err = db.Exec(`
+		INSERT INTO user
 		(id, first_name, last_name, email, password, status_id)
 		VALUES
 		(?,?,?,?,?,?)
-		`, tableName),
-		u.ID,
-		u.FirstName,
-		u.LastName,
-		u.Email,
-		u.Password,
-		u.StatusID)
+		`,
+		uuid, firstName, lastName, email, password, 1)
 
-	// If error occurred error.
-	if err != nil {
-		return 0, err
-	}
-
-	return 1, nil
+	return uuid, err
 }
 
 // *****************************************************************************
 // Read
 // *****************************************************************************
 
-// Read returns one entity with the matching ID.
-// If no result, it will return sql.ErrNoRows.
-func Read(db component.IDatabase, ID string) (*Entity, error) {
-	return readOneByField(db, "id", ID)
+// One returns one user with the matching ID.
+func One(db component.IDatabase, ID string) (p TUser, exists bool, err error) {
+	err = db.Get(&p, `
+		SELECT * FROM user
+		WHERE id = ?
+		LIMIT 1`,
+		ID)
+	return p, (err != sql.ErrNoRows), db.Error(err)
 }
 
-// ReadAll returns all entities.
-func ReadAll(db component.IDatabase) (Group, error) {
-	var result Group
-	err := db.Select(&result, fmt.Sprintf("SELECT * FROM %v", tableName))
+// All returns all users.
+func All(db component.IDatabase) ([]TUser, error) {
+	result := make([]TUser, 0)
+	err := db.Select(&result, `SELECT * FROM user`)
 	return result, err
 }
 
-// readOneByField returns the entity that matches the field value.
-// If no result, it will return ErrNoResult.
-func readOneByField(db component.IDatabase, name string, value string) (*Entity, error) {
-	result := &Entity{}
-	err := db.Get(result, fmt.Sprintf("SELECT * FROM %v WHERE %v = ? LIMIT 1", tableName, name), value)
-	if err == sql.ErrNoRows {
-		err = ErrNoResult
-	}
-	return result, err
+// ExistsEmail determines if a user exists by email.
+func ExistsEmail(db component.IDatabase, s string) (exists bool, ID string,
+	err error) {
+	var p TUser
+	err = db.Get(&p, `
+		SELECT id FROM user
+		WHERE email = ?
+		LIMIT 1`,
+		s)
+	return db.ExistsString(err, p.ID)
 }
 
-// readAllByField returns entities matching a field value.
-// If no result, it will return an empty group.
-func readAllByField(db component.IDatabase, name string, value string) (Group, error) {
-	var result Group
-	err := db.Select(&result, fmt.Sprintf("SELECT * FROM %v WHERE %v = ?", tableName, name), value)
-	return result, err
+// ExistsID determines if a user exists by ID.
+func ExistsID(db component.IDatabase, s string) (exists bool, ID string,
+	err error) {
+	var p TUser
+	err = db.Get(&p, `
+		SELECT id FROM user
+		WHERE id = ?
+		LIMIT 1`,
+		s)
+	return db.ExistsString(err, p.ID)
 }
 
 // *****************************************************************************
@@ -129,36 +96,20 @@ func readAllByField(db component.IDatabase, name string, value string) (Group, e
 // *****************************************************************************
 
 // Update makes changes to one entity.
-func (u *Entity) Update(db component.IDatabase) (int, error) {
-	// Check for existing entity.
-	_, err := readOneByField(db, "id", u.ID)
-
-	// If entity does NOT exists.
-	if err == ErrNoResult {
-		return 0, ErrNotExist
-	}
-
+func Update(db component.IDatabase, ID, firstName, lastName, email,
+	password string) (err error) {
 	// Update the entity.
-	_, err = db.Exec(fmt.Sprintf(`
-		UPDATE %v SET
-		first_name = ?,
-		last_name = ?,
-		email = ?,
-		password = ?
+	_, err = db.Exec(`
+		UPDATE user
+		SET
+			first_name = ?,
+			last_name = ?,
+			email = ?,
+			password = ?
 		WHERE id = ?
-		`, tableName),
-		u.FirstName,
-		u.LastName,
-		u.Email,
-		u.Password,
-		u.ID)
-
-	// If error occurred error.
-	if err != nil {
-		return 0, err
-	}
-
-	return 1, nil
+		`,
+		firstName, lastName, email, password, ID)
+	return
 }
 
 // *****************************************************************************
@@ -167,7 +118,7 @@ func (u *Entity) Update(db component.IDatabase) (int, error) {
 
 // Delete removes one entity.
 func Delete(db component.IDatabase, ID string) (int, error) {
-	result, err := db.Exec(fmt.Sprintf("DELETE FROM %v WHERE id = ? LIMIT 1", tableName), ID)
+	result, err := db.Exec("DELETE FROM user WHERE id = ? LIMIT 1", ID)
 	if err != nil {
 		return 0, err
 	}
@@ -177,27 +128,7 @@ func Delete(db component.IDatabase, ID string) (int, error) {
 
 // DeleteAll removes all entities.
 func DeleteAll(db component.IDatabase) (int, error) {
-	result, err := db.Exec(fmt.Sprintf("DELETE FROM %v", tableName))
-	if err != nil {
-		return 0, err
-	}
-
-	return db.AffectedRows(result), err
-}
-
-// deleteOneByField deletes an entity matching a field value.
-func deleteOneByField(db component.IDatabase, name string, value string) (int, error) {
-	result, err := db.Exec(fmt.Sprintf("DELETE FROM %v WHERE %v = ? LIMIT 1", tableName, name), value)
-	if err != nil {
-		return 0, err
-	}
-
-	return db.AffectedRows(result), err
-}
-
-// deleteAllByField deletes all entities matching a field value.
-func deleteAllByField(db component.IDatabase, name string, value string) (int, error) {
-	result, err := db.Exec(fmt.Sprintf("DELETE FROM %v WHERE %v = ?", tableName, name), value)
+	result, err := db.Exec(`DELETE FROM user`)
 	if err != nil {
 		return 0, err
 	}

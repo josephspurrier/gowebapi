@@ -59,14 +59,24 @@ func (d *DBW) GoTimestamp(s string) (time.Time, error) {
 	return time.Parse("2006-01-02 15:04:05", s)
 }
 
-// Exists returns the proper ID and other values based on the query results.
-func (d *DBW) Exists(err error, ID int64) (bool, int64, error) {
+// ExistsID returns the proper ID and other values based on the query results.
+func (d *DBW) ExistsID(err error, ID int64) (bool, int64, error) {
 	if err == nil {
 		return true, ID, nil
 	} else if err == sql.ErrNoRows {
 		return false, 0, nil
 	}
 	return false, 0, err
+}
+
+// ExistsString returns the proper string and other values based on the query results.
+func (d *DBW) ExistsString(err error, s string) (bool, string, error) {
+	if err == nil {
+		return true, s, nil
+	} else if err == sql.ErrNoRows {
+		return false, "", nil
+	}
+	return false, "", err
 }
 
 // Error will return nil if the error is sql.ErrNoRows.

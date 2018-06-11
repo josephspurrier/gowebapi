@@ -1,7 +1,6 @@
 package user
 
 import (
-	"log"
 	"net/http"
 )
 
@@ -27,7 +26,7 @@ const (
 // Create .
 // swagger:route POST /v1/user user UserCreate
 //
-// Add a user to the database.
+// Create a user.
 //
 // Responses:
 //   201: CreatedResponse
@@ -57,32 +56,25 @@ func (p *Endpoint) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Create an instance of the user.
-	m, err := NewRecord()
-	if err != nil {
-		p.Log.Printf("UUID Error: %v", err)
-		p.Response.SendError(w, http.StatusInternalServerError, friendlyError)
-		return
-	}
-
-	// Copy over the values.
-	m.FirstName = req.FirstName
-	m.LastName = req.LastName
-	m.Email = req.Email
-	m.Password = req.Password
-
-	// Create the user in the database.
-	count, err := m.Create(p.DB)
-	if err == ErrExists {
+	// Check for existing user.
+	exists, _, err := ExistsEmail(p.DB, req.Email)
+	if exists {
 		p.Response.SendError(w, http.StatusBadRequest, itemExists)
 		return
 	} else if err != nil {
-		p.Log.Printf("%v", err)
+		p.Response.SendError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	// Create the user in the database.
+	_, err = Create(p.DB, req.FirstName, req.LastName, req.Email, req.Password)
+	if err != nil {
+		p.Log.ControllerError(r, err)
 		p.Response.SendError(w, http.StatusInternalServerError, friendlyError)
 		return
 	}
 
-	p.Response.Send(w, http.StatusCreated, itemCreated, count, nil)
+	p.Response.Send(w, http.StatusCreated, itemCreated, 1, nil)
 }
 
 // *****************************************************************************
@@ -92,7 +84,7 @@ func (p *Endpoint) Create(w http.ResponseWriter, r *http.Request) {
 // Show .
 // swagger:route GET /v1/user/{user_id} user UserShow
 //
-// Return one user from the database.
+// Return one user.
 //
 // Responses:
 //   201: CreatedResponse
@@ -116,24 +108,24 @@ func (p *Endpoint) Show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get an item.
-	entity, err := Read(p.DB, req.UserID)
-	if err == ErrNoResult {
-		p.Response.Send(w, http.StatusOK, itemNotFound, 0, nil)
-		return
-	} else if err != nil {
-		log.Println(err)
+	// Get a user.
+	u, exists, err := One(p.DB, req.UserID)
+	if err != nil {
+		p.Log.ControllerError(r, err)
 		p.Response.SendError(w, http.StatusInternalServerError, friendlyError)
+		return
+	} else if !exists {
+		p.Response.Send(w, http.StatusOK, itemNotFound, 0, nil)
 		return
 	}
 
-	p.Response.Send(w, http.StatusOK, itemFound, 1, Group{*entity})
+	p.Response.Send(w, http.StatusOK, itemFound, 1, u)
 }
 
 // Index .
 // swagger:route GET /v1/user user UserIndex
 //
-// Returns all users in the database.
+// Return all users.
 //
 // Responses:
 //   201: CreatedResponse
@@ -142,9 +134,9 @@ func (p *Endpoint) Show(w http.ResponseWriter, r *http.Request) {
 //   500: InternalServerErrorResponse
 func (p *Endpoint) Index(w http.ResponseWriter, r *http.Request) {
 	// Get all items
-	group, err := ReadAll(p.DB)
+	group, err := All(p.DB)
 	if err != nil {
-		log.Println(err)
+		p.Log.ControllerError(r, err)
 		p.Response.SendError(w, http.StatusInternalServerError, friendlyError)
 		return
 	} else if len(group) < 1 {
@@ -162,7 +154,7 @@ func (p *Endpoint) Index(w http.ResponseWriter, r *http.Request) {
 // Update .
 // swagger:route PUT /v1/user/{user_id} user UserUpdate
 //
-// Makes changes to a user in the database.
+// Make changes to a user.
 //
 // Responses:
 //   201: CreatedResponse
@@ -194,35 +186,26 @@ func (p *Endpoint) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get an item.
-	m, err := Read(p.DB, req.UserID)
-	if err == ErrNoResult {
+	// Determine if the user exists.
+	exists, ID, err := ExistsID(p.DB, req.UserID)
+	if err != nil {
+		p.Log.ControllerError(r, err)
+		p.Response.SendError(w, http.StatusInternalServerError, friendlyError)
+		return
+	} else if !exists {
 		p.Response.Send(w, http.StatusOK, itemNotFound, 0, nil)
 		return
-	} else if err != nil {
-		log.Println(err)
-		p.Response.SendError(w, http.StatusInternalServerError, friendlyError)
-		return
 	}
-
-	// Copy over the values.
-	m.FirstName = req.FirstName
-	m.LastName = req.LastName
-	m.Email = req.Email
-	m.Password = req.Password
 
 	// Update item
-	count, err := m.Update(p.DB)
-	if err == ErrNotExist {
-		p.Response.SendError(w, http.StatusBadRequest, itemNotFound)
-		return
-	} else if err != nil {
-		log.Println(err)
+	err = Update(p.DB, ID, req.FirstName, req.LastName, req.Email, req.Password)
+	if err != nil {
+		p.Log.ControllerError(r, err)
 		p.Response.SendError(w, http.StatusInternalServerError, friendlyError)
 		return
 	}
 
-	p.Response.Send(w, http.StatusCreated, itemUpdated, count, nil)
+	p.Response.Send(w, http.StatusCreated, itemUpdated, 1, nil)
 }
 
 // *****************************************************************************
@@ -232,7 +215,7 @@ func (p *Endpoint) Update(w http.ResponseWriter, r *http.Request) {
 // Destroy .
 // swagger:route DELETE /v1/user/{user_id} user UserDestroy
 //
-// Delete a user from the database.
+// Delete a user.
 //
 // Responses:
 //   201: CreatedResponse
@@ -259,7 +242,7 @@ func (p *Endpoint) Destroy(w http.ResponseWriter, r *http.Request) {
 	// Delete an item.
 	count, err := Delete(p.DB, req.UserID)
 	if err != nil {
-		log.Println(err)
+		p.Log.ControllerError(r, err)
 		p.Response.SendError(w, http.StatusInternalServerError, friendlyError)
 		return
 	} else if count < 1 {
@@ -273,7 +256,7 @@ func (p *Endpoint) Destroy(w http.ResponseWriter, r *http.Request) {
 // DestroyAll .
 // swagger:route DELETE /v1/user user UserDestroyAll
 //
-// Deletes all users from the database.
+// Delete all users.
 //
 // Responses:
 //   200: CreatedResponse
@@ -284,7 +267,7 @@ func (p *Endpoint) DestroyAll(w http.ResponseWriter, r *http.Request) {
 	// Delete all items
 	count, err := DeleteAll(p.DB)
 	if err != nil {
-		log.Println(err)
+		p.Log.ControllerError(r, err)
 		p.Response.SendError(w, http.StatusInternalServerError, friendlyError)
 		return
 	} else if count < 1 {
