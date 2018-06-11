@@ -28,7 +28,8 @@ func (b *Binder) Validate(s interface{}) error {
 }
 
 // JSONUnmarshal will perform an unmarshal on an interface using JSON.
-func (b *Binder) JSONUnmarshal(iface interface{}, keys []string, values []string) (err error) {
+func (b *Binder) JSONUnmarshal(iface interface{}, keys []string,
+	values []string) (err error) {
 	// Check for errors.
 	v := reflect.ValueOf(iface)
 	if v.Kind() != reflect.Ptr {

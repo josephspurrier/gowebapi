@@ -18,11 +18,6 @@ func New() *Info {
 	}
 }
 
-// ReadConfig returns the information.
-/*func ReadConfig() Info {
-	return r
-}*/
-
 // Instance returns the router.
 func (r *Info) Instance() *way.Router {
 	return r.router

@@ -21,8 +21,15 @@ You must use Go 1.7 or newer because it uses the http context.
 
 ## Swagger
 
-This projects uses Swagger v2 to document the API:
-https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md
+This projects uses [Swagger v2](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md)
+to document the API. The entire Swagger spec is generated from the code in this
+repository.
+
+The Swagger UI linked back to this project can be viewed
+[here](http://petstore.swagger.io/?url=https://raw.githubusercontent.com/josephspurrier/gowebapi/master/src/app/webapi/swagger.json).
+
+The Swagger spec JSON file is available
+[here](https://github.com/josephspurrier/gowebapi/blob/master/src/app/webapi/swagger.json).
 
 ### Install Swagger
 
@@ -56,6 +63,39 @@ The packages used in this project are:
 - SQL to Struct: github.com/jmoiron/sqlx
 - Routing: github.com/matryer/way
 - Request Validation: github.com/go-playground/validator
+
+## Folder Structure
+
+All the Go code is inside the `src` folder. This allows you to easily fork this
+project to use and test it. You'll just need to set your GOPATH to the
+`gowebapi` folder after you do a `git clone` (don't do a `go get`, it will not
+work).
+
+In the `src/app/webapi` folder, you see a few top level folders:
+- **cmd** - contains the main function and a static folder for the favicon.
+- **component** - contains sets of related endpoints and database code.
+- **internal** - contains project specific packages with dependencies.
+- **middleware** - contains http wrappers for logging and CORS.
+- **pkg** - contains generic packages withou project specific dependencies - these can be safely imported by other projects.
+
+## Components
+
+In the root of the `src/app/webapi/component` folder, you see:
+- **component.go** - contains the dependencies shared by all the components:
+logger, database connection, request bind/validation, and the responses.
+- **error.go** - contains the error pages.
+- **interface.go** - contains all the interfaces for the dependencies so you can
+easily mock out each one for testing purposes.
+
+Inside each component, you'll see:
+- **route.go** - contains the main struct and all the routes.
+- **endpoint.go** - conatins all the endpoint functions with Swagger
+annotations.
+
+In the `user` folder, you see `user.go` which has the SQL queries. Notice how
+the `IDatabase` connection is passed into each function - this allows you to
+easily call database functions from other components as the complexity in your
+application grows.
 
 ## Quick Start with MySQL
 

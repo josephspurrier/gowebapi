@@ -7,12 +7,12 @@ import (
 	"os"
 )
 
-// Parser must implement ParseJSON
+// Parser must implement ParseJSON.
 type Parser interface {
 	ParseJSON([]byte) error
 }
 
-// Load the JSON config file
+// Load the JSON config file.
 func Load(configFile string, p Parser) {
 	var err error
 	var input = io.ReadCloser(os.Stdin)
@@ -20,14 +20,14 @@ func Load(configFile string, p Parser) {
 		log.Fatalln(err)
 	}
 
-	// Read the config file
+	// Read the config file.
 	jsonBytes, err := ioutil.ReadAll(input)
 	input.Close()
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	// Parse the config
+	// Parse the config.
 	if err := p.ParseJSON(jsonBytes); err != nil {
 		log.Fatalf("Could not parse %q: %v", configFile, err)
 	}

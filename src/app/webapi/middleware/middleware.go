@@ -9,16 +9,15 @@ import (
 
 // LoadHTTPS will load the HTTP routes and middleware.
 func LoadHTTPS(h http.Handler) http.Handler {
-	//return middleware(routes())
 	return wrapMiddleware(h)
 }
 
 // LoadHTTP will load the HTTPS routes and middleware.
 func LoadHTTP(h http.Handler) http.Handler {
-	//return middleware(routes())
 	return wrapMiddleware(h)
 
-	// Uncomment this and comment out the line above to always redirect to HTTPS
+	// Uncomment this and comment out the line above to always redirect to
+	// HTTPS.
 	//return http.HandlerFunc(redirectToHTTPS)
 }
 
