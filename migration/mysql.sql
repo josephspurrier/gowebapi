@@ -5,19 +5,18 @@ SET NAMES utf8 COLLATE 'utf8_unicode_ci';
 SET foreign_key_checks = 1;
 SET time_zone = '+00:00';
 SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
-SET storage_engine = InnoDB;
 SET CHARACTER SET utf8;
 
 /* *****************************************************************************
 // Remove old database
 // ****************************************************************************/
-DROP DATABASE IF EXISTS gowebapi;
+DROP DATABASE IF EXISTS webapi;
 
 /* *****************************************************************************
 // Create new database
 // ****************************************************************************/
-CREATE DATABASE gowebapi DEFAULT CHARSET = utf8 COLLATE = utf8_unicode_ci;
-USE gowebapi;
+CREATE DATABASE webapi DEFAULT CHARSET = utf8 COLLATE = utf8_unicode_ci;
+USE webapi;
 
 /* *****************************************************************************
 // Create the tables

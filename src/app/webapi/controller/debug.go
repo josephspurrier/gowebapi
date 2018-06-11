@@ -1,11 +1,11 @@
 package controller
 
 import (
-	"app/route/middleware/pprofhandler"
-	"app/shared/router"
+	"app/webapi/route/middleware/pprofhandler"
+	"app/webapi/shared/router"
 )
 
 func init() {
-	// Enable Pprof
+	// Enable Pprof.
 	router.Get("/debug/pprof/*pprof", pprofhandler.Handler)
 }

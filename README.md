@@ -1,25 +1,33 @@
-# GoWebApi
+# gowebapi
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/josephspurrier/gowebapi)](https://goreportcard.com/report/github.com/josephspurrier/gowebapi)
 [![GoDoc](https://godoc.org/github.com/josephspurrier/gowebapi?status.svg)](https://godoc.org/github.com/josephspurrier/gowebapi) 
 
-Basic Web API in Go
+This project demonstrates how to structure and build an API using the Go language without a framework.
+The API is still a work-in-progress, but it's designed to be easy to troubleshoot and easy to modify.
+Everyone structures their API differently, but ultimately consistency is key. The more
+consistent your API is, the easier it will be for other people to interact with it.
 
-This project demonstrates how to structure and build an API using the Go language without a framework. The API is still a work-in-progress, but it's designed to be easy to troubleshoot and easy to modify. Everyone structures their API differently, but ultimately consistency is key. The more consistent your API is, the easier it will be for other people to interact with it.
+**Older Version:** The previous version that was around for a while was 0.1-alpha. If you want to see that code, you can view the [tag](https://github.com/josephspurrier/gowebapi/releases/tag/0.1-alpha). The current version is significant refactor following better practices.
 
-To download, run the following command:
+You cannot use `go get` with this repository. You perform a `git clone` then set
+your GOPATH to the folder called `gowebapi`. This allows you to easily fork
+the repository and build your own applications without rewritting any import
+paths.
 
-~~~
-go get github.com/josephspurrier/gowebapi
-~~~
+If you are on Go 1.5, you need to set GOVENDOREXPERIMENT to 1. If you are on Go
+1.4 or earlier, the code will not work because it uses the vendor folder.
 
-If you are on Go 1.5, you need to set GOVENDOREXPERIMENT to 1. If you are on Go 1.4 or earlier, the code will not work because it uses the vendor folder.
+## Vendoring
+
+This project uses [dep](https://github.com/golang/dep). The `dep init` command
+was from from inside the `src/app/webapi` folder.
 
 ## Quick Start with MySQL
 
-Start MySQL and import config/mysql.sql to create the database and tables.
+Start MySQL and import `migration/mysql.sql` to create the database and tables.
 
-Open config/config.json and edit the Database section so the connection information matches your MySQL instance.
+Copy `config.json` to `src/app/webapi/cmd/webapi/config.json` and edit the Database section so the connection information matches your MySQL instance.
 
 Build and run from the root directory. Open your REST client to: http://localhost. You should see the welcome message and status 200.
 

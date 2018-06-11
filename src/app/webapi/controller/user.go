@@ -4,13 +4,13 @@ import (
 	"log"
 	"net/http"
 
-	"app/model/user"
-	"app/shared/form"
-	"app/shared/response"
-	"app/shared/router"
+	"app/webapi/model/user"
+	"app/webapi/shared/form"
+	"app/webapi/shared/response"
+	"app/webapi/shared/router"
 )
 
-// Routes
+// Routes.
 func init() {
 	router.Post("/users", UserOnePOST)
 	router.Get("/users/:id", UserOneGET)

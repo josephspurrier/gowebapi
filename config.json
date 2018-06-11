@@ -1,0 +1,29 @@
+{
+    "Database": {
+        "Type": "MySQL",
+        "MySQL": {
+            "Username": "root",
+            "Password": "",
+            "Name": "webapi",
+            "Hostname": "127.0.0.1",
+            "Port": 3306,
+            "Parameter": "?parseTime=true"
+        }
+    },
+    "Email": {
+        "Username": "",
+        "Password": "",
+        "Hostname": "",
+        "Port": 25,
+        "From": ""
+    },
+    "Server": {
+        "Hostname": "",
+        "UseHTTP": true,
+        "UseHTTPS": false,
+        "HTTPPort": 8080,
+        "HTTPSPort": 443,
+        "CertFile": "tls/server.crt",
+        "KeyFile": "tls/server.key"
+    }
+}

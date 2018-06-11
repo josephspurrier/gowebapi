@@ -1,0 +1,10 @@
+# IDE specific settings
+.vscode/
+
+# Go specific files
+pkg/
+bin/
+
+# Other project imports
+github.com/
+golang.org/

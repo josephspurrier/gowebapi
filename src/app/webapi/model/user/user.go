@@ -6,20 +6,20 @@ import (
 	"fmt"
 	"time"
 
-	"app/shared/database"
+	"app/webapi/shared/database"
 )
 
-// Name of the table
+// Name of the table.
 const tableName = "user"
 
-// Errors
+// Errors.
 var (
 	ErrNoResult = errors.New("no result")
 	ErrExists   = errors.New("already exists")
 	ErrNotExist = errors.New("does not exist")
 )
 
-// Entity information
+// Entity information.
 type Entity struct {
 	ID        string    `db:"id" json:"id"`
 	FirstName string    `db:"first_name" json:"first_name" require:"true"`
@@ -32,18 +32,18 @@ type Entity struct {
 	DeletedAt time.Time `db:"deleted_at" json:"deleted_at"`
 }
 
-// Group of entities
+// Group of entities.
 type Group []Entity
 
-// New entity
+// New entity.
 func New() (*Entity, error) {
 	var err error
 	entity := &Entity{}
 
-	// Set the default parameters
+	// Set the default parameters.
 	entity.StatusID = 1
 	entity.ID, err = database.UUID()
-	// If error on UUID generation
+	// If error on UUID generation.
 	if err != nil {
 		return entity, err
 	}
@@ -55,17 +55,17 @@ func New() (*Entity, error) {
 // Create
 // *****************************************************************************
 
-// Create will add a new entity
+// Create will add a new entity.
 func (u *Entity) Create() (int, error) {
-	// Check for existing entity
+	// Check for existing entity.
 	_, err := readOneByField("email", u.Email)
 
-	// If entity exists
+	// If entity exists.
 	if err != ErrNoResult {
 		return 0, ErrExists
 	}
 
-	// Create the entity
+	// Create the entity.
 	_, err = database.SQL.Exec(fmt.Sprintf(`
 		INSERT INTO %v
 		(id, first_name, last_name, email, password, status_id)
@@ -79,7 +79,7 @@ func (u *Entity) Create() (int, error) {
 		u.Password,
 		u.StatusID)
 
-	// If error occurred error
+	// If error occurred error.
 	if err != nil {
 		return 0, err
 	}
@@ -91,21 +91,21 @@ func (u *Entity) Create() (int, error) {
 // Read
 // *****************************************************************************
 
-// Read returns one entity with the matching ID
-// If no result, it will return sql.ErrNoRows
+// Read returns one entity with the matching ID.
+// If no result, it will return sql.ErrNoRows.
 func Read(ID string) (*Entity, error) {
 	return readOneByField("id", ID)
 }
 
-// ReadAll returns all entities
+// ReadAll returns all entities.
 func ReadAll() (Group, error) {
 	var result Group
 	err := database.SQL.Select(&result, fmt.Sprintf("SELECT * FROM %v", tableName))
 	return result, err
 }
 
-// readOneByField returns the entity that matches the field value
-// If no result, it will return ErrNoResult
+// readOneByField returns the entity that matches the field value.
+// If no result, it will return ErrNoResult.
 func readOneByField(name string, value string) (*Entity, error) {
 	result := &Entity{}
 	err := database.SQL.Get(result, fmt.Sprintf("SELECT * FROM %v WHERE %v = ? LIMIT 1", tableName, name), value)
@@ -115,8 +115,8 @@ func readOneByField(name string, value string) (*Entity, error) {
 	return result, err
 }
 
-// readAllByField returns entities matching a field value
-// If no result, it will return an empty group
+// readAllByField returns entities matching a field value.
+// If no result, it will return an empty group.
 func readAllByField(name string, value string) (Group, error) {
 	var result Group
 	err := database.SQL.Select(&result, fmt.Sprintf("SELECT * FROM %v WHERE %v = ?", tableName, name), value)
@@ -127,17 +127,17 @@ func readAllByField(name string, value string) (Group, error) {
 // Update
 // *****************************************************************************
 
-// Update makes changes to one entity
+// Update makes changes to one entity.
 func (u *Entity) Update() (int, error) {
-	// Check for existing entity
+	// Check for existing entity.
 	_, err := readOneByField("id", u.ID)
 
-	// If entity does NOT exists
+	// If entity does NOT exists.
 	if err == ErrNoResult {
 		return 0, ErrNotExist
 	}
 
-	// Update the entity
+	// Update the entity.
 	_, err = database.SQL.Exec(fmt.Sprintf(`
 		UPDATE %v SET
 		first_name = ?,
@@ -152,7 +152,7 @@ func (u *Entity) Update() (int, error) {
 		u.Password,
 		u.ID)
 
-	// If error occurred error
+	// If error occurred error.
 	if err != nil {
 		return 0, err
 	}
@@ -164,7 +164,7 @@ func (u *Entity) Update() (int, error) {
 // Delete
 // *****************************************************************************
 
-// DeleteOne removes one entity
+// DeleteOne removes one entity.
 func Delete(ID string) (int, error) {
 	result, err := database.SQL.Exec(fmt.Sprintf("DELETE FROM %v WHERE id = ? LIMIT 1", tableName), ID)
 	if err != nil {
@@ -174,7 +174,7 @@ func Delete(ID string) (int, error) {
 	return database.AffectedRows(result), err
 }
 
-// DeleteAll removes all entities
+// DeleteAll removes all entities.
 func DeleteAll() (int, error) {
 	result, err := database.SQL.Exec(fmt.Sprintf("DELETE FROM %v", tableName))
 	if err != nil {
@@ -184,7 +184,7 @@ func DeleteAll() (int, error) {
 	return database.AffectedRows(result), err
 }
 
-// deleteOneByField deletes an entity matching a field value
+// deleteOneByField deletes an entity matching a field value.
 func deleteOneByField(name string, value string) (int, error) {
 	result, err := database.SQL.Exec(fmt.Sprintf("DELETE FROM %v WHERE %v = ? LIMIT 1", tableName, name), value)
 	if err != nil {
@@ -194,7 +194,7 @@ func deleteOneByField(name string, value string) (int, error) {
 	return database.AffectedRows(result), err
 }
 
-// deleteAllByField deletes all entities matching a field value
+// deleteAllByField deletes all entities matching a field value.
 func deleteAllByField(name string, value string) (int, error) {
 	result, err := database.SQL.Exec(fmt.Sprintf("DELETE FROM %v WHERE %v = ?", tableName, name), value)
 	if err != nil {
