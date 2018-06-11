@@ -7,7 +7,10 @@ The API is still a work-in-progress, but it's designed to be easy to troubleshoo
 Everyone structures their API differently, but ultimately consistency is key. The more
 consistent your API is, the easier it will be for other people to interact with it.
 
-**Older Version:** The previous version that was around for a while was 0.1-alpha. If you want to see that code, you can view the [tag](https://github.com/josephspurrier/gowebapi/releases/tag/0.1-alpha). The current version is significant refactor following better practices.
+**Older Version:** The previous version that was around for a while was
+0.1-alpha. If you want to see that code, you can view the
+[tag](https://github.com/josephspurrier/gowebapi/releases/tag/0.1-alpha).
+The current version is significant refactor following better practices.
 
 You cannot use `go get` with this repository. You perform a `git clone` then set
 your GOPATH to the folder called `gowebapi`. This allows you to easily fork
@@ -20,17 +23,20 @@ If you are on Go 1.5, you need to set GOVENDOREXPERIMENT to 1. If you are on Go
 ## Vendoring
 
 This project uses [dep](https://github.com/golang/dep). The `dep init` command
-was from from inside the `src/app/webapi` folder.
+was run from inside the `src/app/webapi` folder.
 
 ## Quick Start with MySQL
 
 Start MySQL and import `migration/mysql.sql` to create the database and tables.
 
-Copy `config.json` to `src/app/webapi/cmd/webapi/config.json` and edit the Database section so the connection information matches your MySQL instance.
+Copy `config.json` to `src/app/webapi/cmd/webapi/config.json` and edit the
+**Database** section so the connection information matches your MySQL instance.
 
-Build and run from the root directory. Open your REST client to: http://localhost. You should see the **ok** message and status 200.
+Build and run from the root directory. Open your REST client to:
+http://localhost. You should see the **ok** message and status 200.
 
-To create a user, send a POST request to http://localhost/user with the following fields: first_name, last_name, email, and password.
+To create a user, send a POST request to http://localhost/user with the
+following fields: first_name, last_name, email, and password.
 
 ## Available Endpoints
 
