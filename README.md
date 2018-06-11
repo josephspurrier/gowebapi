@@ -126,14 +126,6 @@ The following endpoints are available:
 * DELETE http://localhost/v1/user           - Delete all users
 ```
 
-## Interesting Files
-
-The files that are the most interesting are:
-
-* [src/app/webapi/controller/user.go](https://github.com/josephspurrier/gowebapi/blob/master/src/app/webapi/controller/user.go) - Controller with the routes for /users
-* [src/app/webapi/model/user/user.go](https://github.com/josephspurrier/gowebapi/blob/master/src/app/webapi/model/user/user.go) - Model with all the MySQL logic
-* [src/app/webapi/pkg/response/response.go](https://github.com/josephspurrier/gowebapi/blob/master/src/app/webapi/pkg/response/response.go) - Handles the output of JSON in 3 different formats
-
 ## Rules for Consistency
 
 Rules for mapping HTTP methods to CRUD:
