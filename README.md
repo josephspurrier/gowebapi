@@ -59,10 +59,10 @@ This project uses [dep](https://github.com/golang/dep). The `dep init` command
 was run from inside the `src/app/webapi` folder.
 
 The packages used in this project are:
-- MySQL Driver: github.com/go-sql-driver/mysql
-- SQL to Struct: github.com/jmoiron/sqlx
-- Routing: github.com/matryer/way
-- Request Validation: github.com/go-playground/validator
+- MySQL Driver: [github.com/go-sql-driver/mysql](github.com/go-sql-driver/mysql)
+- SQL to Struct: [github.com/jmoiron/sqlx](github.com/jmoiron/sqlx)
+- Routing: [github.com/matryer/way](github.com/matryer/way)
+- Request Validation: [github.com/go-playground/validator](github.com/go-playground/validator)
 
 ## Folder Structure
 
