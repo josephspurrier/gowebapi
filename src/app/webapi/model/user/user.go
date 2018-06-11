@@ -164,7 +164,7 @@ func (u *Entity) Update() (int, error) {
 // Delete
 // *****************************************************************************
 
-// DeleteOne removes one entity.
+// Delete removes one entity.
 func Delete(ID string) (int, error) {
 	result, err := database.SQL.Exec(fmt.Sprintf("DELETE FROM %v WHERE id = ? LIMIT 1", tableName), ID)
 	if err != nil {

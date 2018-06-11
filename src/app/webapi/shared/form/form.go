@@ -29,15 +29,15 @@ func structPtrCheck(i interface{}) bool {
 	return true
 }
 
-// Validate returns true if the submitted form has the required fields
-func Validate(r *http.Request, model interface{}) (error, string) {
-	// Prevent running on types other than struct
+// Validate returns true if the submitted form has the required fields.
+func Validate(r *http.Request, model interface{}) (string, error) {
+	// Prevent running on types other than struct.
 	if !structPtrCheck(model) {
-		return ErrNotStruct, ErrNotStruct.Error()
+		return ErrNotStruct.Error(), ErrNotStruct
 	}
 
 	if r.Header.Get("Content-Type") != "application/x-www-form-urlencoded" {
-		return ErrWrongContentType, ErrWrongContentType.Error()
+		return ErrWrongContentType.Error(), ErrWrongContentType
 	}
 
 	// Parse Form
@@ -53,26 +53,26 @@ func Validate(r *http.Request, model interface{}) (error, string) {
 		// Get name tag
 		name := field.Tag.Get("json")
 		if len(name) == 0 {
-			return ErrBadStruct, fmt.Sprintf("%v errored because the json tag is missing", field.Name)
+			return fmt.Sprintf("%v errored because the json tag is missing", field.Name), ErrBadStruct
 		}
 
 		// Check required tag
 		if strings.ToLower(field.Tag.Get("require")) == "true" {
 			sentVal := r.FormValue(name)
 			if len(sentVal) == 0 {
-				return ErrRequiredMissing, fmt.Sprintf("%v is missing", name)
+				return fmt.Sprintf("%v is missing", name), ErrRequiredMissing
 			}
 		}
 	}
 
-	return nil, ""
+	return "", nil
 }
 
-// TypeCopy copies values from request form to struct
-func StructCopy(r *http.Request, model interface{}) (error, string) {
+// StructCopy copies values from request form to struct.
+func StructCopy(r *http.Request, model interface{}) (string, error) {
 	// Prevent running on types other than struct
 	if !structPtrCheck(model) {
-		return ErrNotStruct, ErrNotStruct.Error()
+		return ErrNotStruct.Error(), ErrNotStruct
 	}
 
 	// Parse Form
@@ -102,11 +102,11 @@ func StructCopy(r *http.Request, model interface{}) (error, string) {
 					singleValue := value[0]
 
 					// Set the value in the model to the correct value and type
-					err, _ := typeConvert(singleValue, fieldValue)
+					_, err := typeConvert(singleValue, fieldValue)
 					if err == ErrWrongType {
-						return err, fmt.Sprintf("%v needs to be type: %v", name, fieldValue.Type())
+						return fmt.Sprintf("%v needs to be type: %v", name, fieldValue.Type()), err
 					} else if err != nil {
-						return err, fmt.Sprintf("%v errored because the type (%v) is not supported", name, fieldValue.Type())
+						return fmt.Sprintf("%v errored because the type (%v) is not supported", name, fieldValue.Type()), err
 					}
 				}
 
@@ -114,16 +114,16 @@ func StructCopy(r *http.Request, model interface{}) (error, string) {
 			}
 		}
 
-		// Anything that gets to here is not a value field so just drop it
-		// You can return an error here if extra values are not permitted
+		// Anything that gets to here is not a value field so just drop it.
+		// You can return an error here if extra values are not permitted.
 	}
 
-	return nil, ""
+	return "", nil
 }
 
-// convert safely converts the string to the value type and assigns the value
-// Returns a standard error and error specific text
-func typeConvert(s string, v reflect.Value) (error, string) {
+// typeConvert safely converts the string to the value type and assigns the value.
+// Returns a standard error and error specific text.
+func typeConvert(s string, v reflect.Value) (string, error) {
 	var err error
 
 	// Convert to correct type
@@ -188,15 +188,16 @@ func typeConvert(s string, v reflect.Value) (error, string) {
 		v.SetUint(parsed)
 
 	default:
-		return ErrNotSupported, fmt.Sprintf("Type conversion is not supported for type: %v", v.Type())
+		return fmt.Sprintf("Type conversion is not supported for type: %v", v.Type()), ErrNotSupported
 	}
 
 	if err != nil {
-		return ErrWrongType, err.Error()
+		return err.Error(), ErrWrongType
 	}
-	return nil, ""
+	return "", nil
 }
 
+// StructTags returns the tags.
 func StructTags(model interface{}, tag string) ([]string, error) {
 	var arr []string
 
@@ -222,6 +223,7 @@ func StructTags(model interface{}, tag string) ([]string, error) {
 	return arr, nil
 }
 
+// StructFields returns the struct fields.
 func StructFields(model interface{}) ([]string, error) {
 	var arr []string
 

@@ -2,7 +2,6 @@ package acl
 
 import (
 	"net/http"
-
 	//"github.com/josephspurrier/gowebapi/shared/session"
 )
 

@@ -10,13 +10,13 @@ import (
 	"github.com/gorilla/context"
 )
 
-// Load the HTTP routes and middleware
+// LoadHTTPS will load the HTTP routes and middleware.
 func LoadHTTPS() http.Handler {
 	//return middleware(routes())
 	return middleware(router.Instance())
 }
 
-// Load the HTTPS routes and middleware
+// LoadHTTP will load the HTTPS routes and middleware.
 func LoadHTTP() http.Handler {
 	//return middleware(routes())
 	return middleware(router.Instance())
@@ -25,7 +25,7 @@ func LoadHTTP() http.Handler {
 	//return http.HandlerFunc(redirectToHTTPS)
 }
 
-// Optional method to make it easy to redirect from HTTP to HTTPS
+// Optional method to make it easy to redirect from HTTP to HTTPS.
 func redirectToHTTPS(w http.ResponseWriter, req *http.Request) {
 	http.Redirect(w, req, "https://"+req.Host, http.StatusMovedPermanently)
 }
@@ -35,13 +35,13 @@ func redirectToHTTPS(w http.ResponseWriter, req *http.Request) {
 // *****************************************************************************
 
 func middleware(h http.Handler) http.Handler {
-	// Log every request
+	// Log every request.
 	h = logrequest.Handler(h)
 
-	// Cors for swagger-ui
+	// Cors for swagger-ui.
 	h = cors.Handler(h)
 
-	// Clear handler for Gorilla Context
+	// Clear handler for Gorilla Context.
 	h = context.ClearHandler(h)
 
 	return h

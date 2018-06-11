@@ -21,71 +21,74 @@ func init() {
 }
 
 const (
-	ItemCreated      = "item created"
-	ItemExists       = "item already exists"
-	ItemNotFound     = "item not found"
-	ItemFound        = "item found"
-	ItemsFound       = "items found"
-	ItemsFindEmpty   = "no items to find"
-	ItemUpdated      = "item updated"
-	ItemDeleted      = "item deleted"
-	ItemsDeleted     = "items deleted"
-	ItemsDeleteEmpty = "no items to delete"
+	itemCreated      = "item created"
+	itemExists       = "item already exists"
+	itemNotFound     = "item not found"
+	itemFound        = "item found"
+	itemsFound       = "items found"
+	itemsFindEmpty   = "no items to find"
+	itemUpdated      = "item updated"
+	itemDeleted      = "item deleted"
+	itemsDeleted     = "items deleted"
+	itemsDeleteEmpty = "no items to delete"
 
-	FriendlyError = "an error occurred, please try again later"
+	friendlyError = "an error occurred, please try again later"
 )
 
 // *****************************************************************************
 // Create
 // *****************************************************************************
+
+// UserOnePOST creates a user.
 func UserOnePOST(w http.ResponseWriter, r *http.Request) {
 	m, err := user.New()
 	if err != nil {
 		log.Println("UUID Error", err)
-		response.SendError(w, http.StatusInternalServerError, FriendlyError)
+		response.SendError(w, http.StatusInternalServerError, friendlyError)
 		return
 	}
 
 	// Validate the required fields are present
-	err, errMsg := form.Validate(r, m)
+	errMsg, err := form.Validate(r, m)
 	if err == form.ErrRequiredMissing || err == form.ErrWrongContentType {
 		response.SendError(w, http.StatusBadRequest, errMsg)
 		return
 	} else if err == form.ErrBadStruct || err == form.ErrNotStruct {
 		log.Println(errMsg)
-		response.SendError(w, http.StatusInternalServerError, FriendlyError)
+		response.SendError(w, http.StatusInternalServerError, friendlyError)
 		return
 	}
 
 	// Validate value types and copy values to struct
-	err, errMsg = form.StructCopy(r, m)
+	errMsg, err = form.StructCopy(r, m)
 	if err == form.ErrWrongType {
 		response.SendError(w, http.StatusBadRequest, errMsg)
 		return
 	} else if err == form.ErrNotSupported || err == form.ErrNotStruct {
 		log.Println(errMsg)
-		response.SendError(w, http.StatusInternalServerError, FriendlyError)
+		response.SendError(w, http.StatusInternalServerError, friendlyError)
 		return
 	}
 
 	// Create item
 	count, err := m.Create()
 	if err == user.ErrExists {
-		response.SendError(w, http.StatusBadRequest, ItemExists)
+		response.SendError(w, http.StatusBadRequest, itemExists)
 		return
 	} else if err != nil {
 		log.Println(err)
-		response.SendError(w, http.StatusInternalServerError, FriendlyError)
+		response.SendError(w, http.StatusInternalServerError, friendlyError)
 		return
 	}
 
-	response.Send(w, http.StatusCreated, ItemCreated, count, nil)
+	response.Send(w, http.StatusCreated, itemCreated, count, nil)
 }
 
 // *****************************************************************************
 // Read
 // *****************************************************************************
 
+// UserOneGET returns one user.
 func UserOneGET(w http.ResponseWriter, r *http.Request) {
 	// Get the parameter id
 	params := router.Params(r)
@@ -94,36 +97,38 @@ func UserOneGET(w http.ResponseWriter, r *http.Request) {
 	// Get an item
 	entity, err := user.Read(ID)
 	if err == user.ErrNoResult {
-		response.Send(w, http.StatusOK, ItemNotFound, 0, nil)
+		response.Send(w, http.StatusOK, itemNotFound, 0, nil)
 		return
 	} else if err != nil {
 		log.Println(err)
-		response.SendError(w, http.StatusInternalServerError, FriendlyError)
+		response.SendError(w, http.StatusInternalServerError, friendlyError)
 		return
 	}
 
-	response.Send(w, http.StatusOK, ItemFound, 1, user.Group{*entity})
+	response.Send(w, http.StatusOK, itemFound, 1, user.Group{*entity})
 }
 
+// UserAllGET returns all users.
 func UserAllGET(w http.ResponseWriter, r *http.Request) {
 	// Get all items
 	group, err := user.ReadAll()
 	if err != nil {
 		log.Println(err)
-		response.SendError(w, http.StatusInternalServerError, FriendlyError)
+		response.SendError(w, http.StatusInternalServerError, friendlyError)
 		return
 	} else if len(group) < 1 {
-		response.Send(w, http.StatusOK, ItemsFindEmpty, len(group), nil)
+		response.Send(w, http.StatusOK, itemsFindEmpty, len(group), nil)
 		return
 	}
 
-	response.Send(w, http.StatusOK, ItemsFound, len(group), group)
+	response.Send(w, http.StatusOK, itemsFound, len(group), group)
 }
 
 // *****************************************************************************
 // Update
 // *****************************************************************************
 
+// UserOnePUT updates a user.
 func UserOnePUT(w http.ResponseWriter, r *http.Request) {
 	// Get the parameter id
 	params := router.Params(r)
@@ -132,54 +137,55 @@ func UserOnePUT(w http.ResponseWriter, r *http.Request) {
 	// Get an item
 	m, err := user.Read(ID)
 	if err == user.ErrNoResult {
-		response.Send(w, http.StatusOK, ItemNotFound, 0, nil)
+		response.Send(w, http.StatusOK, itemNotFound, 0, nil)
 		return
 	} else if err != nil {
 		log.Println(err)
-		response.SendError(w, http.StatusInternalServerError, FriendlyError)
+		response.SendError(w, http.StatusInternalServerError, friendlyError)
 		return
 	}
 
 	// Validate the required fields are present
-	err, errMsg := form.Validate(r, m)
+	errMsg, err := form.Validate(r, m)
 	if err == form.ErrRequiredMissing {
 		response.SendError(w, http.StatusBadRequest, errMsg)
 		return
 	} else if err == form.ErrBadStruct || err == form.ErrNotStruct {
 		log.Println(errMsg)
-		response.SendError(w, http.StatusInternalServerError, FriendlyError)
+		response.SendError(w, http.StatusInternalServerError, friendlyError)
 		return
 	}
 
 	// Validate value types and copy values to struct
-	err, errMsg = form.StructCopy(r, m)
+	errMsg, err = form.StructCopy(r, m)
 	if err == form.ErrWrongType {
 		response.SendError(w, http.StatusBadRequest, errMsg)
 		return
 	} else if err == form.ErrNotSupported || err == form.ErrNotStruct {
 		log.Println(errMsg)
-		response.SendError(w, http.StatusInternalServerError, FriendlyError)
+		response.SendError(w, http.StatusInternalServerError, friendlyError)
 		return
 	}
 
 	// Update item
 	count, err := m.Update()
 	if err == user.ErrNotExist {
-		response.SendError(w, http.StatusBadRequest, ItemNotFound)
+		response.SendError(w, http.StatusBadRequest, itemNotFound)
 		return
 	} else if err != nil {
 		log.Println(err)
-		response.SendError(w, http.StatusInternalServerError, FriendlyError)
+		response.SendError(w, http.StatusInternalServerError, friendlyError)
 		return
 	}
 
-	response.Send(w, http.StatusCreated, ItemUpdated, count, nil)
+	response.Send(w, http.StatusCreated, itemUpdated, count, nil)
 }
 
 // *****************************************************************************
 // Delete
 // *****************************************************************************
 
+// UserOneDELETE deletes one user.
 func UserOneDELETE(w http.ResponseWriter, r *http.Request) {
 	// Get the parameter id
 	params := router.Params(r)
@@ -189,27 +195,28 @@ func UserOneDELETE(w http.ResponseWriter, r *http.Request) {
 	count, err := user.Delete(ID)
 	if err != nil {
 		log.Println(err)
-		response.SendError(w, http.StatusInternalServerError, FriendlyError)
+		response.SendError(w, http.StatusInternalServerError, friendlyError)
 		return
 	} else if count < 1 {
-		response.Send(w, http.StatusOK, ItemNotFound, count, nil)
+		response.Send(w, http.StatusOK, itemNotFound, count, nil)
 		return
 	}
 
-	response.Send(w, http.StatusOK, ItemDeleted, count, nil)
+	response.Send(w, http.StatusOK, itemDeleted, count, nil)
 }
 
+// UserAllDELETE deletes all users.
 func UserAllDELETE(w http.ResponseWriter, r *http.Request) {
 	// Delete all items
 	count, err := user.DeleteAll()
 	if err != nil {
 		log.Println(err)
-		response.SendError(w, http.StatusInternalServerError, FriendlyError)
+		response.SendError(w, http.StatusInternalServerError, friendlyError)
 		return
 	} else if count < 1 {
-		response.Send(w, http.StatusOK, ItemsDeleteEmpty, count, nil)
+		response.Send(w, http.StatusOK, itemsDeleteEmpty, count, nil)
 		return
 	}
 
-	response.Send(w, http.StatusOK, ItemsDeleted, count, nil)
+	response.Send(w, http.StatusOK, itemsDeleted, count, nil)
 }
