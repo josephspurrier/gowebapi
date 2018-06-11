@@ -1,7 +1,6 @@
 # gowebapi
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/josephspurrier/gowebapi)](https://goreportcard.com/report/github.com/josephspurrier/gowebapi)
-[![GoDoc](https://godoc.org/github.com/josephspurrier/gowebapi?status.svg)](https://godoc.org/github.com/josephspurrier/gowebapi) 
 
 This project demonstrates how to structure and build an API using the Go language without a framework.
 The API is still a work-in-progress, but it's designed to be easy to troubleshoot and easy to modify.
@@ -29,7 +28,7 @@ Start MySQL and import `migration/mysql.sql` to create the database and tables.
 
 Copy `config.json` to `src/app/webapi/cmd/webapi/config.json` and edit the Database section so the connection information matches your MySQL instance.
 
-Build and run from the root directory. Open your REST client to: http://localhost. You should see the welcome message and status 200.
+Build and run from the root directory. Open your REST client to: http://localhost. You should see the **ok** message and status 200.
 
 To create a user, send a POST request to http://localhost/user with the following fields: first_name, last_name, email, and password.
 
@@ -46,15 +45,9 @@ The following endpoints are available:
 * DELETE http://localhost/users		 - Delete all users
 ```
 
-## Structure
+## Interesting Files
 
-The majority of the code is in the **vendor/app** folder. I made this decision originally on
-my [GoWebApp](https://github.com/josephspurrier/gowebapp) project because there were
-a lot of users trying to use the code on their own, but had to change all the imports path for it to work properly.
-The only downside is godoc does not work with the vendor folder method. Luckily, all the code can be moved out of the vendor
-folder and then a quick find and replace will get it working again if you want.
-
-The files that are probably of most interest to you are these:
+The files that are the most interesting are:
 
 * [vendor/app/controller/user.go](https://github.com/josephspurrier/gowebapi/blob/master/vendor/app/controller/user.go) - Controller with the routes for /users
 * [vendor/app/model/user/user.go](https://github.com/josephspurrier/gowebapi/blob/master/vendor/app/model/user/user.go) - Model with all the MySQL logic
@@ -92,19 +85,7 @@ Rules for messages:
 * 500 - an error occurred, please try again later (should also log error because it's a programming or server issue)
 ```
 
-## Goals for this project
-
-Integrate security similar to Parse: http://blog.parse.com/learn/secure-your-app-one-class-at-a-time/
-
-Code generation for the following:
-* Controllers with routes
-* Models
-* Endpoint tests
-* Swagger spec
-
 ## My Other Projects
 
 [GoWebApp](https://github.com/josephspurrier/gowebapp) demonstrates how to build a website using the Go language without a framework. Much
 of the structure of this project comes from GoWebApp.
-
-I'll use the [apigen](https://github.com/josephspurrier/apigen) project for the code generation.
