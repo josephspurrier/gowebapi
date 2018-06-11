@@ -10,11 +10,17 @@ import (
 )
 
 var (
-	ErrNotSupported     = errors.New("type not supported for conversion")
-	ErrWrongType        = errors.New("value is wrong type")
-	ErrBadStruct        = errors.New("struct missing json tag")
-	ErrNotStruct        = errors.New("model is not a struct")
-	ErrRequiredMissing  = errors.New("required field missing")
+	// ErrNotSupported is when the type is not supported for conversion.
+	ErrNotSupported = errors.New("type not supported for conversion")
+	// ErrWrongType is when a value is the wrong trpe.
+	ErrWrongType = errors.New("value is wrong type")
+	// ErrBadStruct is when a struct is missing a json tag.
+	ErrBadStruct = errors.New("struct missing json tag")
+	// ErrNotStruct is when a model is not a struct.
+	ErrNotStruct = errors.New("model is not a struct")
+	// ErrRequiredMissing is when a required field is missing.
+	ErrRequiredMissing = errors.New("required field missing")
+	// ErrWrongContentType is when a request content type if wrong.
 	ErrWrongContentType = errors.New("content-type of request is incorrect")
 )
 
