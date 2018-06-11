@@ -49,10 +49,10 @@ The following endpoints are available:
 
 The files that are the most interesting are:
 
-* [vendor/app/controller/user.go](https://github.com/josephspurrier/gowebapi/blob/master/vendor/app/controller/user.go) - Controller with the routes for /users
-* [vendor/app/model/user/user.go](https://github.com/josephspurrier/gowebapi/blob/master/vendor/app/model/user/user.go) - Model with all the MySQL logic
-* [vendor/app/shared/form/form.go](https://github.com/josephspurrier/gowebapi/blob/master/vendor/app/shared/form/form.go) - Functions that automate the interaction between the model struct and forms
-* [vendor/app/shared/response/response.go](https://github.com/josephspurrier/gowebapi/blob/master/vendor/app/shared/response/response.go) - Handles the output of JSON in 3 different formats
+* [src/app/webapi/controller/user.go](https://github.com/josephspurrier/gowebapi/blob/master/src/app/webapi/controller/user.go) - Controller with the routes for /users
+* [src/app/webapi/model/user/user.go](https://github.com/josephspurrier/gowebapi/blob/master/src/app/webapi/model/user/user.go) - Model with all the MySQL logic
+* [src/app/webapi/pkg/form/form.go](https://github.com/josephspurrier/gowebapi/blob/master/src/app/webapi/pkg/form/form.go) - Functions that automate the interaction between the model struct and forms
+* [src/app/webapi/pkg/response/response.go](https://github.com/josephspurrier/gowebapi/blob/master/src/app/webapi/pkg/response/response.go) - Handles the output of JSON in 3 different formats
 
 ## Rules for Consistency
 
