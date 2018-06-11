@@ -193,7 +193,7 @@ func (p *Endpoint) Update(w http.ResponseWriter, r *http.Request) {
 		p.Response.SendError(w, http.StatusInternalServerError, friendlyError)
 		return
 	} else if !exists {
-		p.Response.Send(w, http.StatusOK, itemNotFound, 0, nil)
+		p.Response.SendError(w, http.StatusBadRequest, itemNotFound)
 		return
 	}
 
