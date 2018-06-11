@@ -10,7 +10,7 @@ consistent your API is, the easier it will be for other people to interact with 
 **Older Version:** The previous version that was around for a while was
 0.1-alpha. If you want to see that code, you can view the
 [tag](https://github.com/josephspurrier/gowebapi/releases/tag/0.1-alpha).
-The current version is significant refactor following better practices.
+The current version is a significant refactor that follows better practices.
 
 You cannot use `go get` with this repository. You should perform a `git clone`
 then set your GOPATH to the folder that git clone created called `gowebapi`.
