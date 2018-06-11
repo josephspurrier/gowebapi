@@ -1,9 +1,9 @@
 # IDE specific settings
-.vscode/
+/.vscode/
 
 # Go specific files
-pkg/
-bin/
+/pkg/
+/bin/
 
 # MacOS files
 .DS_Store
