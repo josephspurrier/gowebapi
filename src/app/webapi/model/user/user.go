@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"app/webapi/shared/database"
+	"app/webapi/pkg/database"
 )
 
 // Name of the table.

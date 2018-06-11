@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"app/webapi/route/middleware/pprofhandler"
-	"app/webapi/shared/router"
+	"app/webapi/middleware/pprofhandler"
+	"app/webapi/pkg/router"
 )
 
 func init() {

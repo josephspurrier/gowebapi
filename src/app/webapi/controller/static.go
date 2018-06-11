@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strings"
 
-	"app/webapi/shared/router"
+	"app/webapi/pkg/router"
 )
 
 func init() {

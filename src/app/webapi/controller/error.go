@@ -3,8 +3,8 @@ package controller
 import (
 	"net/http"
 
-	"app/webapi/shared/response"
-	"app/webapi/shared/router"
+	"app/webapi/pkg/response"
+	"app/webapi/pkg/router"
 )
 
 func init() {

@@ -3,9 +3,9 @@ package route
 import (
 	"net/http"
 
-	"app/webapi/route/middleware/cors"
-	"app/webapi/route/middleware/logrequest"
-	"app/webapi/shared/router"
+	"app/webapi/middleware/cors"
+	"app/webapi/middleware/logrequest"
+	"app/webapi/pkg/router"
 
 	"github.com/gorilla/context"
 )

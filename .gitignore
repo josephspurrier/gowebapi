@@ -8,3 +8,6 @@ bin/
 # Other project imports
 github.com/
 golang.org/
+
+# MacOS files
+.DS_Store

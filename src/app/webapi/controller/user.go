@@ -5,9 +5,9 @@ import (
 	"net/http"
 
 	"app/webapi/model/user"
-	"app/webapi/shared/form"
-	"app/webapi/shared/response"
-	"app/webapi/shared/router"
+	"app/webapi/pkg/form"
+	"app/webapi/pkg/response"
+	"app/webapi/pkg/router"
 )
 
 // Routes.

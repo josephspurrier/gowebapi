@@ -6,11 +6,11 @@ import (
 	"runtime"
 
 	"app/webapi/controller"
+	"app/webapi/pkg/database"
+	"app/webapi/pkg/email"
+	"app/webapi/pkg/jsonconfig"
+	"app/webapi/pkg/server"
 	"app/webapi/route"
-	"app/webapi/shared/database"
-	"app/webapi/shared/email"
-	"app/webapi/shared/jsonconfig"
-	"app/webapi/shared/server"
 )
 
 // *****************************************************************************
