@@ -35,6 +35,19 @@ following fields: first_name, last_name, email, and password.
 Currently, only a Content-Type of `application/x-www-form-urlencoded` is
 supported when sending to the API.
 
+## Available Endpoints
+
+The following endpoints are available:
+
+```
+* POST   http://localhost/v1/user           - Create a new user
+* GET	 http://localhost/v1/user/{user_id} - Retrieve a user by ID
+* GET	 http://localhost/v1/user           - Retrieve a list of all users
+* PUT	 http://localhost/v1/user/{user_id} - Update a user by ID
+* DELETE http://localhost/v1/user/{user_id} - Delete a user by ID
+* DELETE http://localhost/v1/user           - Delete all users
+```
+
 ## Swagger
 
 This projects uses [Swagger v2](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md)
@@ -99,6 +112,7 @@ In the `src/app/webapi` folder, you see a few top level folders:
 In the root of the `src/app/webapi/component` folder, you see:
 - **component.go** - contains the dependencies shared by all the components:
 logger, database connection, request bind/validation, and the responses.
+- **handler.go** - contains the error handling code for all the http handlers.
 - **interface.go** - contains all the interfaces for the dependencies so you can
 easily mock out each one for testing purposes.
 
@@ -184,10 +198,9 @@ if err := p.Bind.FormUnmarshal(&req, r); err != nil {
 
 The `app/webapi/internal/bind` and the `app/webapi/internal/response` packages
 use reflection. The `bind` package will take the form parameters from the
-request object and map them to a struct. The `response` package will take the
-struct object and automatically set the JSON fields with the tags, **status**
-and **data** and will fill them with the proper data. This helps reduce the
-code in the endpoint.go files.
+request object and map them to a struct. The `response` package will set the
+field values via the with the JSON tags, **status** and **data**. The package
+This helps reduce the code in the `endpoint.go` files.
 
 You'll notice when calling the `Results()` function, you'll pass in a struct
 pointer and the results from the data without setting these on the `response`
@@ -221,20 +234,7 @@ func (p *Endpoint) Index(w http.ResponseWriter, r *http.Request) (int, error) {
 }
 ```
 
-## Available Endpoints
-
-The following endpoints are available:
-
-```
-* POST   http://localhost/v1/user           - Create a new user
-* GET	 http://localhost/v1/user/{user_id} - Retrieve a user by ID
-* GET	 http://localhost/v1/user           - Retrieve a list of all users
-* PUT	 http://localhost/v1/user/{user_id} - Update a user by ID
-* DELETE http://localhost/v1/user/{user_id} - Delete a user by ID
-* DELETE http://localhost/v1/user           - Delete all users
-```
-
-## Rules for Consistency
+## Conventions
 
 Rules for mapping HTTP methods to CRUD:
 
@@ -245,14 +245,14 @@ PUT    - Update (edit record in the database)
 DELETE - Delete (remove record from the database)
 ```
 
-Rules for status codes:
+Rules for HTTP status codes:
 
 ```
-* Create something - 201 (Created)
-* Read something - 200 (OK)
-* Update something - 200 (OK)
-* Delete something - 200 (OK)
+* Create something            - 201 (Created)
+* Read something              - 200 (OK)
+* Update something            - 200 (OK)
+* Delete something            - 200 (OK)
 * Missing request information - 400 (Bad Request)
-* Unauthorized operation - 401 (Unauthorized)
-* Any other error - 500 (Internal Server Error)
+* Unauthorized operation      - 401 (Unauthorized)
+* Any other error             - 500 (Internal Server Error)
 ```
