@@ -8,13 +8,13 @@ import (
 	"app/webapi/pkg/uuid"
 )
 
-// TUser is user table that contains users.
+// TUser represents users.
 type TUser struct {
 	ID        string     `db:"id" json:"id"`
-	FirstName string     `db:"first_name" json:"first_name" require:"true"`
-	LastName  string     `db:"last_name" json:"last_name" require:"true"`
-	Email     string     `db:"email" json:"email" require:"true"`
-	Password  string     `db:"password" json:"password" require:"true"`
+	FirstName string     `db:"first_name" json:"first_name"`
+	LastName  string     `db:"last_name" json:"last_name"`
+	Email     string     `db:"email" json:"email"`
+	Password  string     `db:"password" json:"password"`
 	StatusID  uint8      `db:"status_id" json:"status_id"`
 	CreatedAt *time.Time `db:"created_at" json:"created_at"`
 	UpdatedAt *time.Time `db:"updated_at" json:"updated_at"`

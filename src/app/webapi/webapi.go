@@ -36,11 +36,11 @@ import (
 	"app/webapi/component/static"
 	"app/webapi/component/user"
 	"app/webapi/internal/bind"
+	"app/webapi/internal/response"
 	"app/webapi/middleware"
 	"app/webapi/pkg/database"
 	"app/webapi/pkg/jsonconfig"
 	"app/webapi/pkg/logger"
-	"app/webapi/pkg/response"
 	"app/webapi/pkg/router"
 	"app/webapi/pkg/server"
 )
@@ -70,8 +70,10 @@ func Boot() {
 	user.New(core).Routes(r)
 
 	// Set up the 404 page.
-	nf := &component.NotFoundHandler{Response: resp}
-	r.Instance().NotFound = http.HandlerFunc(nf.Error404)
+	r.Instance().NotFound = component.Handler(
+		func(w http.ResponseWriter, r *http.Request) (int, error) {
+			return http.StatusNotFound, nil
+		})
 
 	// Start the listener.
 	server.Run(middleware.LoadHTTP(r.Instance()),

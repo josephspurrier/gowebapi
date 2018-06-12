@@ -3,17 +3,15 @@ package static
 import (
 	"net/http"
 	"strings"
-
-	"app/webapi/component"
 )
 
 // Static displays static files.
-func (p *Endpoint) Static(w http.ResponseWriter, r *http.Request) {
+func (p *Endpoint) Static(w http.ResponseWriter, r *http.Request) (int, error) {
 	// Disable listing directories.
 	if strings.HasSuffix(r.URL.Path, "/") {
-		component.Error404(p.Response, w, r)
-		return
+		return http.StatusNotFound, nil
 	}
 
 	http.ServeFile(w, r, "static/"+r.URL.Path[1:])
+	return http.StatusOK, nil
 }

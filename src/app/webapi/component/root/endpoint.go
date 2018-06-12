@@ -7,19 +7,10 @@ import (
 // Index .
 // swagger:route GET /v1 root RootIndex
 //
-// Display an ok message.
+// Display a hello message.
 //
 // Responses:
-//   200: RootIndexResponse
-func (p *Endpoint) Index(w http.ResponseWriter, r *http.Request) {
-	// Response returns 200.
-	// swagger:response RootIndexResponse
-	type response struct {
-		// in: body
-		Body struct {
-			Message string `json:"message"`
-		}
-	}
-
-	p.Response.Send(w, http.StatusOK, "ok", 0, nil)
+//   200: OKResponse
+func (p *Endpoint) Index(w http.ResponseWriter, r *http.Request) (int, error) {
+	return p.Response.OK(w, "hello")
 }

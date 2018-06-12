@@ -19,6 +19,22 @@ without rewritting any import paths.
 
 You must use Go 1.7 or newer because it uses the http context.
 
+## Quick Start with MySQL
+
+Start MySQL and import `migration/mysql.sql` to create the database and tables.
+
+Copy `config.json` to `src/app/webapi/cmd/webapi/config.json` and edit the
+**Database** section so the connection information matches your MySQL instance.
+
+Build and run from the root directory. Open your REST client to:
+http://localhost. You should see the **welcome** message and status **OK**.
+
+To create a user, send a POST request to http://localhost/v1/user with the
+following fields: first_name, last_name, email, and password.
+
+Currently, only a Content-Type of `application/x-www-form-urlencoded` is
+supported when sending to the API.
+
 ## Swagger
 
 This projects uses [Swagger v2](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md)
@@ -58,7 +74,7 @@ swagger serve -F=swagger ./swagger.json
 This project uses [dep](https://github.com/golang/dep). The `dep init` command
 was run from inside the `src/app/webapi` folder.
 
-The packages used in this project are:
+These packages are used in the project:
 - MySQL Driver: [github.com/go-sql-driver/mysql](http://github.com/go-sql-driver/mysql)
 - SQL to Struct: [github.com/jmoiron/sqlx](http://github.com/jmoiron/sqlx)
 - Routing: [github.com/matryer/way](http://github.com/matryer/way)
@@ -83,7 +99,6 @@ In the `src/app/webapi` folder, you see a few top level folders:
 In the root of the `src/app/webapi/component` folder, you see:
 - **component.go** - contains the dependencies shared by all the components:
 logger, database connection, request bind/validation, and the responses.
-- **error.go** - contains the error pages.
 - **interface.go** - contains all the interfaces for the dependencies so you can
 easily mock out each one for testing purposes.
 
@@ -97,21 +112,114 @@ the `IDatabase` connection is passed into each function - this allows you to
 easily call database functions from other components as the complexity in your
 application grows.
 
-## Quick Start with MySQL
+## Endpoint HTTP Handlers
 
-Start MySQL and import `migration/mysql.sql` to create the database and tables.
+In order to make the endpoints error driven, all the http handler functions must
+return an `int` and an `error`. This allows error handling to be centralized
+in the `component/handler.go` file. You can see in the `user/route.go` file, the
+functions are wrapped in `component.Handler()`:
 
-Copy `config.json` to `src/app/webapi/cmd/webapi/config.json` and edit the
-**Database** section so the connection information matches your MySQL instance.
+```go
+// Routes will set up the endpoints.
+func (p *Endpoint) Routes(router component.IRouter) {
+	router.Post("/v1/user", component.Handler(p.Create))
+	router.Get("/v1/user/:user_id", component.Handler(p.Show))
+	router.Get("/v1/user", component.Handler(p.Index))
+	router.Put("/v1/user/:user_id", component.Handler(p.Update))
+	router.Delete("/v1/user/:user_id", component.Handler(p.Destroy))
+	router.Delete("/v1/user", component.Handler(p.DestroyAll))
+}
+```
 
-Build and run from the root directory. Open your REST client to:
-http://localhost. You should see the **ok** message and status 200.
+Each http handler function looks like this:
 
-To create a user, send a POST request to http://localhost/user with the
-following fields: first_name, last_name, email, and password.
+```go
+func (p *Endpoint) DestroyAll(w http.ResponseWriter, r *http.Request) (int, error) {
+	// Delete all items.
+	count, err := DeleteAll(p.DB)
+	if err != nil {
+		return http.StatusInternalServerError, err
+	} else if count < 1 {
+		return http.StatusBadRequest, errors.New("no users to delete")
+	}
 
-Currently, only a Content-Type of `application/x-www-form-urlencoded` is
-supported.
+	return p.Response.OK(w, "users deleted")
+}
+```
+
+## Request Validation
+
+The `app/webapi/internal/bind` is a wrapper around the
+`github.com/go-playground/validator` package so it can validate structs. You can
+view the `user/endpoint.go` file so see where the email validation and the
+required validation is specified in the tags:
+
+```go
+// swagger:parameters UserCreate
+type request struct {
+	// in: formData
+	// Required: true
+	FirstName string `json:"first_name" validate:"required"`
+	// in: formData
+	// Required: true
+	LastName string `json:"last_name" validate:"required"`
+	// in: formData
+	// Required: true
+	Email string `json:"email" validate:"required,email"`
+	// in: formData
+	// Required: true
+	Password string `json:"password" validate:"required"`
+}
+
+// Request validation.
+req := new(request)
+if err := p.Bind.FormUnmarshal(&req, r); err != nil {
+	return http.StatusBadRequest, err
+} else if err = p.Bind.Validate(req); err != nil {
+	return http.StatusBadRequest, err
+}
+```
+
+## Reflection
+
+The `app/webapi/internal/bind` and the `app/webapi/internal/response` packages
+use reflection. The `bind` package will take the form parameters from the
+request object and map them to a struct. The `response` package will take the
+struct object and automatically set the JSON fields with the tags, **status**
+and **data** and will fill them with the proper data. This helps reduce the
+code in the endpoint.go files.
+
+You'll notice when calling the `Results()` function, you'll pass in a struct
+pointer and the results from the data without setting these on the `response`
+struct - these will be set using reflection. Just make sure to set the JSON
+tags to `status` and `data`. The Status field must be a string and the data
+being passed in must match the type specified in the body of the struct or it
+will throw a 500 error.
+
+```go
+func (p *Endpoint) Index(w http.ResponseWriter, r *http.Request) (int, error) {
+	// Get all items.
+	group, err := All(p.DB)
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	// Response returns 200.
+	// swagger:response UserIndexResponse
+	type response struct {
+		// in: body
+		Body struct {
+			// Required: true
+			Status string `json:"status"`
+			// Required: true
+			Data []TUser `json:"data"`
+		}
+	}
+
+	resp := new(response)
+	return p.Response.Results(w, &resp.Body, group)
+}
+```
 
 ## Available Endpoints
 
@@ -144,15 +252,7 @@ Rules for status codes:
 * Read something - 200 (OK)
 * Update something - 200 (OK)
 * Delete something - 200 (OK)
-* Create but missing info - 400 (Bad Request)
+* Missing request information - 400 (Bad Request)
+* Unauthorized operation - 401 (Unauthorized)
 * Any other error - 500 (Internal Server Error)
-```
-
-Rules for messages:
-
-```
-* 201 - item created
-* 200 - item found; no items to find; items deleted; no items to delete; etc
-* 400 - [field] is missing; [field] needs to be type: [type]
-* 500 - an error occurred, please try again later (should also log error because it's a programming or server issue)
 ```

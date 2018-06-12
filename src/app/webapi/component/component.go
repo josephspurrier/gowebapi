@@ -10,7 +10,7 @@ func New(l ILogger, d IDatabase, b IBind, resp IResponse) Core {
 	}
 }
 
-// Core contains all the dependencies.
+// Core contains all the dependencies for the components.
 type Core struct {
 	Log      ILogger
 	DB       IDatabase

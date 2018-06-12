@@ -22,11 +22,11 @@
         "tags": [
           "root"
         ],
-        "summary": "Display an ok message.",
+        "summary": "Display a hello message.",
         "operationId": "RootIndex",
         "responses": {
           "200": {
-            "$ref": "#/responses/RootIndexResponse"
+            "$ref": "#/responses/OKResponse"
           }
         }
       }
@@ -39,8 +39,8 @@
         "summary": "Return all users.",
         "operationId": "UserIndex",
         "responses": {
-          "201": {
-            "$ref": "#/responses/CreatedResponse"
+          "200": {
+            "$ref": "#/responses/UserIndexResponse"
           },
           "400": {
             "$ref": "#/responses/BadRequestResponse"
@@ -64,25 +64,29 @@
             "type": "string",
             "x-go-name": "FirstName",
             "name": "first_name",
-            "in": "formData"
+            "in": "formData",
+            "required": true
           },
           {
             "type": "string",
             "x-go-name": "LastName",
             "name": "last_name",
-            "in": "formData"
+            "in": "formData",
+            "required": true
           },
           {
             "type": "string",
             "x-go-name": "Email",
             "name": "email",
-            "in": "formData"
+            "in": "formData",
+            "required": true
           },
           {
             "type": "string",
             "x-go-name": "Password",
             "name": "password",
-            "in": "formData"
+            "in": "formData",
+            "required": true
           }
         ],
         "responses": {
@@ -108,7 +112,7 @@
         "operationId": "UserDestroyAll",
         "responses": {
           "200": {
-            "$ref": "#/responses/CreatedResponse"
+            "$ref": "#/responses/OKResponse"
           },
           "400": {
             "$ref": "#/responses/BadRequestResponse"
@@ -139,8 +143,8 @@
           }
         ],
         "responses": {
-          "201": {
-            "$ref": "#/responses/CreatedResponse"
+          "200": {
+            "$ref": "#/responses/UserShowResponse"
           },
           "400": {
             "$ref": "#/responses/BadRequestResponse"
@@ -171,30 +175,34 @@
             "type": "string",
             "x-go-name": "FirstName",
             "name": "first_name",
-            "in": "formData"
+            "in": "formData",
+            "required": true
           },
           {
             "type": "string",
             "x-go-name": "LastName",
             "name": "last_name",
-            "in": "formData"
+            "in": "formData",
+            "required": true
           },
           {
             "type": "string",
             "x-go-name": "Email",
             "name": "email",
-            "in": "formData"
+            "in": "formData",
+            "required": true
           },
           {
             "type": "string",
             "x-go-name": "Password",
             "name": "password",
-            "in": "formData"
+            "in": "formData",
+            "required": true
           }
         ],
         "responses": {
-          "201": {
-            "$ref": "#/responses/CreatedResponse"
+          "200": {
+            "$ref": "#/responses/OKResponse"
           },
           "400": {
             "$ref": "#/responses/BadRequestResponse"
@@ -223,8 +231,8 @@
           }
         ],
         "responses": {
-          "201": {
-            "$ref": "#/responses/CreatedResponse"
+          "200": {
+            "$ref": "#/responses/OKResponse"
           },
           "400": {
             "$ref": "#/responses/BadRequestResponse"
@@ -239,17 +247,71 @@
       }
     }
   },
+  "definitions": {
+    "TUser": {
+      "type": "object",
+      "title": "TUser represents users.",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "x-go-name": "CreatedAt"
+        },
+        "deleted_at": {
+          "type": "string",
+          "format": "date-time",
+          "x-go-name": "DeletedAt"
+        },
+        "email": {
+          "type": "string",
+          "x-go-name": "Email"
+        },
+        "first_name": {
+          "type": "string",
+          "x-go-name": "FirstName"
+        },
+        "id": {
+          "type": "string",
+          "x-go-name": "ID"
+        },
+        "last_name": {
+          "type": "string",
+          "x-go-name": "LastName"
+        },
+        "password": {
+          "type": "string",
+          "x-go-name": "Password"
+        },
+        "status_id": {
+          "type": "integer",
+          "format": "uint8",
+          "x-go-name": "StatusID"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time",
+          "x-go-name": "UpdatedAt"
+        }
+      },
+      "x-go-package": "app/webapi/component/user"
+    }
+  },
   "responses": {
     "BadRequestResponse": {
       "description": "BadRequestResponse returns 400.",
       "schema": {
         "type": "object",
+        "required": [
+          "status"
+        ],
         "properties": {
           "message": {
+            "description": "Message can contain a user friendly message.",
             "type": "string",
             "x-go-name": "Message"
           },
           "status": {
+            "description": "Status contains the string of the HTTP status.",
             "type": "string",
             "x-go-name": "Status"
           }
@@ -260,34 +322,17 @@
       "description": "CreatedResponse returns 201.",
       "schema": {
         "type": "object",
+        "required": [
+          "status"
+        ],
         "properties": {
-          "message": {
-            "type": "string",
-            "x-go-name": "Message"
-          },
           "record_id": {
             "description": "RecordID can be used for returning the ID from a row.",
-            "type": "integer",
-            "format": "int64",
+            "type": "string",
             "x-go-name": "RecordID"
           },
           "status": {
-            "type": "string",
-            "x-go-name": "Status"
-          }
-        }
-      }
-    },
-    "ErrorResponse": {
-      "description": "ErrorResponse is a standard error response.",
-      "schema": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "x-go-name": "Message"
-          },
-          "status": {
+            "description": "Status contains the string of the HTTP status.",
             "type": "string",
             "x-go-name": "Status"
           }
@@ -298,12 +343,17 @@
       "description": "InternalServerErrorResponse returns 500.",
       "schema": {
         "type": "object",
+        "required": [
+          "status"
+        ],
         "properties": {
           "message": {
+            "description": "Message can contain a user friendly message.",
             "type": "string",
             "x-go-name": "Message"
           },
           "status": {
+            "description": "Status contains the string of the HTTP status.",
             "type": "string",
             "x-go-name": "Status"
           }
@@ -314,26 +364,40 @@
       "description": "NotFoundResponse returns 404.",
       "schema": {
         "type": "object",
+        "required": [
+          "status"
+        ],
         "properties": {
           "message": {
+            "description": "Message can contain a user friendly message.",
             "type": "string",
             "x-go-name": "Message"
           },
           "status": {
+            "description": "Status contains the string of the HTTP status.",
             "type": "string",
             "x-go-name": "Status"
           }
         }
       }
     },
-    "RootIndexResponse": {
-      "description": "Response returns 200.",
+    "OKResponse": {
+      "description": "OKResponse returns 200.",
       "schema": {
         "type": "object",
+        "required": [
+          "status"
+        ],
         "properties": {
           "message": {
+            "description": "Message can contain a user friendly message.",
             "type": "string",
             "x-go-name": "Message"
+          },
+          "status": {
+            "description": "Status contains the string of the HTTP status.",
+            "type": "string",
+            "x-go-name": "Status"
           }
         }
       }
@@ -342,10 +406,61 @@
       "description": "UnauthorizedResponse returns 401.",
       "schema": {
         "type": "object",
+        "required": [
+          "status"
+        ],
         "properties": {
           "message": {
+            "description": "Message can contain a user friendly message.",
             "type": "string",
             "x-go-name": "Message"
+          },
+          "status": {
+            "description": "Status contains the string of the HTTP status.",
+            "type": "string",
+            "x-go-name": "Status"
+          }
+        }
+      }
+    },
+    "UserIndexResponse": {
+      "description": "Response returns 200.",
+      "schema": {
+        "type": "object",
+        "required": [
+          "status",
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/TUser"
+            },
+            "x-go-name": "Data"
+          },
+          "status": {
+            "type": "string",
+            "x-go-name": "Status"
+          }
+        }
+      }
+    },
+    "UserShowResponse": {
+      "description": "Response returns 200.",
+      "schema": {
+        "type": "object",
+        "required": [
+          "status",
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/TUser"
+            },
+            "x-go-name": "Data"
           },
           "status": {
             "type": "string",

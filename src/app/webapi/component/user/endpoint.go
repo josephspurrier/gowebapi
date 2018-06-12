@@ -1,22 +1,8 @@
 package user
 
 import (
+	"errors"
 	"net/http"
-)
-
-const (
-	itemCreated      = "item created"
-	itemExists       = "item already exists"
-	itemNotFound     = "item not found"
-	itemFound        = "item found"
-	itemsFound       = "items found"
-	itemsFindEmpty   = "no items to find"
-	itemUpdated      = "item updated"
-	itemDeleted      = "item deleted"
-	itemsDeleted     = "items deleted"
-	itemsDeleteEmpty = "no items to delete"
-
-	friendlyError = "an error occurred, please try again later"
 )
 
 // *****************************************************************************
@@ -33,48 +19,46 @@ const (
 //   400: BadRequestResponse
 //   401: UnauthorizedResponse
 //   500: InternalServerErrorResponse
-func (p *Endpoint) Create(w http.ResponseWriter, r *http.Request) {
+func (p *Endpoint) Create(w http.ResponseWriter, r *http.Request) (int, error) {
 	// swagger:parameters UserCreate
 	type request struct {
 		// in: formData
+		// Required: true
 		FirstName string `json:"first_name" validate:"required"`
 		// in: formData
+		// Required: true
 		LastName string `json:"last_name" validate:"required"`
 		// in: formData
-		Email string `json:"email" validate:"required"`
+		// Required: true
+		Email string `json:"email" validate:"required,email"`
 		// in: formData
+		// Required: true
 		Password string `json:"password" validate:"required"`
 	}
 
 	// Request validation.
 	req := new(request)
 	if err := p.Bind.FormUnmarshal(&req, r); err != nil {
-		p.Response.SendError(w, http.StatusBadRequest, err.Error())
-		return
+		return http.StatusBadRequest, err
 	} else if err = p.Bind.Validate(req); err != nil {
-		p.Response.SendError(w, http.StatusBadRequest, err.Error())
-		return
+		return http.StatusBadRequest, err
 	}
 
 	// Check for existing user.
 	exists, _, err := ExistsEmail(p.DB, req.Email)
-	if exists {
-		p.Response.SendError(w, http.StatusBadRequest, itemExists)
-		return
-	} else if err != nil {
-		p.Response.SendError(w, http.StatusBadRequest, err.Error())
-		return
+	if err != nil {
+		return http.StatusInternalServerError, err
+	} else if exists {
+		return http.StatusBadRequest, errors.New("user already exists")
 	}
 
 	// Create the user in the database.
-	_, err = Create(p.DB, req.FirstName, req.LastName, req.Email, req.Password)
+	ID, err := Create(p.DB, req.FirstName, req.LastName, req.Email, req.Password)
 	if err != nil {
-		p.Log.ControllerError(r, err)
-		p.Response.SendError(w, http.StatusInternalServerError, friendlyError)
-		return
+		return http.StatusInternalServerError, err
 	}
 
-	p.Response.Send(w, http.StatusCreated, itemCreated, 1, nil)
+	return p.Response.Created(w, ID)
 }
 
 // *****************************************************************************
@@ -87,11 +71,11 @@ func (p *Endpoint) Create(w http.ResponseWriter, r *http.Request) {
 // Return one user.
 //
 // Responses:
-//   201: CreatedResponse
+//   200: UserShowResponse
 //   400: BadRequestResponse
 //   401: UnauthorizedResponse
 //   500: InternalServerErrorResponse
-func (p *Endpoint) Show(w http.ResponseWriter, r *http.Request) {
+func (p *Endpoint) Show(w http.ResponseWriter, r *http.Request) (int, error) {
 	// swagger:parameters UserShow
 	type request struct {
 		// in: path
@@ -101,25 +85,33 @@ func (p *Endpoint) Show(w http.ResponseWriter, r *http.Request) {
 	// Request validation.
 	req := new(request)
 	if err := p.Bind.FormUnmarshal(&req, r); err != nil {
-		p.Response.SendError(w, http.StatusBadRequest, err.Error())
-		return
+		return http.StatusBadRequest, err
 	} else if err = p.Bind.Validate(req); err != nil {
-		p.Response.SendError(w, http.StatusBadRequest, err.Error())
-		return
+		return http.StatusBadRequest, err
 	}
 
 	// Get a user.
 	u, exists, err := One(p.DB, req.UserID)
 	if err != nil {
-		p.Log.ControllerError(r, err)
-		p.Response.SendError(w, http.StatusInternalServerError, friendlyError)
-		return
+		return http.StatusInternalServerError, err
 	} else if !exists {
-		p.Response.Send(w, http.StatusOK, itemNotFound, 0, nil)
-		return
+		return http.StatusBadRequest, errors.New("item not found")
 	}
 
-	p.Response.Send(w, http.StatusOK, itemFound, 1, u)
+	// Response returns 200.
+	// swagger:response UserShowResponse
+	type response struct {
+		// in: body
+		Body struct {
+			// Required: true
+			Status string `json:"status"`
+			// Required: true
+			Data []TUser `json:"data"`
+		}
+	}
+
+	resp := new(response)
+	return p.Response.Results(w, &resp.Body, []TUser{u})
 }
 
 // Index .
@@ -128,23 +120,31 @@ func (p *Endpoint) Show(w http.ResponseWriter, r *http.Request) {
 // Return all users.
 //
 // Responses:
-//   201: CreatedResponse
+//   200: UserIndexResponse
 //   400: BadRequestResponse
 //   401: UnauthorizedResponse
 //   500: InternalServerErrorResponse
-func (p *Endpoint) Index(w http.ResponseWriter, r *http.Request) {
-	// Get all items
+func (p *Endpoint) Index(w http.ResponseWriter, r *http.Request) (int, error) {
+	// Get all items.
 	group, err := All(p.DB)
 	if err != nil {
-		p.Log.ControllerError(r, err)
-		p.Response.SendError(w, http.StatusInternalServerError, friendlyError)
-		return
-	} else if len(group) < 1 {
-		p.Response.Send(w, http.StatusOK, itemsFindEmpty, len(group), nil)
-		return
+		return http.StatusInternalServerError, err
 	}
 
-	p.Response.Send(w, http.StatusOK, itemsFound, len(group), group)
+	// Response returns 200.
+	// swagger:response UserIndexResponse
+	type response struct {
+		// in: body
+		Body struct {
+			// Required: true
+			Status string `json:"status"`
+			// Required: true
+			Data []TUser `json:"data"`
+		}
+	}
+
+	resp := new(response)
+	return p.Response.Results(w, &resp.Body, group)
 }
 
 // *****************************************************************************
@@ -157,55 +157,52 @@ func (p *Endpoint) Index(w http.ResponseWriter, r *http.Request) {
 // Make changes to a user.
 //
 // Responses:
-//   201: CreatedResponse
+//   200: OKResponse
 //   400: BadRequestResponse
 //   401: UnauthorizedResponse
 //   500: InternalServerErrorResponse
-func (p *Endpoint) Update(w http.ResponseWriter, r *http.Request) {
+func (p *Endpoint) Update(w http.ResponseWriter, r *http.Request) (int, error) {
 	// swagger:parameters UserUpdate
 	type request struct {
 		// in: path
 		UserID string `json:"user_id" validate:"required"`
 		// in: formData
+		// Required: true
 		FirstName string `json:"first_name" validate:"required"`
 		// in: formData
+		// Required: true
 		LastName string `json:"last_name" validate:"required"`
 		// in: formData
+		// Required: true
 		Email string `json:"email" validate:"required"`
 		// in: formData
+		// Required: true
 		Password string `json:"password" validate:"required"`
 	}
 
 	// Request validation.
 	req := new(request)
 	if err := p.Bind.FormUnmarshal(&req, r); err != nil {
-		p.Response.SendError(w, http.StatusBadRequest, err.Error())
-		return
+		return http.StatusBadRequest, err
 	} else if err = p.Bind.Validate(req); err != nil {
-		p.Response.SendError(w, http.StatusBadRequest, err.Error())
-		return
+		return http.StatusBadRequest, err
 	}
 
 	// Determine if the user exists.
 	exists, ID, err := ExistsID(p.DB, req.UserID)
 	if err != nil {
-		p.Log.ControllerError(r, err)
-		p.Response.SendError(w, http.StatusInternalServerError, friendlyError)
-		return
+		return http.StatusInternalServerError, err
 	} else if !exists {
-		p.Response.SendError(w, http.StatusBadRequest, itemNotFound)
-		return
+		return http.StatusBadRequest, errors.New("user not found")
 	}
 
-	// Update item
+	// Update item.
 	err = Update(p.DB, ID, req.FirstName, req.LastName, req.Email, req.Password)
 	if err != nil {
-		p.Log.ControllerError(r, err)
-		p.Response.SendError(w, http.StatusInternalServerError, friendlyError)
-		return
+		return http.StatusInternalServerError, err
 	}
 
-	p.Response.Send(w, http.StatusCreated, itemUpdated, 1, nil)
+	return p.Response.OK(w, "user updated")
 }
 
 // *****************************************************************************
@@ -218,11 +215,11 @@ func (p *Endpoint) Update(w http.ResponseWriter, r *http.Request) {
 // Delete a user.
 //
 // Responses:
-//   201: CreatedResponse
+//   200: OKResponse
 //   400: BadRequestResponse
 //   401: UnauthorizedResponse
 //   500: InternalServerErrorResponse
-func (p *Endpoint) Destroy(w http.ResponseWriter, r *http.Request) {
+func (p *Endpoint) Destroy(w http.ResponseWriter, r *http.Request) (int, error) {
 	// swagger:parameters UserDestroy
 	type request struct {
 		// in: path
@@ -232,25 +229,20 @@ func (p *Endpoint) Destroy(w http.ResponseWriter, r *http.Request) {
 	// Request validation.
 	req := new(request)
 	if err := p.Bind.FormUnmarshal(&req, r); err != nil {
-		p.Response.SendError(w, http.StatusBadRequest, err.Error())
-		return
+		return http.StatusBadRequest, err
 	} else if err = p.Bind.Validate(req); err != nil {
-		p.Response.SendError(w, http.StatusBadRequest, err.Error())
-		return
+		return http.StatusBadRequest, err
 	}
 
 	// Delete an item.
 	count, err := Delete(p.DB, req.UserID)
 	if err != nil {
-		p.Log.ControllerError(r, err)
-		p.Response.SendError(w, http.StatusInternalServerError, friendlyError)
-		return
+		return http.StatusInternalServerError, err
 	} else if count < 1 {
-		p.Response.Send(w, http.StatusOK, itemNotFound, count, nil)
-		return
+		return http.StatusBadRequest, errors.New("user does not exist")
 	}
 
-	p.Response.Send(w, http.StatusOK, itemDeleted, count, nil)
+	return p.Response.OK(w, "user deleted")
 }
 
 // DestroyAll .
@@ -259,21 +251,18 @@ func (p *Endpoint) Destroy(w http.ResponseWriter, r *http.Request) {
 // Delete all users.
 //
 // Responses:
-//   200: CreatedResponse
+//   200: OKResponse
 //   400: BadRequestResponse
 //   401: UnauthorizedResponse
 //   500: InternalServerErrorResponse
-func (p *Endpoint) DestroyAll(w http.ResponseWriter, r *http.Request) {
-	// Delete all items
+func (p *Endpoint) DestroyAll(w http.ResponseWriter, r *http.Request) (int, error) {
+	// Delete all items.
 	count, err := DeleteAll(p.DB)
 	if err != nil {
-		p.Log.ControllerError(r, err)
-		p.Response.SendError(w, http.StatusInternalServerError, friendlyError)
-		return
+		return http.StatusInternalServerError, err
 	} else if count < 1 {
-		p.Response.Send(w, http.StatusOK, itemsDeleteEmpty, count, nil)
-		return
+		return http.StatusBadRequest, errors.New("no users to delete")
 	}
 
-	p.Response.Send(w, http.StatusOK, itemsDeleted, count, nil)
+	return p.Response.OK(w, "users deleted")
 }
