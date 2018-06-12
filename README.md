@@ -257,3 +257,14 @@ Rules for HTTP status codes:
 * Unauthorized operation      - 401 (Unauthorized)
 * Any other error             - 500 (Internal Server Error)
 ```
+
+## Resources
+
+These are all good reads:
+
+Custom HTTP Handlers:
+
+- https://blog.golang.org/error-handling-and-go
+- https://mwholt.blogspot.com/2015/05/handling-errors-in-http-handlers-in-go.html
+- https://medium.com/statuscode/how-i-write-go-http-services-after-seven-years-37c208122831
+
