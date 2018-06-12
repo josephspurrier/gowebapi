@@ -268,3 +268,6 @@ Custom HTTP Handlers:
 - https://mwholt.blogspot.com/2015/05/handling-errors-in-http-handlers-in-go.html
 - https://medium.com/statuscode/how-i-write-go-http-services-after-seven-years-37c208122831
 
+Package Layout:
+
+- https://medium.com/@benbjohnson/standard-package-layout-7cdbc8391fc1
