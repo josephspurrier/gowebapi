@@ -1,6 +1,7 @@
 # gowebapi
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/josephspurrier/gowebapi)](https://goreportcard.com/report/github.com/josephspurrier/gowebapi)
+[![Swagger Validator](http://online.swagger.io/validator?url=https://raw.githubusercontent.com/josephspurrier/gowebapi/master/src/app/webapi/swagger.json)](http://petstore.swagger.io/?url=https://raw.githubusercontent.com/josephspurrier/gowebapi/master/src/app/webapi/swagger.json)
 
 This project demonstrates how to structure and build an API using the Go language without a framework.
 The API is still a work-in-progress, but it's designed to be easy to troubleshoot and easy to modify.
