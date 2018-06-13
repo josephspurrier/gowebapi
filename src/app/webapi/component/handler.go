@@ -8,12 +8,12 @@ import (
 	"app/webapi/internal/response"
 )
 
-// Handler is used to wrapper all endpoint functions so they work with generic
+// F is used to wrapper all endpoint functions so they work with generic
 // routers.
-type Handler func(http.ResponseWriter, *http.Request) (int, error)
+type F func(http.ResponseWriter, *http.Request) (int, error)
 
-// ServeHTTP handles the errors.
-func (fn Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+// ServeHTTP handles all the errors from the HTTP handlers.
+func (fn F) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	status, err := fn(w, r)
 	// Handle only errors.
 	if status >= 400 {

@@ -19,5 +19,5 @@ type Endpoint struct {
 // Routes will set up the endpoints.
 func (p *Endpoint) Routes(router component.IRouter) {
 	// Serve just the favorite icon and don't allow directory browsing.
-	router.Get("/favicon.ico", component.Handler(p.Static))
+	router.Get("/favicon.ico", component.F(p.Static))
 }

@@ -7,3 +7,6 @@
 
 # MacOS files
 .DS_Store
+
+# Ignore other packages
+/src/github.com/
