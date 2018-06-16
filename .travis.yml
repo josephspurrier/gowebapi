@@ -1,5 +1,7 @@
 language: go
 
+go_import_path: project-root
+
 go:
   - "1.7"
   - "1.8"
