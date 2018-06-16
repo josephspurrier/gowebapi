@@ -8,6 +8,9 @@ go:
   - "tip"
 
 before_install:
+  - export GOPATH=$HOME/gopath/src/project-root
+  - export PATH=$HOME/gopath/src/project-root/bin:$PATH
+  - cd $GOPATH/src/app/webapi
   - go get github.com/axw/gocov/gocov
   - go get github.com/mattn/goveralls
   - go get golang.org/x/tools/cmd/cover
