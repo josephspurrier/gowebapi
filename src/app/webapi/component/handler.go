@@ -8,12 +8,12 @@ import (
 	"app/webapi/internal/response"
 )
 
-// F is used to wrapper all endpoint functions so they work with generic
+// H is used to wrapper all endpoint functions so they work with generic
 // routers.
-type F func(http.ResponseWriter, *http.Request) (int, error)
+type H func(http.ResponseWriter, *http.Request) (int, error)
 
 // ServeHTTP handles all the errors from the HTTP handlers.
-func (fn F) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (fn H) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	status, err := fn(w, r)
 	// Handle only errors.
 	if status >= 400 {

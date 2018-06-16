@@ -70,7 +70,7 @@ func Boot() {
 	user.New(core).Routes(r)
 
 	// Set up the 404 page.
-	r.Instance().NotFound = component.F(
+	r.Instance().NotFound = component.H(
 		func(w http.ResponseWriter, r *http.Request) (int, error) {
 			return http.StatusNotFound, nil
 		})

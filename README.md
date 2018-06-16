@@ -1,9 +1,15 @@
 # gowebapi
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/josephspurrier/gowebapi)](https://goreportcard.com/report/github.com/josephspurrier/gowebapi)
+[![Build Status](https://travis-ci.org/josephspurrier/gowebapi.svg)](https://travis-ci.org/josephspurrier/gowebapi)
+[![Coverage Status](https://coveralls.io/repos/github/josephspurrier/gowebapi/badge.svg?branch=master)](https://coveralls.io/github/josephspurrier/gowebapi?branch=master)
+
 [![Swagger Validator](http://online.swagger.io/validator?url=https://raw.githubusercontent.com/josephspurrier/gowebapi/master/src/app/webapi/swagger.json)](http://petstore.swagger.io/?url=https://raw.githubusercontent.com/josephspurrier/gowebapi/master/src/app/webapi/swagger.json)
 
+## Web API in Go
+
 This project demonstrates how to structure and build an API using the Go language without a framework.
+Only carefully chosen packages are included.
 The API is still a work-in-progress, but it's designed to be easy to troubleshoot and easy to modify.
 Everyone structures their API differently, but ultimately consistency is key. The more
 consistent your API is, the easier it will be for other people to interact with it.
