@@ -138,17 +138,17 @@ application grows.
 In order to make the endpoints error driven, all the http handler functions must
 return an `int` and an `error`. This allows error handling to be centralized
 in the `component/handler.go` file. You can see in the `user/route.go` file, the
-functions are wrapped in `component.Handler()`:
+functions are wrapped in `component.H()`:
 
 ```go
 // Routes will set up the endpoints.
 func (p *Endpoint) Routes(router component.IRouter) {
-	router.Post("/v1/user", component.Handler(p.Create))
-	router.Get("/v1/user/:user_id", component.Handler(p.Show))
-	router.Get("/v1/user", component.Handler(p.Index))
-	router.Put("/v1/user/:user_id", component.Handler(p.Update))
-	router.Delete("/v1/user/:user_id", component.Handler(p.Destroy))
-	router.Delete("/v1/user", component.Handler(p.DestroyAll))
+	router.Post("/v1/user", component.H(p.Create))
+	router.Get("/v1/user/:user_id", component.H(p.Show))
+	router.Get("/v1/user", component.H(p.Index))
+	router.Put("/v1/user/:user_id", component.H(p.Update))
+	router.Delete("/v1/user/:user_id", component.H(p.Destroy))
+	router.Delete("/v1/user", component.H(p.DestroyAll))
 }
 ```
 
