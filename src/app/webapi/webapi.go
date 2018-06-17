@@ -33,30 +33,39 @@ import (
 
 	"app/webapi/component"
 	"app/webapi/component/root"
-	"app/webapi/component/static"
 	"app/webapi/component/user"
 	"app/webapi/internal/bind"
 	"app/webapi/internal/response"
-	"app/webapi/middleware"
 	"app/webapi/pkg/database"
-	"app/webapi/pkg/jsonconfig"
 	"app/webapi/pkg/logger"
 	"app/webapi/pkg/router"
 	"app/webapi/pkg/server"
 )
 
 // *****************************************************************************
+// Application Settings
+// *****************************************************************************
+
+// AppConfig contains the application settings with JSON tags.
+type AppConfig struct {
+	Database database.Connection `json:"Database"`
+	Server   server.Server       `json:"Server"`
+}
+
+// ParseJSON unmarshals the JSON bytes to the struct.
+func (c *AppConfig) ParseJSON(b []byte) error {
+	return json.Unmarshal(b, &c)
+}
+
+// *****************************************************************************
 // Application Logic
 // *****************************************************************************
 
 // Boot will run the main application.
-func Boot() {
-	// Load the configuration file.
-	jsonconfig.Load("config.json", config)
-
+func Boot(config *AppConfig, appLogger logger.ILog) *router.Mux {
 	// Set up the dependencies.
 	db := Database(config.Database)
-	l := logger.New()
+	l := logger.New(appLogger)
 	b := bind.New()
 	resp := response.New()
 
@@ -65,7 +74,6 @@ func Boot() {
 
 	// Set up the routes.
 	r := router.New()
-	static.New(core).Routes(r)
 	root.New(core).Routes(r)
 	user.New(core).Routes(r)
 
@@ -75,10 +83,7 @@ func Boot() {
 			return http.StatusNotFound, nil
 		})
 
-	// Start the listener.
-	server.Run(middleware.LoadHTTP(r.Instance()),
-		middleware.LoadHTTPS(r.Instance()),
-		config.Server)
+	return r
 }
 
 // Database returns the database connection.
@@ -98,22 +103,4 @@ func Database(dbc database.Connection) *database.DBW {
 	db := database.New(connection)
 
 	return db
-}
-
-// *****************************************************************************
-// Application Settings
-// *****************************************************************************
-
-// config the settings variable.
-var config = &configuration{}
-
-// configuration contains the application settings.
-type configuration struct {
-	Database database.Connection `json:"Database"`
-	Server   server.Server       `json:"Server"`
-}
-
-// ParseJSON unmarshals bytes to structs.
-func (c *configuration) ParseJSON(b []byte) error {
-	return json.Unmarshal(b, &c)
 }

@@ -241,6 +241,31 @@ func (p *Endpoint) Index(w http.ResponseWriter, r *http.Request) (int, error) {
 }
 ```
 
+## Test Coverage
+
+You can use these commands to run tests:
+
+```bash
+# CD to the folder.
+cd src/app/webapi
+
+# Test all the packages.
+go test ./...
+
+# Get coverage of all tests.
+go test -coverpkg=all ./...
+
+# Get the coverage map of the current folder.
+go test -coverprofile cover.out && go tool cover -html=cover.out -o cover.html && open cover.html && sleep 5 && rm cover.html && rm cover.out
+
+# Get the coverage map of all the packages.
+go test -coverprofile cover.out ./... && go tool cover -html=cover.out -o cover.html && open cover.html && sleep 5 && rm cover.html && rm cover.out
+
+# Get the total code coverage - this only takes into consideration packages that
+# have a test file in them.
+go test ./... -coverprofile cover.out; go tool cover -func cover.out
+```
+
 ## Conventions
 
 Rules for mapping HTTP methods to CRUD:

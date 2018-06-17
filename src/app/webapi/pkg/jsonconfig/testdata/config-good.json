@@ -1,0 +1,11 @@
+{
+    "Database": {
+        "Hostname": "127.0.0.1",
+        "Port": 3306
+    },
+    "Server": {
+        "Hostname": "localhost",
+        "UseHTTPS": true,
+        "HTTPSPort": 443
+    }
+}

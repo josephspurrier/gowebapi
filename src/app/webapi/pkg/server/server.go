@@ -2,13 +2,10 @@ package server
 
 import (
 	"fmt"
-	"log"
-	"net/http"
-	"time"
 )
 
-// Server stores the hostname and port number
-type Server struct {
+// Config stores the hostname and port number
+type Config struct {
 	Hostname  string `json:"Hostname"`  // Server name
 	UseHTTP   bool   `json:"UseHTTP"`   // Listen on HTTP
 	UseHTTPS  bool   `json:"UseHTTPS"`  // Listen on HTTPS
@@ -18,45 +15,67 @@ type Server struct {
 	KeyFile   string `json:"KeyFile"`   // HTTPS private key
 }
 
+// ILog provides logging capabilities.
+type ILog interface {
+	Fatalf(format string, v ...interface{})
+	Printf(format string, v ...interface{})
+}
+
+// IServer provides HTTP server capabilities.
+type IServer interface {
+	ListenAndServe() error
+	ListenAndServeTLS(certFile, keyFile string) error
+}
+
 // Run starts the HTTP and/or HTTPS listener
-func Run(httpHandlers http.Handler, httpsHandlers http.Handler, s Server) {
-	if s.UseHTTP && s.UseHTTPS {
+func (c *Config) Run(httpServer IServer, httpsServer IServer, logger ILog) {
+	if c.UseHTTP && c.UseHTTPS {
 		go func() {
-			startHTTPS(httpsHandlers, s)
+			c.StartHTTPS(httpsServer, logger)
 		}()
 
-		startHTTP(httpHandlers, s)
-	} else if s.UseHTTP {
-		startHTTP(httpHandlers, s)
-	} else if s.UseHTTPS {
-		startHTTPS(httpsHandlers, s)
+		c.StartHTTP(httpServer, logger)
+	} else if c.UseHTTP {
+		c.StartHTTP(httpServer, logger)
+	} else if c.UseHTTPS {
+		c.StartHTTPS(httpsServer, logger)
 	} else {
-		log.Println("Config file does not specify a listener to start")
+		logger.Printf("Config file does not specify a listener to start")
 	}
 }
 
-// startHTTP starts the HTTP listener
-func startHTTP(handlers http.Handler, s Server) {
-	fmt.Println(time.Now().Format("2006-01-02 03:04:05 PM"), "Running HTTP "+httpAddress(s))
+// StartHTTP starts the HTTP listener.
+func (c *Config) StartHTTP(s IServer, logger ILog) {
+	addr := c.HTTPAddress()
+	logger.Printf("%v", "Running HTTP "+addr)
 
 	// Start the HTTP listener
-	log.Fatal(http.ListenAndServe(httpAddress(s), handlers))
+	logger.Fatalf("%v", s.ListenAndServe())
 }
 
-// startHTTPs starts the HTTPS listener
-func startHTTPS(handlers http.Handler, s Server) {
-	fmt.Println(time.Now().Format("2006-01-02 03:04:05 PM"), "Running HTTPS "+httpsAddress(s))
+// StartHTTPS starts the HTTPS listener.
+func (c *Config) StartHTTPS(s IServer, logger ILog) {
+	addr := c.HTTPSAddress()
+	logger.Printf("%v", "Running HTTPS "+addr)
 
 	// Start the HTTPS listener
-	log.Fatal(http.ListenAndServeTLS(httpsAddress(s), s.CertFile, s.KeyFile, handlers))
+	logger.Fatalf("%v", s.ListenAndServeTLS(c.CertFile, c.KeyFile))
 }
 
-// httpAddress returns the HTTP address
-func httpAddress(s Server) string {
-	return s.Hostname + ":" + fmt.Sprintf("%d", s.HTTPPort)
+// HTTPAddress returns the HTTP address.
+func (c *Config) HTTPAddress() string {
+	port := 80
+	if c.HTTPPort != 0 {
+		port = c.HTTPPort
+	}
+	return c.Hostname + ":" + fmt.Sprintf("%d", port)
 }
 
-// httpsAddress returns the HTTPS address
-func httpsAddress(s Server) string {
-	return s.Hostname + ":" + fmt.Sprintf("%d", s.HTTPSPort)
+// HTTPSAddress returns the HTTPS address.
+func (c *Config) HTTPSAddress() string {
+	port := 443
+	if c.HTTPSPort != 0 {
+		port = c.HTTPSPort
+	}
+	return c.Hostname + ":" + fmt.Sprintf("%d", port)
 }

@@ -6,21 +6,27 @@ import (
 	"github.com/matryer/way"
 )
 
-// Info contains the router.
-type Info struct {
+// Mux contains the router.
+type Mux struct {
 	router *way.Router
 }
 
 // New returns an instance of the router.
-func New() *Info {
-	return &Info{
+func New() *Mux {
+	return &Mux{
 		router: way.NewRouter(),
 	}
 }
 
 // Instance returns the router.
-func (r *Info) Instance() *way.Router {
-	return r.router
+func (m *Mux) Instance() *way.Router {
+	return m.router
+}
+
+// ServeHTTP routes the incoming http.Request based on method and path
+// extracting path parameters as it goes.
+func (m *Mux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	m.router.ServeHTTP(w, r)
 }
 
 // Params returns a URL parameter.
