@@ -7,34 +7,18 @@ import (
 	"app/webapi/middleware/logrequest"
 )
 
-// LoadHTTPS will load the HTTP routes and middleware.
-func LoadHTTPS(h http.Handler) http.Handler {
-	return wrapMiddleware(h)
-}
-
-// LoadHTTP will load the HTTPS routes and middleware.
-func LoadHTTP(h http.Handler) http.Handler {
-	return wrapMiddleware(h)
-
-	// Uncomment this and comment out the line above to always redirect to
-	// HTTPS.
-	//return http.HandlerFunc(redirectToHTTPS)
-}
-
-// Optional method to make it easy to redirect from HTTP to HTTPS.
-func redirectToHTTPS(w http.ResponseWriter, req *http.Request) {
-	http.Redirect(w, req, "https://"+req.Host, http.StatusMovedPermanently)
-}
-
 // *****************************************************************************
 // Middleware
 // *****************************************************************************
 
-func wrapMiddleware(h http.Handler) http.Handler {
+// Wrap will return the http.Handler wrapped in middleware.
+func Wrap(h http.Handler, logger logrequest.ILog,
+	clock logrequest.IClock) http.Handler {
 	// Log every request.
-	h = logrequest.Handler(h)
+	lr := logrequest.New(logger, clock)
+	h = lr.Handler(h)
 
-	// Cors for swagger-ui.
+	// CORS for the endpoints.
 	h = cors.Handler(h)
 
 	return h

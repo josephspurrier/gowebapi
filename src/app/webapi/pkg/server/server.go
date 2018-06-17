@@ -2,17 +2,19 @@ package server
 
 import (
 	"fmt"
+	"net/http"
 )
 
 // Config stores the hostname and port number
 type Config struct {
-	Hostname  string `json:"Hostname"`  // Server name
-	UseHTTP   bool   `json:"UseHTTP"`   // Listen on HTTP
-	UseHTTPS  bool   `json:"UseHTTPS"`  // Listen on HTTPS
-	HTTPPort  int    `json:"HTTPPort"`  // HTTP port
-	HTTPSPort int    `json:"HTTPSPort"` // HTTPS port
-	CertFile  string `json:"CertFile"`  // HTTPS certificate
-	KeyFile   string `json:"KeyFile"`   // HTTPS private key
+	Hostname           string `json:"Hostname"`           // Server name.
+	UseHTTP            bool   `json:"UseHTTP"`            // Listen on HTTP.
+	UseHTTPS           bool   `json:"UseHTTPS"`           // Listen on HTTPS.
+	ForceHTTPSRedirect bool   `json:"ForceHTTPSRedirect"` // Redirect HTTP to HTTPS.
+	HTTPPort           int    `json:"HTTPPort"`           // HTTP port.
+	HTTPSPort          int    `json:"HTTPSPort"`          // HTTPS port.
+	CertFile           string `json:"CertFile"`           // HTTPS certificate.
+	KeyFile            string `json:"KeyFile"`            // HTTPS private key.
 }
 
 // ILog provides logging capabilities.
@@ -78,4 +80,10 @@ func (c *Config) HTTPSAddress() string {
 		port = c.HTTPSPort
 	}
 	return c.Hostname + ":" + fmt.Sprintf("%d", port)
+}
+
+func RedirectToHTTPS() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		http.Redirect(w, req, "https://"+req.Host, http.StatusMovedPermanently)
+	})
 }

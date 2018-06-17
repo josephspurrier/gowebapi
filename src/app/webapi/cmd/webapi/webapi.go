@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"runtime"
+	"time"
 
 	"app/webapi"
 	"app/webapi/middleware"
@@ -19,7 +20,18 @@ func init() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 }
 
+// Clock is a clock.
+type Clock struct{}
+
+// Now returns the current time.
+func (c *Clock) Now() time.Time {
+	return time.Now()
+}
+
 func main() {
+	// Create the clock.
+	clock := new(Clock)
+
 	// Create the logger.
 	appLogger := log.New(os.Stderr, "", log.LstdFlags)
 
@@ -30,18 +42,27 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Boot the application.
-	mux := webapi.Boot(config, appLogger)
+	// Set up the routes.
+	mux := webapi.Routes(config, appLogger)
 
-	// Get the router instance.
-	r := mux.Instance()
-
-	// Start the web listener(s).
+	// Set up the HTTP listener.
 	httpServer := new(http.Server)
 	httpServer.Addr = config.Server.HTTPAddress()
-	httpServer.Handler = middleware.LoadHTTP(r)
+
+	// Determine if HTTP should redirect to HTTPS.
+	if config.Server.ForceHTTPSRedirect {
+		httpServer.Handler = http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+			http.Redirect(w, req, "https://"+req.Host, http.StatusMovedPermanently)
+		})
+	} else {
+		httpServer.Handler = middleware.Wrap(mux, appLogger, clock)
+	}
+
+	// Set up the HTTPS listener.
 	httpsServer := new(http.Server)
 	httpsServer.Addr = config.Server.HTTPSAddress()
-	httpsServer.Handler = middleware.LoadHTTPS(r)
+	httpsServer.Handler = middleware.Wrap(mux, appLogger, clock)
+
+	// Start the listeners based on the config.
 	config.Server.Run(httpServer, httpsServer, appLogger)
 }

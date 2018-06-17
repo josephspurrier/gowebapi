@@ -61,8 +61,8 @@ func (c *AppConfig) ParseJSON(b []byte) error {
 // Application Logic
 // *****************************************************************************
 
-// Boot will run the main application.
-func Boot(config *AppConfig, appLogger logger.ILog) *router.Mux {
+// Routes will set up the components and return the router.
+func Routes(config *AppConfig, appLogger logger.ILog) *router.Mux {
 	// Set up the dependencies.
 	db := Database(config.Database)
 	l := logger.New(appLogger)
