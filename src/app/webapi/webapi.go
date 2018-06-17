@@ -49,7 +49,7 @@ import (
 // AppConfig contains the application settings with JSON tags.
 type AppConfig struct {
 	Database database.Connection `json:"Database"`
-	Server   server.Server       `json:"Server"`
+	Server   server.Config       `json:"Server"`
 }
 
 // ParseJSON unmarshals the JSON bytes to the struct.
