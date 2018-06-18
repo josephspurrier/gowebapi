@@ -28,7 +28,7 @@ func (b *Binder) Validate(s interface{}) error {
 }
 
 // JSONUnmarshal will perform an unmarshal on an interface using JSON.
-func (b *Binder) JSONUnmarshal(iface interface{}, keys []string,
+/*func (b *Binder) JSONUnmarshal(iface interface{}, keys []string,
 	values []string) (err error) {
 	// Check for errors.
 	v := reflect.ValueOf(iface)
@@ -53,7 +53,7 @@ func (b *Binder) JSONUnmarshal(iface interface{}, keys []string,
 
 	// Unmarshal to the interface from JSON.
 	return json.Unmarshal(data, &iface)
-}
+}*/
 
 // FormUnmarshal will perform an unmarshal on an interface using a form.
 func (b *Binder) FormUnmarshal(iface interface{}, r *http.Request) (err error) {
@@ -76,7 +76,7 @@ func (b *Binder) FormUnmarshal(iface interface{}, r *http.Request) (err error) {
 	}
 
 	// Loop through each field to extract the URL parameter.
-	elem := reflect.Indirect(v).Elem()
+	elem := reflect.Indirect(v.Elem())
 	keys := elem.Type()
 	for j := 0; j < elem.NumField(); j++ {
 		tag := keys.Field(j).Tag

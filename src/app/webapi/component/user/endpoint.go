@@ -38,7 +38,7 @@ func (p *Endpoint) Create(w http.ResponseWriter, r *http.Request) (int, error) {
 
 	// Request validation.
 	req := new(request)
-	if err := p.Bind.FormUnmarshal(&req, r); err != nil {
+	if err := p.Bind.FormUnmarshal(req, r); err != nil {
 		return http.StatusBadRequest, err
 	} else if err = p.Bind.Validate(req); err != nil {
 		return http.StatusBadRequest, err
@@ -84,7 +84,7 @@ func (p *Endpoint) Show(w http.ResponseWriter, r *http.Request) (int, error) {
 
 	// Request validation.
 	req := new(request)
-	if err := p.Bind.FormUnmarshal(&req, r); err != nil {
+	if err := p.Bind.FormUnmarshal(req, r); err != nil {
 		return http.StatusBadRequest, err
 	} else if err = p.Bind.Validate(req); err != nil {
 		return http.StatusBadRequest, err
@@ -182,7 +182,7 @@ func (p *Endpoint) Update(w http.ResponseWriter, r *http.Request) (int, error) {
 
 	// Request validation.
 	req := new(request)
-	if err := p.Bind.FormUnmarshal(&req, r); err != nil {
+	if err := p.Bind.FormUnmarshal(req, r); err != nil {
 		return http.StatusBadRequest, err
 	} else if err = p.Bind.Validate(req); err != nil {
 		return http.StatusBadRequest, err
@@ -228,7 +228,7 @@ func (p *Endpoint) Destroy(w http.ResponseWriter, r *http.Request) (int, error) 
 
 	// Request validation.
 	req := new(request)
-	if err := p.Bind.FormUnmarshal(&req, r); err != nil {
+	if err := p.Bind.FormUnmarshal(req, r); err != nil {
 		return http.StatusBadRequest, err
 	} else if err = p.Bind.Validate(req); err != nil {
 		return http.StatusBadRequest, err
