@@ -61,10 +61,19 @@ func One(db component.IDatabase, ID string) (p TUser, exists bool, err error) {
 }
 
 // All returns all users.
-func All(db component.IDatabase) ([]TUser, error) {
-	result := make([]TUser, 0)
-	err := db.Select(&result, `SELECT * FROM user`)
-	return result, err
+func All(db component.IDatabase) (result []TUser, total int, err error) {
+	result = make([]TUser, 0)
+
+	err = db.Get(&total, `
+		SELECT COUNT(DISTINCT player_id)
+		FROM game_player
+		WHERE deleted_at IS NULL;`)
+	if err != nil {
+		return result, total, db.Error(err)
+	}
+
+	err = db.Select(&result, `SELECT * FROM user`)
+	return result, total, err
 }
 
 // ExistsEmail determines if a user exists by email.

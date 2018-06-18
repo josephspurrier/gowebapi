@@ -21,7 +21,7 @@ type IDatabase interface {
 
 	//ExistsID(err error, ID int64) (bool, int64, error)
 
-	//PaginatedResults(results interface{}, fn func() (results interface{}, total int, err error)) (total int, err error)
+	PaginatedResults(results interface{}, fn func() (results interface{}, total int, err error)) (total int, err error)
 	RecordExistsInt(fn func() (exists bool, ID int64, err error)) (exists bool, ID int64, err error)
 	RecordExistsString(fn func() (exists bool, ID string, err error)) (exists bool, ID string, err error)
 	AddRecordInt(fn func() (ID int64, err error)) (ID int64, err error)

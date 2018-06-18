@@ -131,7 +131,10 @@ func (p *Endpoint) Show(w http.ResponseWriter, r *http.Request) (int, error) {
 //   500: InternalServerErrorResponse
 func (p *Endpoint) Index(w http.ResponseWriter, r *http.Request) (int, error) {
 	// Get all items.
-	group, err := All(p.DB)
+	results := make([]TUser, 0)
+	_, err := p.DB.PaginatedResults(&results, func() (results interface{}, total int, err error) {
+		return All(p.DB)
+	})
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
@@ -149,7 +152,7 @@ func (p *Endpoint) Index(w http.ResponseWriter, r *http.Request) (int, error) {
 	}
 
 	resp := new(response)
-	return p.Response.Results(w, &resp.Body, group)
+	return p.Response.Results(w, &resp.Body, results)
 }
 
 // *****************************************************************************

@@ -2,7 +2,9 @@ package testutil
 
 import (
 	"database/sql"
+	"errors"
 	"net/http"
+	"reflect"
 )
 
 // MockLogger .
@@ -169,6 +171,49 @@ func (d *MockDatabase) AddRecordString(fn func() (ID string, err error)) (ID str
 		fnInternal = fn
 	}
 	return fnInternal()
+}
+
+// *****************************************************************************
+
+// PaginatedResults returns the paginated results of a query.
+func (d *MockDatabase) PaginatedResults(i interface{}, fn func() (
+	interface{}, int, error)) (int, error) {
+	v := reflect.ValueOf(i)
+	if v.Kind() != reflect.Ptr {
+		return 0, errors.New("must pass a pointer, not a value")
+	}
+
+	// Use the default.
+	fnInternal := paginatedResults
+	if fnInternal == nil {
+		fnInternal = fn
+	}
+
+	results, d2, d3 := fnInternal()
+	if results == nil {
+		return d2, d3
+	}
+
+	arrPtr := reflect.ValueOf(i)
+	value := arrPtr.Elem()
+	itemPtr := reflect.ValueOf(results)
+	value.Set(itemPtr)
+
+	return d2, d3
+}
+
+type paginatedResultsFunc func() (interface{}, int, error)
+
+var paginatedResults paginatedResultsFunc
+
+// PaginatedResultsEmpty returns nil, 0, nil.
+var PaginatedResultsEmpty = func() (interface{}, int, error) {
+	return nil, 0, nil
+}
+
+// SetPaginatedResults will set the paginated results function.
+func (d *MockDatabase) SetPaginatedResults(fn paginatedResultsFunc) {
+	paginatedResults = fn
 }
 
 // *****************************************************************************
