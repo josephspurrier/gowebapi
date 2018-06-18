@@ -2,7 +2,6 @@ package component
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"app/webapi/internal/response"
@@ -34,9 +33,9 @@ func (fn H) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Only output 500 errors.
-	if status >= 500 {
+	/*if status >= 500 {
 		if err != nil {
 			log.Println(err)
 		}
-	}
+	}*/
 }

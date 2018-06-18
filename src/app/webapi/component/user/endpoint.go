@@ -45,7 +45,10 @@ func (p *Endpoint) Create(w http.ResponseWriter, r *http.Request) (int, error) {
 	}
 
 	// Check for existing user.
-	exists, _, err := ExistsEmail(p.DB, req.Email)
+	exists, _, err := p.DB.RecordExistsString(func() (exists bool, ID string, err error) {
+		return ExistsEmail(p.DB, req.Email)
+	})
+
 	if err != nil {
 		return http.StatusInternalServerError, err
 	} else if exists {
@@ -53,7 +56,9 @@ func (p *Endpoint) Create(w http.ResponseWriter, r *http.Request) (int, error) {
 	}
 
 	// Create the user in the database.
-	ID, err := Create(p.DB, req.FirstName, req.LastName, req.Email, req.Password)
+	ID, err := p.DB.AddRecordString(func() (ID string, err error) {
+		return Create(p.DB, req.FirstName, req.LastName, req.Email, req.Password)
+	})
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}

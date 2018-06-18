@@ -123,14 +123,25 @@ func (d *DBW) PaginatedResults(i interface{}, fn func() (interface{}, int,
 	return d2, d3
 }
 
-// RecordExists returns the ID if a record exists.
-func (d *DBW) RecordExists(fn func() (exists bool, ID int64, err error)) (
+// RecordExistsInt returns the ID if a record exists.
+func (d *DBW) RecordExistsInt(fn func() (exists bool, ID int64, err error)) (
 	exists bool, ID int64, err error) {
 	return fn()
 }
 
-// AddRecord returns the ID if the record is created.
-func (d *DBW) AddRecord(fn func() (ID int64, err error)) (ID int64, err error) {
+// RecordExistsString returns the ID if a record exists.
+func (d *DBW) RecordExistsString(fn func() (exists bool, ID string, err error)) (
+	exists bool, ID string, err error) {
+	return fn()
+}
+
+// AddRecordInt returns the ID if the record is created.
+func (d *DBW) AddRecordInt(fn func() (ID int64, err error)) (ID int64, err error) {
+	return fn()
+}
+
+// AddRecordString returns the ID if the record is created.
+func (d *DBW) AddRecordString(fn func() (ID string, err error)) (ID string, err error) {
 	return fn()
 }
 

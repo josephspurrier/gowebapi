@@ -22,8 +22,10 @@ type IDatabase interface {
 	//ExistsID(err error, ID int64) (bool, int64, error)
 
 	//PaginatedResults(results interface{}, fn func() (results interface{}, total int, err error)) (total int, err error)
-	//RecordExists(fn func() (exists bool, ID int64, err error)) (exists bool, ID int64, err error)
-	//AddRecord(fn func() (ID int64, err error)) (ID int64, err error)
+	RecordExistsInt(fn func() (exists bool, ID int64, err error)) (exists bool, ID int64, err error)
+	RecordExistsString(fn func() (exists bool, ID string, err error)) (exists bool, ID string, err error)
+	AddRecordInt(fn func() (ID int64, err error)) (ID int64, err error)
+	AddRecordString(fn func() (ID string, err error)) (ID string, err error)
 	//ExecQuery(fn func() (err error)) (err error)
 }
 
