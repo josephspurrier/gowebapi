@@ -14,6 +14,9 @@ import (
 //
 // Create a user.
 //
+// Security:
+//   token:
+//
 // Responses:
 //   201: CreatedResponse
 //   400: BadRequestResponse
@@ -75,6 +78,9 @@ func (p *Endpoint) Create(w http.ResponseWriter, r *http.Request) (int, error) {
 //
 // Return one user.
 //
+// Security:
+//   token:
+//
 // Responses:
 //   200: UserShowResponse
 //   400: BadRequestResponse
@@ -124,6 +130,9 @@ func (p *Endpoint) Show(w http.ResponseWriter, r *http.Request) (int, error) {
 //
 // Return all users.
 //
+// Security:
+//   token:
+//
 // Responses:
 //   200: UserIndexResponse
 //   400: BadRequestResponse
@@ -163,6 +172,9 @@ func (p *Endpoint) Index(w http.ResponseWriter, r *http.Request) (int, error) {
 // swagger:route PUT /v1/user/{user_id} user UserUpdate
 //
 // Make changes to a user.
+//
+// Security:
+//   token:
 //
 // Responses:
 //   200: OKResponse
@@ -222,6 +234,9 @@ func (p *Endpoint) Update(w http.ResponseWriter, r *http.Request) (int, error) {
 //
 // Delete a user.
 //
+// Security:
+//   token:
+//
 // Responses:
 //   200: OKResponse
 //   400: BadRequestResponse
@@ -257,6 +272,9 @@ func (p *Endpoint) Destroy(w http.ResponseWriter, r *http.Request) (int, error) 
 // swagger:route DELETE /v1/user user UserDestroyAll
 //
 // Delete all users.
+//
+// Security:
+//   token:
 //
 // Responses:
 //   200: OKResponse

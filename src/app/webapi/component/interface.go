@@ -3,6 +3,7 @@ package component
 import (
 	"database/sql"
 	"net/http"
+	"time"
 )
 
 // IDatabase provides data query capabilities.
@@ -58,4 +59,9 @@ type IResponse interface {
 	Created(w http.ResponseWriter, recordID string) (int, error)
 	Results(w http.ResponseWriter, body interface{}, data interface{}) (int, error)
 	OK(w http.ResponseWriter, message string) (int, error)
+}
+
+// IToken provides outputs for the JWT.
+type IToken interface {
+	Generate(userID string, duration time.Duration) (string, error)
 }

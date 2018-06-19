@@ -47,42 +47,44 @@ func (o *Output) Created(w http.ResponseWriter, recordID string) (int, error) {
 
 // Results will output the data to the writer.
 func (o *Output) Results(w http.ResponseWriter, body interface{}, data interface{}) (int, error) {
-	// Ensure a pointer is passed in.
-	v := reflect.ValueOf(body)
-	if v.Kind() != reflect.Ptr {
-		return http.StatusInternalServerError, fmt.Errorf("body types do not match - expected 'struct pointer' but got '%v'", v.Kind())
-	}
-
-	// Ensure a struct is passed in.
-	v = reflect.Indirect(reflect.ValueOf(body))
-	if v.Kind() != reflect.Struct {
-		return http.StatusInternalServerError, fmt.Errorf("body types do not match - expected 'struct pointer' but got '%v pointer'", v.Kind())
-	}
-
-	// Loop through each field.
-	keys := v.Type()
-	for j := 0; j < v.NumField(); j++ {
-		field := v.Field(j)
-		tag := keys.Field(j).Tag
-
-		// Set the "status" field.
-		if tag.Get("json") == "status" {
-			if field.Kind() == reflect.String {
-				v.Field(j).SetString(http.StatusText(http.StatusOK))
-			} else {
-				return http.StatusInternalServerError, fmt.Errorf("data types do not match for 'status' - expected '%v' but got '%v'", reflect.String, field.Type())
-			}
+	if data != nil {
+		// Ensure a pointer is passed in.
+		v := reflect.ValueOf(body)
+		if v.Kind() != reflect.Ptr {
+			return http.StatusInternalServerError, fmt.Errorf("body types do not match - expected 'struct pointer' but got '%v'", v.Kind())
 		}
 
-		// Set the "data" field.
-		if tag.Get("json") == "data" {
-			dataType := reflect.TypeOf(data)
-			if field.Type() == dataType {
-				v.Field(j).Set(reflect.ValueOf(data))
-			} else {
-				return http.StatusInternalServerError, fmt.Errorf("data types do not match for 'data' - expected %v but got %v", field.Type(), dataType)
+		// Ensure a struct is passed in.
+		v = reflect.Indirect(reflect.ValueOf(body))
+		if v.Kind() != reflect.Struct {
+			return http.StatusInternalServerError, fmt.Errorf("body types do not match - expected 'struct pointer' but got '%v pointer'", v.Kind())
+		}
+
+		// Loop through each field.
+		keys := v.Type()
+		for j := 0; j < v.NumField(); j++ {
+			field := v.Field(j)
+			tag := keys.Field(j).Tag
+
+			// Set the "status" field.
+			if tag.Get("json") == "status" {
+				if field.Kind() == reflect.String {
+					v.Field(j).SetString(http.StatusText(http.StatusOK))
+				} else {
+					return http.StatusInternalServerError, fmt.Errorf("data types do not match for 'status' - expected '%v' but got '%v'", reflect.String, field.Type())
+				}
 			}
 
+			// Set the "data" field.
+			if tag.Get("json") == "data" {
+				dataType := reflect.TypeOf(data)
+				if field.Type() == dataType {
+					v.Field(j).Set(reflect.ValueOf(data))
+				} else {
+					return http.StatusInternalServerError, fmt.Errorf("data types do not match for 'data' - expected %v but got %v", field.Type(), dataType)
+				}
+
+			}
 		}
 	}
 

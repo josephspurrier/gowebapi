@@ -7,21 +7,15 @@ import (
 
 	"app/webapi/component"
 	"app/webapi/component/root"
-	"app/webapi/internal/response"
-	"app/webapi/internal/testutil"
 	"app/webapi/pkg/router"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestIndex(t *testing.T) {
-	ml := new(testutil.MockLogger)
-	md := new(testutil.MockDatabase)
-	mb := new(testutil.MockBind)
-	resp := response.New()
+	core, _ := component.NewCoreMock()
 
 	mux := router.New()
-	core := component.New(ml, md, mb, resp)
 	root.New(core).Routes(mux)
 
 	r := httptest.NewRequest("GET", "/v1", nil)

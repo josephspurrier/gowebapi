@@ -1,12 +1,13 @@
 package component
 
-// New returns the standard component dependencies.
-func New(l ILogger, d IDatabase, b IBind, resp IResponse) Core {
+// NewCore returns the standard component dependencies.
+func NewCore(l ILogger, d IDatabase, b IBind, resp IResponse, t IToken) Core {
 	return Core{
 		Log:      l,
 		DB:       d,
 		Bind:     b,
 		Response: resp,
+		Token:    t,
 	}
 }
 
@@ -16,4 +17,5 @@ type Core struct {
 	DB       IDatabase
 	Bind     IBind
 	Response IResponse
+	Token    IToken
 }

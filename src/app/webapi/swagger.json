@@ -31,8 +31,27 @@
         }
       }
     },
+    "/v1/auth": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Get an access token.",
+        "operationId": "AuthIndex",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/AuthIndexResponse"
+          }
+        }
+      }
+    },
     "/v1/user": {
       "get": {
+        "security": [
+          {
+            "token": []
+          }
+        ],
         "tags": [
           "user"
         ],
@@ -54,6 +73,11 @@
         }
       },
       "post": {
+        "security": [
+          {
+            "token": []
+          }
+        ],
         "tags": [
           "user"
         ],
@@ -105,6 +129,11 @@
         }
       },
       "delete": {
+        "security": [
+          {
+            "token": []
+          }
+        ],
         "tags": [
           "user"
         ],
@@ -128,6 +157,11 @@
     },
     "/v1/user/{user_id}": {
       "get": {
+        "security": [
+          {
+            "token": []
+          }
+        ],
         "tags": [
           "user"
         ],
@@ -158,6 +192,11 @@
         }
       },
       "put": {
+        "security": [
+          {
+            "token": []
+          }
+        ],
         "tags": [
           "user"
         ],
@@ -216,6 +255,11 @@
         }
       },
       "delete": {
+        "security": [
+          {
+            "token": []
+          }
+        ],
         "tags": [
           "user"
         ],
@@ -297,6 +341,35 @@
     }
   },
   "responses": {
+    "AuthIndexResponse": {
+      "description": "Response returns 200.",
+      "schema": {
+        "type": "object",
+        "required": [
+          "status",
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "type": "object",
+            "required": [
+              "token"
+            ],
+            "properties": {
+              "token": {
+                "type": "string",
+                "x-go-name": "Token"
+              }
+            },
+            "x-go-name": "Data"
+          },
+          "status": {
+            "type": "string",
+            "x-go-name": "Status"
+          }
+        }
+      }
+    },
     "BadRequestResponse": {
       "description": "BadRequestResponse returns 400.",
       "schema": {

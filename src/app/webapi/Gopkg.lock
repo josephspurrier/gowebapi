@@ -2,10 +2,31 @@
 
 
 [[projects]]
+  branch = "master"
+  name = "github.com/alecthomas/template"
+  packages = [
+    ".",
+    "parse"
+  ]
+  revision = "a0175ee3bccc567396460bf5acd36800cb10c49c"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/alecthomas/units"
+  packages = ["."]
+  revision = "2efee857e7cfd4f3d0138cc3cbb1b4966962b93a"
+
+[[projects]]
   name = "github.com/davecgh/go-spew"
   packages = ["spew"]
   revision = "346938d642f2ec3594ed81d874461961cd0faa76"
   version = "v1.1.0"
+
+[[projects]]
+  name = "github.com/dgrijalva/jwt-go"
+  packages = ["."]
+  revision = "06ea1031745cb8b3dab3f6a236daf2b0aa468b7e"
+  version = "v3.2.0"
 
 [[projects]]
   name = "github.com/go-playground/locales"
@@ -62,6 +83,12 @@
   version = "v1.0.0"
 
 [[projects]]
+  name = "gopkg.in/alecthomas/kingpin.v2"
+  packages = ["."]
+  revision = "947dcec5ba9c011838740e680966fd7087a71d0d"
+  version = "v2.2.6"
+
+[[projects]]
   name = "gopkg.in/go-playground/validator.v9"
   packages = ["."]
   revision = "f28cb45dc0f0f406ba2015cdb59a5203ad220bc2"
@@ -70,6 +97,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "5b10acfc90cba347bfbb7fdb45ad56cdac96adfc9a99636b93e1ff11a9f3fddd"
+  inputs-digest = "e10cba8d895f1d8ca3b3aceb820d3c8d3f9aac010b11343308b81a15480e2b00"
   solver-name = "gps-cdcl"
   solver-version = 1

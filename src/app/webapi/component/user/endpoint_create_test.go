@@ -10,30 +10,22 @@ import (
 
 	"app/webapi/component"
 	"app/webapi/component/user"
-	"app/webapi/internal/bind"
-	"app/webapi/internal/response"
-	"app/webapi/internal/testutil"
 	"app/webapi/pkg/router"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestCreate(t *testing.T) {
-	ml := new(testutil.MockLogger)
-	md := new(testutil.MockDatabase)
-
-	binder := bind.New()
-	resp := response.New()
+	core, m := component.NewCoreMock()
 
 	mux := router.New()
-	core := component.New(ml, md, binder, resp)
 	user.New(core).Routes(mux)
 
-	md.SetRecordExistsString(func() (exists bool, ID string, err error) {
+	m.DB.SetRecordExistsString(func() (exists bool, ID string, err error) {
 		return false, "", nil
 	})
 
-	md.SetAddRecordString(func() (ID string, err error) {
+	m.DB.SetAddRecordString(func() (ID string, err error) {
 		return "123", nil
 	})
 
@@ -53,17 +45,12 @@ func TestCreate(t *testing.T) {
 }
 
 func TestCreateUserAlreadyExists(t *testing.T) {
-	ml := new(testutil.MockLogger)
-	md := new(testutil.MockDatabase)
-
-	binder := bind.New()
-	resp := response.New()
+	core, m := component.NewCoreMock()
 
 	mux := router.New()
-	core := component.New(ml, md, binder, resp)
 	user.New(core).Routes(mux)
 
-	md.SetRecordExistsString(func() (exists bool, ID string, err error) {
+	m.DB.SetRecordExistsString(func() (exists bool, ID string, err error) {
 		return true, "", nil
 	})
 
@@ -83,17 +70,12 @@ func TestCreateUserAlreadyExists(t *testing.T) {
 }
 
 func TestCreateUserInternalError(t *testing.T) {
-	ml := new(testutil.MockLogger)
-	md := new(testutil.MockDatabase)
-
-	binder := bind.New()
-	resp := response.New()
+	core, m := component.NewCoreMock()
 
 	mux := router.New()
-	core := component.New(ml, md, binder, resp)
 	user.New(core).Routes(mux)
 
-	md.SetRecordExistsString(func() (exists bool, ID string, err error) {
+	m.DB.SetRecordExistsString(func() (exists bool, ID string, err error) {
 		return true, "", errors.New("bad error")
 	})
 
@@ -113,21 +95,16 @@ func TestCreateUserInternalError(t *testing.T) {
 }
 
 func TestCreateUserInternalError2(t *testing.T) {
-	ml := new(testutil.MockLogger)
-	md := new(testutil.MockDatabase)
-
-	binder := bind.New()
-	resp := response.New()
+	core, m := component.NewCoreMock()
 
 	mux := router.New()
-	core := component.New(ml, md, binder, resp)
 	user.New(core).Routes(mux)
 
-	md.SetRecordExistsString(func() (exists bool, ID string, err error) {
+	m.DB.SetRecordExistsString(func() (exists bool, ID string, err error) {
 		return false, "", nil
 	})
 
-	md.SetAddRecordString(func() (ID string, err error) {
+	m.DB.SetAddRecordString(func() (ID string, err error) {
 		return "", errors.New("bad error 2")
 	})
 
@@ -147,14 +124,9 @@ func TestCreateUserInternalError2(t *testing.T) {
 }
 
 func TestCreateMissingItem(t *testing.T) {
-	ml := new(testutil.MockLogger)
-	md := new(testutil.MockDatabase)
-
-	binder := bind.New()
-	resp := response.New()
+	core, _ := component.NewCoreMock()
 
 	mux := router.New()
-	core := component.New(ml, md, binder, resp)
 	user.New(core).Routes(mux)
 
 	form := url.Values{}
@@ -172,14 +144,9 @@ func TestCreateMissingItem(t *testing.T) {
 }
 
 func TestCreateBadEmail(t *testing.T) {
-	ml := new(testutil.MockLogger)
-	md := new(testutil.MockDatabase)
-
-	binder := bind.New()
-	resp := response.New()
+	core, _ := component.NewCoreMock()
 
 	mux := router.New()
-	core := component.New(ml, md, binder, resp)
 	user.New(core).Routes(mux)
 
 	form := url.Values{}

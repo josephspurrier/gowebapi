@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 	"reflect"
+	"time"
 )
 
 // MockLogger .
@@ -218,6 +219,7 @@ func (d *MockDatabase) SetPaginatedResults(fn paginatedResultsFunc) {
 
 // *****************************************************************************
 
+/*
 // MockBind .
 type MockBind struct{}
 
@@ -229,7 +231,7 @@ func (mb *MockBind) FormUnmarshal(i interface{}, r *http.Request) (err error) {
 // Validate .
 func (mb *MockBind) Validate(s interface{}) error {
 	return nil
-}
+}*/
 
 // MockResponse .
 type MockResponse struct{}
@@ -247,4 +249,35 @@ func (mr *MockResponse) Results(w http.ResponseWriter, body interface{}, data in
 // OK .
 func (mr *MockResponse) OK(w http.ResponseWriter, message string) (int, error) {
 	return 0, nil
+}
+
+// MockToken .
+type MockToken struct{}
+
+// *****************************************************************************
+
+type generateFunc func(userID string, duration time.Duration) (string, error)
+
+var (
+	generate generateFunc
+
+	// GenerateDefault returns "", nil.
+	GenerateDefault = func(userID string, duration time.Duration) (string, error) {
+		return "", nil
+	}
+)
+
+// SetGenerate will set the function.
+func (mt *MockToken) SetGenerate(fn generateFunc) {
+	generate = fn
+}
+
+// Generate .
+func (mt *MockToken) Generate(userID string, duration time.Duration) (string, error) {
+	// Use the default.
+	fnInternal := generate
+	if fnInternal == nil {
+		fnInternal = GenerateDefault
+	}
+	return fnInternal(userID, duration)
 }

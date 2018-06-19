@@ -32,10 +32,12 @@ import (
 	"os"
 
 	"app/webapi/component"
+	"app/webapi/component/auth"
 	"app/webapi/component/root"
 	"app/webapi/component/user"
 	"app/webapi/internal/bind"
 	"app/webapi/internal/response"
+	"app/webapi/internal/webtoken"
 	"app/webapi/pkg/database"
 	"app/webapi/pkg/logger"
 	"app/webapi/pkg/router"
@@ -48,8 +50,9 @@ import (
 
 // AppConfig contains the application settings with JSON tags.
 type AppConfig struct {
-	Database database.Connection `json:"Database"`
-	Server   server.Config       `json:"Server"`
+	Database database.Connection    `json:"Database"`
+	Server   server.Config          `json:"Server"`
+	JWT      webtoken.Configuration `json:"JWT"`
 }
 
 // ParseJSON unmarshals the JSON bytes to the struct.
@@ -62,19 +65,21 @@ func (c *AppConfig) ParseJSON(b []byte) error {
 // *****************************************************************************
 
 // Routes will set up the components and return the router.
-func Routes(config *AppConfig, appLogger logger.ILog) *router.Mux {
+func Routes(config *AppConfig, appLogger logger.ILog, clock webtoken.IClock) *router.Mux {
 	// Set up the dependencies.
 	db := Database(config.Database)
 	l := logger.New(appLogger)
 	b := bind.New()
 	resp := response.New()
+	t := webtoken.New(config.JWT.Secret, clock)
 
 	// Create the component core.
-	core := component.New(l, db, b, resp)
+	core := component.NewCore(l, db, b, resp, t)
 
 	// Set up the routes.
 	r := router.New()
 	root.New(core).Routes(r)
+	auth.New(core).Routes(r)
 	user.New(core).Routes(r)
 
 	// Set up the 404 page.

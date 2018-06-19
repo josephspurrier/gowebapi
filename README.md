@@ -6,7 +6,7 @@
 
 [![Swagger Validator](http://online.swagger.io/validator?url=https://raw.githubusercontent.com/josephspurrier/gowebapi/master/src/app/webapi/swagger.json)](http://petstore.swagger.io/?url=https://raw.githubusercontent.com/josephspurrier/gowebapi/master/src/app/webapi/swagger.json)
 
-## Web API in Go
+## Testable Web API in Go with Swagger
 
 This project demonstrates how to structure and build an API using the Go language without a framework.
 Only carefully chosen packages are included.
@@ -32,6 +32,8 @@ Start MySQL and import `migration/mysql.sql` to create the database and tables.
 
 Copy `config.json` to `src/app/webapi/cmd/webapi/config.json` and edit the
 **Database** section so the connection information matches your MySQL instance.
+Also add a base64 encoded `JWT.Secret` to the config. You can generate it use
+these commands `cd src/app/webapi/cmd/cliapp` and then `go run cliapp.go`.
 
 Build and run from the root directory. Open your REST client to:
 http://localhost. You should see the **welcome** message and status **OK**.
@@ -99,6 +101,7 @@ These packages are used in the project:
 - SQL to Struct: [github.com/jmoiron/sqlx](http://github.com/jmoiron/sqlx)
 - Routing: [github.com/matryer/way](http://github.com/matryer/way)
 - Request Validation: [github.com/go-playground/validator](http://github.com/go-playground/validator)
+- JSON Web Tokens (JWT): [github.com/dgrijalva/jwt-go](github.com/dgrijalva/jwt-go)
 
 ## Folder Structure
 
@@ -117,8 +120,10 @@ In the `src/app/webapi` folder, you see a few top level folders:
 ## Components
 
 In the root of the `src/app/webapi/component` folder, you see:
-- **component.go** - contains the dependencies shared by all the components:
+- **core.go** - contains the dependencies shared by all the components:
 logger, database connection, request bind/validation, and the responses.
+- **core_mock.go** - contains the mocked dependencies which can be used by tests
+to modify all the mocked dependencies.
 - **handler.go** - contains the error handling code for all the http handlers.
 - **interface.go** - contains all the interfaces for the dependencies so you can
 easily mock out each one for testing purposes.

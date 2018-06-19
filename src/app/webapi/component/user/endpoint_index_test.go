@@ -7,8 +7,6 @@ import (
 
 	"app/webapi/component"
 	"app/webapi/component/user"
-	"app/webapi/internal/bind"
-	"app/webapi/internal/response"
 	"app/webapi/internal/testutil"
 	"app/webapi/pkg/router"
 
@@ -16,17 +14,12 @@ import (
 )
 
 func TestIndexEmpty(t *testing.T) {
-	ml := new(testutil.MockLogger)
-	md := new(testutil.MockDatabase)
-
-	binder := bind.New()
-	resp := response.New()
+	core, m := component.NewCoreMock()
 
 	mux := router.New()
-	core := component.New(ml, md, binder, resp)
 	user.New(core).Routes(mux)
 
-	md.SetPaginatedResults(testutil.PaginatedResultsEmpty)
+	m.DB.SetPaginatedResults(testutil.PaginatedResultsEmpty)
 
 	r := httptest.NewRequest("GET", "/v1/user", nil)
 	w := httptest.NewRecorder()
@@ -37,17 +30,12 @@ func TestIndexEmpty(t *testing.T) {
 }
 
 func TestIndexOne(t *testing.T) {
-	ml := new(testutil.MockLogger)
-	md := new(testutil.MockDatabase)
-
-	binder := bind.New()
-	resp := response.New()
+	core, m := component.NewCoreMock()
 
 	mux := router.New()
-	core := component.New(ml, md, binder, resp)
 	user.New(core).Routes(mux)
 
-	md.SetPaginatedResults(func() (interface{}, int, error) {
+	m.DB.SetPaginatedResults(func() (interface{}, int, error) {
 		results := make([]user.TUser, 0)
 		results = append(results, user.TUser{
 			FirstName: "John",

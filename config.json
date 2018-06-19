@@ -9,6 +9,9 @@
         "Port": 3306,
         "Parameter": "parseTime=true&allowNativePasswords=true"
     },
+    "JWT": {
+        "Secret": ""
+    },
     "Server": {
         "Hostname": "",
         "UseHTTP": true,

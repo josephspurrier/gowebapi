@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"app/webapi/component"
-	"app/webapi/pkg/uuid"
+	"app/webapi/pkg/securegen"
 )
 
 // TUser represents users.
@@ -29,7 +29,7 @@ type TUser struct {
 func Create(db component.IDatabase, firstName, lastName, email,
 	password string) (string, error) {
 	// Generate a UUID.
-	uuid, err := uuid.Generate()
+	uuid, err := securegen.UUID()
 	if err != nil {
 		return "", err
 	}
@@ -65,8 +65,8 @@ func All(db component.IDatabase) (result []TUser, total int, err error) {
 	result = make([]TUser, 0)
 
 	err = db.Get(&total, `
-		SELECT COUNT(DISTINCT player_id)
-		FROM game_player
+		SELECT COUNT(DISTINCT id)
+		FROM user
 		WHERE deleted_at IS NULL;`)
 	if err != nil {
 		return result, total, db.Error(err)

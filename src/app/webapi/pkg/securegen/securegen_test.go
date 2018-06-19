@@ -1,21 +1,20 @@
-package uuid_test
+package securegen_test
 
 import (
+	"app/webapi/pkg/securegen"
 	"strings"
 	"testing"
-
-	"app/webapi/pkg/uuid"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGenerate(t *testing.T) {
-	iterations := 500000
+func TestUUID(t *testing.T) {
+	iterations := 50000
 
 	m := make(map[string]bool)
 
 	for i := 0; i < iterations; i++ {
-		s, err := uuid.Generate()
+		s, err := securegen.UUID()
 		assert.Nil(t, err)
 
 		// Ensure the lengths are consistent.
@@ -28,6 +27,26 @@ func TestGenerate(t *testing.T) {
 		assert.Equal(t, len(arr[4]), 12)
 
 		m[s] = false
+	}
+
+	// Ensure the randomness is accurate. Every entry should be unique making
+	// the len the same number as the iterations.
+	assert.Len(t, m, iterations)
+}
+
+func TestBytes(t *testing.T) {
+	iterations := 50000
+
+	m := make(map[string]bool)
+
+	for i := 0; i < iterations; i++ {
+		s, err := securegen.Bytes(32)
+		assert.Nil(t, err)
+
+		// Ensure the lengths are consistent.
+		assert.Equal(t, 32, len(s))
+
+		m[string(s)] = false
 	}
 
 	// Ensure the randomness is accurate. Every entry should be unique making

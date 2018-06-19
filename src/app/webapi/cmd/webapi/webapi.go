@@ -43,7 +43,7 @@ func main() {
 	}
 
 	// Set up the routes.
-	mux := webapi.Routes(config, appLogger)
+	mux := webapi.Routes(config, appLogger, clock)
 
 	// Set up the HTTP listener.
 	httpServer := new(http.Server)
@@ -55,13 +55,13 @@ func main() {
 			http.Redirect(w, req, "https://"+req.Host, http.StatusMovedPermanently)
 		})
 	} else {
-		httpServer.Handler = middleware.Wrap(mux, appLogger, clock)
+		httpServer.Handler = middleware.Wrap(mux, appLogger, clock, config.JWT.Secret)
 	}
 
 	// Set up the HTTPS listener.
 	httpsServer := new(http.Server)
 	httpsServer.Addr = config.Server.HTTPSAddress()
-	httpsServer.Handler = middleware.Wrap(mux, appLogger, clock)
+	httpsServer.Handler = middleware.Wrap(mux, appLogger, clock, config.JWT.Secret)
 
 	// Start the listeners based on the config.
 	config.Server.Run(httpServer, httpsServer, appLogger)
