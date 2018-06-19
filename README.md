@@ -32,12 +32,17 @@ Start MySQL and import `migration/mysql.sql` to create the database and tables.
 
 Copy `config.json` to `src/app/webapi/cmd/webapi/config.json` and edit the
 **Database** section so the connection information matches your MySQL instance.
-Also add a base64 encoded `JWT.Secret` to the config. You can generate it use
-these commands `cd src/app/webapi/cmd/cliapp` and then `go run cliapp.go`.
+Also add a base64 encoded `JWT.Secret` to the config. You can generate it using
+the command line app in the repo - run these commands:
+- `cd src/app/webapi/cmd/cliapp`
+- `go run cliapp.go generate`
 
 Build and run from the root directory. Open your REST client to:
-http://localhost. You should see the **welcome** message and status **OK**.
+http://localhost/v1. You should see the **welcome** message and status **OK**.
 
+You'll need to authenticate with at http://localhost/v1/auth before you can use
+any of the user endpoints. Once you have a token, add it to the request header
+with a name of `Authorization` and with a value of `Bearer {TOKEN HERE}`.
 To create a user, send a POST request to http://localhost/v1/user with the
 following fields: first_name, last_name, email, and password.
 
@@ -102,6 +107,8 @@ These packages are used in the project:
 - Routing: [github.com/matryer/way](http://github.com/matryer/way)
 - Request Validation: [github.com/go-playground/validator](http://github.com/go-playground/validator)
 - JSON Web Tokens (JWT): [github.com/dgrijalva/jwt-go](github.com/dgrijalva/jwt-go)
+- CLI and Flag Parser: [gopkg.in/alecthomas/kingpin.v2](gopkg.in/alecthomas/kingpin.v2)
+
 
 ## Folder Structure
 
