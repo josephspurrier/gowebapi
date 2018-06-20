@@ -30,7 +30,9 @@ func (c *MockClock) Now() time.Time {
 func TestHandler(t *testing.T) {
 	ml := new(MockLogger)
 	c := new(MockClock)
-	lr := logrequest.New(ml, c)
+	lr := logrequest.New()
+	lr.SetClock(c)
+	lr.SetLog(ml)
 
 	called := false
 

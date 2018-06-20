@@ -37,6 +37,9 @@ the command line app in the repo - run these commands:
 - `cd src/app/webapi/cmd/cliapp`
 - `go run cliapp.go generate`
 
+The database password is read from the `config.json` first, but is overwritten
+by the environment variable, `DB_PASSWORD`, if it is set.
+
 Build and run from the root directory. Open your REST client to:
 http://localhost/v1. You should see the **welcome** message and status **OK**.
 

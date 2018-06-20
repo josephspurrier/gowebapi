@@ -62,11 +62,15 @@ type IClock interface {
 }
 
 // New creates a new JWT configuration.
-func New(secret []byte, clock IClock) *Configuration {
+func New(secret []byte) *Configuration {
 	return &Configuration{
-		clock:  clock,
 		Secret: secret,
 	}
+}
+
+// SetClock will set the clock.
+func (c *Configuration) SetClock(clock IClock) {
+	c.clock = clock
 }
 
 // Generate will generate a JWT.
@@ -126,12 +130,12 @@ func (c *Configuration) Verify(s string) (string, error) {
 	if ve, ok := err.(*jwt.ValidationError); ok {
 		if ve.Errors&jwt.ValidationErrorMalformed != 0 {
 			return "", ErrMalformed
+		} else if ve.Errors&(jwt.ValidationErrorSignatureInvalid) != 0 {
+			return "", ErrSignatureInvalid
 		} else if ve.Errors&(jwt.ValidationErrorExpired) != 0 {
 			return "", ErrExpired
 		} else if ve.Errors&(jwt.ValidationErrorNotValidYet) != 0 {
 			return "", ErrNotValidYet
-		} else if ve.Errors&(jwt.ValidationErrorSignatureInvalid) != 0 {
-			return "", ErrSignatureInvalid
 		}
 	}
 

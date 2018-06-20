@@ -19,13 +19,13 @@ func (fn H) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(status)
 
-		r := new(response.OKResponse)
-		r.Body.Status = http.StatusText(status)
+		resp := new(response.OKResponse)
+		resp.Body.Status = http.StatusText(status)
 		if err != nil {
-			r.Body.Message = err.Error()
+			resp.Body.Message = err.Error()
 		}
 
-		err := json.NewEncoder(w).Encode(r.Body)
+		err := json.NewEncoder(w).Encode(resp.Body)
 		if err != nil {
 			w.Write([]byte(`{"status":"Internal Server Error","message":"problem encoding JSON"}`))
 			return

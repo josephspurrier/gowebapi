@@ -65,13 +65,13 @@ func (c *AppConfig) ParseJSON(b []byte) error {
 // *****************************************************************************
 
 // Routes will set up the components and return the router.
-func Routes(config *AppConfig, appLogger logger.ILog, clock webtoken.IClock) *router.Mux {
+func Routes(config *AppConfig, appLogger logger.ILog) *router.Mux {
 	// Set up the dependencies.
 	db := Database(config.Database)
 	l := logger.New(appLogger)
 	b := bind.New()
 	resp := response.New()
-	t := webtoken.New(config.JWT.Secret, clock)
+	t := webtoken.New(config.JWT.Secret)
 
 	// Create the component core.
 	core := component.NewCore(l, db, b, resp, t)

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-	"time"
 
 	"app/webapi/internal/response"
 	"app/webapi/internal/webtoken"
@@ -13,19 +12,12 @@ import (
 
 // Config contains the dependencies for the handler.
 type Config struct {
-	clock  IClock
 	secret []byte
 }
 
-// IClock provides clock capabilities.
-type IClock interface {
-	Now() time.Time
-}
-
 // New returns a new loq request middleware.
-func New(secret []byte, clock IClock) *Config {
+func New(secret []byte) *Config {
 	return &Config{
-		clock:  clock,
 		secret: secret,
 	}
 }
@@ -59,7 +51,7 @@ func (c *Config) Handler(next http.Handler) http.Handler {
 				return
 			}
 
-			token := webtoken.New(c.secret, c.clock)
+			token := webtoken.New(c.secret)
 			_, err := token.Verify(bearer[7:])
 			if err != nil {
 				w.Header().Set("Content-Type", "application/json")

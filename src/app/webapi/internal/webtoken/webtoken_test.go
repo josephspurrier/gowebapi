@@ -35,7 +35,8 @@ func TestValidJWT(t *testing.T) {
 	secret := []byte("0123456789ABCDEF0123456789ABCDEF")
 
 	// Generate a token.
-	token := webtoken.New(secret, mc)
+	token := webtoken.New(secret)
+	token.SetClock(mc)
 	ss, err := token.Generate("jsmith", 999999*time.Hour)
 	assert.Nil(t, err)
 	assert.NotEmpty(t, ss)
@@ -53,13 +54,15 @@ func TestInvalidSecret(t *testing.T) {
 	secret2 := []byte("0123456789ABCDEF0123456789ABCDEF3")
 
 	// Generate a token.
-	token := webtoken.New(secret, mc)
+	token := webtoken.New(secret)
+	token.SetClock(mc)
 	ss, err := token.Generate("jsmith", 999999*time.Hour)
 	assert.Nil(t, err)
 	assert.NotEmpty(t, ss)
 
 	// Verify the token.
-	token2 := webtoken.New(secret2, mc)
+	token2 := webtoken.New(secret2)
+	token.SetClock(mc)
 	s, err := token2.Verify(ss)
 	assert.Equal(t, webtoken.ErrSignatureInvalid, err)
 	assert.Equal(t, "", s)
@@ -69,7 +72,8 @@ func TestNoSecret(t *testing.T) {
 	mc := new(MockClock)
 
 	// Generate a token.
-	token := webtoken.New([]byte(""), mc)
+	token := webtoken.New([]byte(""))
+	token.SetClock(mc)
 	ss, err := token.Generate("jsmith", 999999*time.Hour)
 	assert.Equal(t, webtoken.ErrSecretTooShort, err)
 	assert.Equal(t, "", ss)
@@ -91,7 +95,8 @@ func TestFutureJWT(t *testing.T) {
 	secret := []byte("0123456789ABCDEF0123456789ABCDEF")
 
 	// Generate a token.
-	token := webtoken.New(secret, mc)
+	token := webtoken.New(secret)
+	token.SetClock(mc)
 	ss, err := token.Generate("jsmith", 24*time.Hour)
 	assert.Nil(t, err)
 	assert.NotEmpty(t, ss)
@@ -118,7 +123,8 @@ func TestPastJWT(t *testing.T) {
 	secret := []byte("0123456789ABCDEF0123456789ABCDEF")
 
 	// Generate a token.
-	token := webtoken.New(secret, mc)
+	token := webtoken.New(secret)
+	token.SetClock(mc)
 	ss, err := token.Generate("jsmith", 1*time.Minute)
 	assert.Nil(t, err)
 	assert.NotEmpty(t, ss)
@@ -140,7 +146,8 @@ func TestErrorJWT(t *testing.T) {
 	secret := []byte("0123456789ABCDEF0123456789ABCDEF")
 
 	// Generate a token object.
-	token := webtoken.New(secret, mc)
+	token := webtoken.New(secret)
+	token.SetClock(mc)
 
 	// Random text in three sections.
 	s, err := token.Verify("this.is.randomtext")
