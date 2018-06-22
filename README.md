@@ -209,7 +209,7 @@ type request struct {
 
 // Request validation.
 req := new(request)
-if err := p.Bind.FormUnmarshal(&req, r); err != nil {
+if err := p.Bind.FormUnmarshal(req, r); err != nil {
 	return http.StatusBadRequest, err
 } else if err = p.Bind.Validate(req); err != nil {
 	return http.StatusBadRequest, err
