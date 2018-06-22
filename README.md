@@ -221,7 +221,7 @@ if err := p.Bind.FormUnmarshal(req, r); err != nil {
 The `app/webapi/internal/bind` and the `app/webapi/internal/response` packages
 use reflection. The `bind` package will take the form parameters from the
 request object and map them to a struct. The `response` package will set the
-field values via the with the JSON tags, **status** and **data**. The package
+field values via the JSON tags: **status** and **data**.
 This helps reduce the code in the `endpoint.go` files.
 
 You'll notice when calling the `Results()` function, you'll pass in a struct
