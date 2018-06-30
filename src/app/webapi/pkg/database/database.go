@@ -27,6 +27,11 @@ func (d *DBW) Select(dest interface{}, query string, args ...interface{}) error 
 	return d.db.Select(dest, query, args...)
 }
 
+// QueryRowScan returns a single result.
+func (d *DBW) QueryRowScan(dest interface{}, query string, args ...interface{}) error {
+	return d.db.QueryRow(query, args...).Scan(dest)
+}
+
 // Get using this DB.
 // Any placeholder parameters are replaced with supplied args.
 // An error is returned if the result set is empty.

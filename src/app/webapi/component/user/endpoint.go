@@ -47,9 +47,12 @@ func (p *Endpoint) Create(w http.ResponseWriter, r *http.Request) (int, error) {
 		return http.StatusBadRequest, err
 	}
 
+	u := NewUser(p.DB, p.Q)
+
 	// Check for existing user.
 	exists, _, err := p.DB.RecordExistsString(func() (exists bool, ID string, err error) {
-		return ExistsEmail(p.DB, req.Email)
+		return u.ExistsByField(u, "email", req.Email)
+		//return ExistsEmail(p.DB, req.Email)
 	})
 
 	if err != nil {
@@ -60,7 +63,7 @@ func (p *Endpoint) Create(w http.ResponseWriter, r *http.Request) (int, error) {
 
 	// Create the user in the database.
 	ID, err := p.DB.AddRecordString(func() (ID string, err error) {
-		return Create(p.DB, req.FirstName, req.LastName, req.Email, req.Password)
+		return u.Create(req.FirstName, req.LastName, req.Email, req.Password)
 	})
 	if err != nil {
 		return http.StatusInternalServerError, err
@@ -102,7 +105,8 @@ func (p *Endpoint) Show(w http.ResponseWriter, r *http.Request) (int, error) {
 	}
 
 	// Get a user.
-	u, exists, err := One(p.DB, req.UserID)
+	u := NewUser(p.DB, p.Q)
+	exists, err := u.FindOneByID(u, req.UserID)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	} else if !exists {
@@ -122,7 +126,7 @@ func (p *Endpoint) Show(w http.ResponseWriter, r *http.Request) (int, error) {
 	}
 
 	resp := new(response)
-	return p.Response.Results(w, &resp.Body, []TUser{u})
+	return p.Response.Results(w, &resp.Body, []TUser{*u})
 }
 
 // Index .
@@ -140,13 +144,16 @@ func (p *Endpoint) Show(w http.ResponseWriter, r *http.Request) (int, error) {
 //   500: InternalServerErrorResponse
 func (p *Endpoint) Index(w http.ResponseWriter, r *http.Request) (int, error) {
 	// Get all items.
-	results := make([]TUser, 0)
-	_, err := p.DB.PaginatedResults(&results, func() (results interface{}, total int, err error) {
-		return All(p.DB)
+	results := make(TUserGroup, 0)
+	//FIXME: This code was commented out.
+	//u := NewUser(p.DB, p.Q)
+
+	/*_, err := p.DB.PaginatedResults(&results, func() (results interface{}, total int, err error) {
+		return u.FindAll(&arr)
 	})
 	if err != nil {
 		return http.StatusInternalServerError, err
-	}
+	}*/
 
 	// Response returns 200.
 	// swagger:response UserIndexResponse
@@ -209,7 +216,8 @@ func (p *Endpoint) Update(w http.ResponseWriter, r *http.Request) (int, error) {
 	}
 
 	// Determine if the user exists.
-	exists, ID, err := ExistsID(p.DB, req.UserID)
+	u := NewUser(p.DB, p.Q)
+	exists, err := u.ExistsByID(u, req.UserID)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	} else if !exists {
@@ -217,7 +225,7 @@ func (p *Endpoint) Update(w http.ResponseWriter, r *http.Request) (int, error) {
 	}
 
 	// Update item.
-	err = Update(p.DB, ID, req.FirstName, req.LastName, req.Email, req.Password)
+	err = u.Update(u.ID, req.FirstName, req.LastName, req.Email, req.Password)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
@@ -258,7 +266,8 @@ func (p *Endpoint) Destroy(w http.ResponseWriter, r *http.Request) (int, error) 
 	}
 
 	// Delete an item.
-	count, err := Delete(p.DB, req.UserID)
+	u := NewUser(p.DB, p.Q)
+	count, err := u.DeleteOneByID(u, req.UserID)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	} else if count < 1 {
@@ -283,7 +292,8 @@ func (p *Endpoint) Destroy(w http.ResponseWriter, r *http.Request) (int, error) 
 //   500: InternalServerErrorResponse
 func (p *Endpoint) DestroyAll(w http.ResponseWriter, r *http.Request) (int, error) {
 	// Delete all items.
-	count, err := DeleteAll(p.DB)
+	u := NewUser(p.DB, p.Q)
+	count, err := u.DeleteAll(u)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	} else if count < 1 {

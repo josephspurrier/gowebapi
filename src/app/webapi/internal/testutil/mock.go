@@ -43,6 +43,12 @@ func (d *MockDatabase) Exec(query string, args ...interface{}) (sql.Result, erro
 	return ms, nil
 }
 
+// QueryRowScan .
+//FIXME: This just returns nil.
+func (d *MockDatabase) QueryRowScan(dest interface{}, query string, args ...interface{}) error {
+	return nil
+}
+
 // ExistsString .
 func (d *MockDatabase) ExistsString(err error, s string) (bool, string, error) {
 	return false, "", nil

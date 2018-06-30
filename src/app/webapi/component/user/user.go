@@ -1,15 +1,25 @@
 package user
 
 import (
-	"database/sql"
 	"time"
 
 	"app/webapi/component"
 	"app/webapi/pkg/securegen"
 )
 
-// TUser represents users.
+// NewUser returns a new query object.
+func NewUser(db component.IDatabase, q component.IQuery) *TUser {
+	return &TUser{
+		IQuery: q,
+		db:     db,
+	}
+}
+
+// TUser represents a user.
 type TUser struct {
+	component.IQuery
+	db component.IDatabase
+
 	ID        string     `db:"id" json:"id"`
 	FirstName string     `db:"first_name" json:"first_name"`
 	LastName  string     `db:"last_name" json:"last_name"`
@@ -21,13 +31,53 @@ type TUser struct {
 	DeletedAt *time.Time `db:"deleted_at" json:"deleted_at"`
 }
 
+// Table returns the table name.
+func (x *TUser) Table() string {
+	return "user"
+}
+
+// PrimaryKey returns the primary key field.
+func (x *TUser) PrimaryKey() string {
+	return "id"
+}
+
+// NewGroup returns an empty group.
+func (x *TUser) NewGroup() *TUserGroup {
+	group := make(TUserGroup, 0)
+	return &group
+}
+
+// TUserGroup represents a group of users.
+type TUserGroup []TUser
+
+// Table returns the table name.
+func (x TUserGroup) Table() string {
+	return "user"
+}
+
+// PrimaryKey returns the primary key field.
+func (x TUserGroup) PrimaryKey() string {
+	return "id"
+}
+
+//TODO: This should be used as an example.
+// FindOneByID will find the user by string ID.
+/*func (x *TUser) FindOneByID(dest component.IRecord, ID string) (exists bool, err error) {
+	ID = "2"
+	err = x.db.Get(dest, fmt.Sprintf(`
+		SELECT * FROM %s
+		WHERE %s = ?
+		LIMIT 1`, x.Table(), x.PrimaryKey()),
+		ID)
+	return (err != sql.ErrNoRows), x.db.Error(err)
+}*/
+
 // *****************************************************************************
 // Create
 // *****************************************************************************
 
 // Create adds a new user.
-func Create(db component.IDatabase, firstName, lastName, email,
-	password string) (string, error) {
+func (x *TUser) Create(firstName, lastName, email, password string) (string, error) {
 	// Generate a UUID.
 	uuid, err := securegen.UUID()
 	if err != nil {
@@ -35,7 +85,7 @@ func Create(db component.IDatabase, firstName, lastName, email,
 	}
 
 	// Create the user.
-	_, err = db.Exec(`
+	_, err = x.db.Exec(`
 		INSERT INTO user
 		(id, first_name, last_name, email, password, status_id)
 		VALUES
@@ -51,17 +101,17 @@ func Create(db component.IDatabase, firstName, lastName, email,
 // *****************************************************************************
 
 // One returns one user with the matching ID.
-func One(db component.IDatabase, ID string) (p TUser, exists bool, err error) {
+/*func One(db component.IDatabase, ID string) (p TUser, exists bool, err error) {
 	err = db.Get(&p, `
 		SELECT * FROM user
 		WHERE id = ?
 		LIMIT 1`,
 		ID)
 	return p, (err != sql.ErrNoRows), db.Error(err)
-}
+}*/
 
 // All returns all users.
-func All(db component.IDatabase) (result []TUser, total int, err error) {
+/*func All(db component.IDatabase) (result []TUser, total int, err error) {
 	result = make([]TUser, 0)
 
 	err = db.Get(&total, `
@@ -74,41 +124,16 @@ func All(db component.IDatabase) (result []TUser, total int, err error) {
 
 	err = db.Select(&result, `SELECT * FROM user`)
 	return result, total, err
-}
-
-// ExistsEmail determines if a user exists by email.
-func ExistsEmail(db component.IDatabase, s string) (exists bool, ID string,
-	err error) {
-	var p TUser
-	err = db.Get(&p, `
-		SELECT id FROM user
-		WHERE email = ?
-		LIMIT 1`,
-		s)
-	return db.ExistsString(err, p.ID)
-}
-
-// ExistsID determines if a user exists by ID.
-func ExistsID(db component.IDatabase, s string) (exists bool, ID string,
-	err error) {
-	var p TUser
-	err = db.Get(&p, `
-		SELECT id FROM user
-		WHERE id = ?
-		LIMIT 1`,
-		s)
-	return db.ExistsString(err, p.ID)
-}
+}*/
 
 // *****************************************************************************
 // Update
 // *****************************************************************************
 
 // Update makes changes to one entity.
-func Update(db component.IDatabase, ID, firstName, lastName, email,
-	password string) (err error) {
+func (x *TUser) Update(ID, firstName, lastName, email, password string) (err error) {
 	// Update the entity.
-	_, err = db.Exec(`
+	_, err = x.db.Exec(`
 		UPDATE user
 		SET
 			first_name = ?,
@@ -119,28 +144,4 @@ func Update(db component.IDatabase, ID, firstName, lastName, email,
 		`,
 		firstName, lastName, email, password, ID)
 	return
-}
-
-// *****************************************************************************
-// Delete
-// *****************************************************************************
-
-// Delete removes one entity.
-func Delete(db component.IDatabase, ID string) (int, error) {
-	result, err := db.Exec("DELETE FROM user WHERE id = ? LIMIT 1", ID)
-	if err != nil {
-		return 0, err
-	}
-
-	return db.AffectedRows(result), err
-}
-
-// DeleteAll removes all entities.
-func DeleteAll(db component.IDatabase) (int, error) {
-	result, err := db.Exec(`DELETE FROM user`)
-	if err != nil {
-		return 0, err
-	}
-
-	return db.AffectedRows(result), err
 }

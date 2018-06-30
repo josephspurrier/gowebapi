@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"net/http"
 	"time"
+
+	"app/webapi/pkg/query"
 )
 
 // IDatabase provides data query capabilities.
@@ -11,11 +13,49 @@ type IDatabase interface {
 	Select(dest interface{}, query string, args ...interface{}) error
 	Get(dest interface{}, query string, args ...interface{}) error
 	Exec(query string, args ...interface{}) (sql.Result, error)
+	QueryRowScan(dest interface{}, query string, args ...interface{}) error
 
 	ExistsString(err error, s string) (bool, string, error)
 	Error(err error) error
 	AffectedRows(result sql.Result) int
 
+	PaginatedResults(results interface{}, fn func() (results interface{}, total int, err error)) (total int, err error)
+	RecordExistsInt(fn func() (exists bool, ID int64, err error)) (exists bool, ID int64, err error)
+	RecordExistsString(fn func() (exists bool, ID string, err error)) (exists bool, ID string, err error)
+	AddRecordInt(fn func() (ID int64, err error)) (ID int64, err error)
+	AddRecordString(fn func() (ID string, err error)) (ID string, err error)
+}
+
+// IQuery provides default queries.
+type IQuery interface {
+	FindOneByID(dest query.IRecord, ID string) (found bool, err error)
+	FindAll(dest query.IRecord) (total int, err error)
+	ExistsByID(db query.IRecord, s string) (found bool, err error)
+	ExistsByField(db query.IRecord, field string, value string) (found bool, ID string, err error)
+	DeleteOneByID(dest query.IRecord, ID string) (affected int, err error)
+	DeleteAll(dest query.IRecord) (affected int, err error)
+}
+
+// IRecord provides table information.
+type IRecord interface {
+	Table() string
+	PrimaryKey() string
+}
+
+/*
+// IQuery provides data query capabilities.
+type IQuery interface {
+	Select(dest interface{}, query string, args ...interface{}) error
+	Get(dest interface{}, query string, args ...interface{}) error
+	Exec(query string, args ...interface{}) (sql.Result, error)
+
+	ExistsString(err error, s string) (bool, string, error)
+	Error(err error) error
+	AffectedRows(result sql.Result) int
+}*/
+
+// IDatabase provides data query capabilities.
+/*type IDatabase interface {
 	//LastInsertID(r sql.Result, err error) (int64, error)
 	//MySQLTimestamp(t time.Time) string
 	//GoTimestamp(s string) (time.Time, error)
@@ -28,7 +68,7 @@ type IDatabase interface {
 	AddRecordInt(fn func() (ID int64, err error)) (ID int64, err error)
 	AddRecordString(fn func() (ID string, err error)) (ID string, err error)
 	//ExecQuery(fn func() (err error)) (err error)
-}
+}*/
 
 // ILogger provides logging capabilities.
 type ILogger interface {

@@ -40,6 +40,7 @@ import (
 	"app/webapi/internal/webtoken"
 	"app/webapi/pkg/database"
 	"app/webapi/pkg/logger"
+	"app/webapi/pkg/query"
 	"app/webapi/pkg/router"
 	"app/webapi/pkg/server"
 )
@@ -68,13 +69,14 @@ func (c *AppConfig) ParseJSON(b []byte) error {
 func Routes(config *AppConfig, appLogger logger.ILog) *router.Mux {
 	// Set up the dependencies.
 	db := Database(config.Database)
+	q := query.New(db)
 	l := logger.New(appLogger)
 	b := bind.New()
 	resp := response.New()
 	t := webtoken.New(config.JWT.Secret)
 
 	// Create the component core.
-	core := component.NewCore(l, db, b, resp, t)
+	core := component.NewCore(l, db, q, b, resp, t)
 
 	// Set up the routes.
 	r := router.New()
