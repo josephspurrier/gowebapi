@@ -19,11 +19,11 @@ type IDatabase interface {
 	Error(err error) error
 	AffectedRows(result sql.Result) int
 
-	PaginatedResults(results interface{}, fn func() (results interface{}, total int, err error)) (total int, err error)
+	/*PaginatedResults(results interface{}, fn func() (results interface{}, total int, err error)) (total int, err error)
 	RecordExistsInt(fn func() (exists bool, ID int64, err error)) (exists bool, ID int64, err error)
 	RecordExistsString(fn func() (exists bool, ID string, err error)) (exists bool, ID string, err error)
 	AddRecordInt(fn func() (ID int64, err error)) (ID int64, err error)
-	AddRecordString(fn func() (ID string, err error)) (ID string, err error)
+	AddRecordString(fn func() (ID string, err error)) (ID string, err error)*/
 }
 
 // IQuery provides default queries.

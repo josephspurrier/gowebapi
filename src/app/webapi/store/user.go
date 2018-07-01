@@ -1,4 +1,4 @@
-package user
+package store
 
 import (
 	"time"
@@ -17,8 +17,8 @@ func NewUser(db component.IDatabase, q component.IQuery) *TUser {
 
 // TUser represents a user.
 type TUser struct {
-	component.IQuery
-	db component.IDatabase
+	component.IQuery `json:"-"`
+	db               component.IDatabase
 
 	ID        string     `db:"id" json:"id"`
 	FirstName string     `db:"first_name" json:"first_name"`
@@ -60,18 +60,6 @@ func (x TUserGroup) PrimaryKey() string {
 	return "id"
 }
 
-//TODO: This should be used as an example.
-// FindOneByID will find the user by string ID.
-/*func (x *TUser) FindOneByID(dest component.IRecord, ID string) (exists bool, err error) {
-	ID = "2"
-	err = x.db.Get(dest, fmt.Sprintf(`
-		SELECT * FROM %s
-		WHERE %s = ?
-		LIMIT 1`, x.Table(), x.PrimaryKey()),
-		ID)
-	return (err != sql.ErrNoRows), x.db.Error(err)
-}*/
-
 // *****************************************************************************
 // Create
 // *****************************************************************************
@@ -95,36 +83,6 @@ func (x *TUser) Create(firstName, lastName, email, password string) (string, err
 
 	return uuid, err
 }
-
-// *****************************************************************************
-// Read
-// *****************************************************************************
-
-// One returns one user with the matching ID.
-/*func One(db component.IDatabase, ID string) (p TUser, exists bool, err error) {
-	err = db.Get(&p, `
-		SELECT * FROM user
-		WHERE id = ?
-		LIMIT 1`,
-		ID)
-	return p, (err != sql.ErrNoRows), db.Error(err)
-}*/
-
-// All returns all users.
-/*func All(db component.IDatabase) (result []TUser, total int, err error) {
-	result = make([]TUser, 0)
-
-	err = db.Get(&total, `
-		SELECT COUNT(DISTINCT id)
-		FROM user
-		WHERE deleted_at IS NULL;`)
-	if err != nil {
-		return result, total, db.Error(err)
-	}
-
-	err = db.Select(&result, `SELECT * FROM user`)
-	return result, total, err
-}*/
 
 // *****************************************************************************
 // Update
