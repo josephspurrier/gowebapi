@@ -2,7 +2,7 @@
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/josephspurrier/gowebapi)](https://goreportcard.com/report/github.com/josephspurrier/gowebapi)
 [![Build Status](https://travis-ci.org/josephspurrier/gowebapi.svg)](https://travis-ci.org/josephspurrier/gowebapi)
-[![Coverage Status](https://coveralls.io/repos/github/josephspurrier/gowebapi/badge.svg?branch=master&timestamp=20180707)](https://coveralls.io/github/josephspurrier/gowebapi?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/josephspurrier/gowebapi/badge.svg?branch=master&timestamp=20180706)](https://coveralls.io/github/josephspurrier/gowebapi?branch=master)
 
 [![Swagger Validator](http://online.swagger.io/validator?url=https://raw.githubusercontent.com/josephspurrier/gowebapi/master/src/app/webapi/swagger.json)](http://petstore.swagger.io/?url=https://raw.githubusercontent.com/josephspurrier/gowebapi/master/src/app/webapi/swagger.json)
 
