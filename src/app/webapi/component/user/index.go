@@ -24,7 +24,7 @@ func (p *Endpoint) Index(w http.ResponseWriter, r *http.Request) (int, error) {
 	u := store.NewUser(p.DB, p.Q)
 
 	// Get all items.
-	results := make(store.TUserGroup, 0)
+	results := make(store.UserGroup, 0)
 	_, err := u.FindAll(&results)
 	if err != nil {
 		return http.StatusInternalServerError, err
@@ -38,7 +38,7 @@ func (p *Endpoint) Index(w http.ResponseWriter, r *http.Request) (int, error) {
 			// Required: true
 			Status string `json:"status"`
 			// Required: true
-			Data store.TUserGroup `json:"data"`
+			Data store.UserGroup `json:"data"`
 		}
 	}
 

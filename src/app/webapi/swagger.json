@@ -292,9 +292,9 @@
     }
   },
   "definitions": {
-    "TUser": {
+    "User": {
       "type": "object",
-      "title": "TUser is a user of the system.",
+      "title": "User is a user of the system.",
       "properties": {
         "created_at": {
           "type": "string",
@@ -339,11 +339,11 @@
       },
       "x-go-package": "app/webapi/store"
     },
-    "TUserGroup": {
+    "UserGroup": {
       "type": "array",
-      "title": "TUserGroup represents a group of users.",
+      "title": "UserGroup represents a group of users.",
       "items": {
-        "$ref": "#/definitions/TUser"
+        "$ref": "#/definitions/User"
       },
       "x-go-package": "app/webapi/store"
     }
@@ -411,6 +411,27 @@
             "description": "RecordID can be used for returning the ID from a row.",
             "type": "string",
             "x-go-name": "RecordID"
+          },
+          "status": {
+            "description": "Status contains the string of the HTTP status.",
+            "type": "string",
+            "x-go-name": "Status"
+          }
+        }
+      }
+    },
+    "GenericResponse": {
+      "description": "GenericResponse returns any status code.",
+      "schema": {
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "properties": {
+          "message": {
+            "description": "Message can contain a user friendly message.",
+            "type": "string",
+            "x-go-name": "Message"
           },
           "status": {
             "description": "Status contains the string of the HTTP status.",
@@ -514,7 +535,7 @@
         ],
         "properties": {
           "data": {
-            "$ref": "#/definitions/TUserGroup"
+            "$ref": "#/definitions/UserGroup"
           },
           "status": {
             "type": "string",
@@ -535,7 +556,7 @@
           "data": {
             "type": "array",
             "items": {
-              "$ref": "#/definitions/TUser"
+              "$ref": "#/definitions/User"
             },
             "x-go-name": "Data"
           },

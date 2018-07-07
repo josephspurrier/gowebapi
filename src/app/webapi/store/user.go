@@ -42,21 +42,21 @@ func (x *User) PrimaryKey() string {
 }
 
 // NewGroup returns an empty group.
-func (x *User) NewGroup() *TUserGroup {
-	group := make(TUserGroup, 0)
+func (x *User) NewGroup() *UserGroup {
+	group := make(UserGroup, 0)
 	return &group
 }
 
 // UserGroup represents a group of users.
-type TUserGroup []User
+type UserGroup []User
 
 // Table returns the table name.
-func (x TUserGroup) Table() string {
+func (x UserGroup) Table() string {
 	return "user"
 }
 
 // PrimaryKey returns the primary key field.
-func (x TUserGroup) PrimaryKey() string {
+func (x UserGroup) PrimaryKey() string {
 	return "id"
 }
 
