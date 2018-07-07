@@ -58,10 +58,10 @@ func (p *Endpoint) Show(w http.ResponseWriter, r *http.Request) (int, error) {
 			// Required: true
 			Status string `json:"status"`
 			// Required: true
-			Data []store.TUser `json:"data"`
+			Data []store.User `json:"data"`
 		}
 	}
 
 	resp := new(response)
-	return p.Response.Results(w, &resp.Body, []store.TUser{*u})
+	return p.Response.Results(w, &resp.Body, []store.User{*u})
 }

@@ -56,14 +56,10 @@ type Configuration struct {
 	Secret SecretKey `json:"Secret"`
 }
 
-// IClock represents a clock.
-type IClock interface {
-	Now() time.Time
-}
-
 // New creates a new JWT configuration.
 func New(secret []byte) *Configuration {
 	return &Configuration{
+		clock:  new(clock),
 		Secret: secret,
 	}
 }

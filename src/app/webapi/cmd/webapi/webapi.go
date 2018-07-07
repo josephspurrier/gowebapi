@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"os"
 	"runtime"
-	"time"
 
 	"app/webapi"
 	"app/webapi/middleware"
@@ -18,14 +17,6 @@ func init() {
 
 	// Use all CPU cores.
 	runtime.GOMAXPROCS(runtime.NumCPU())
-}
-
-// Clock is a clock.
-type Clock struct{}
-
-// Now returns the current time.
-func (c *Clock) Now() time.Time {
-	return time.Now()
 }
 
 func main() {

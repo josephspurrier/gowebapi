@@ -34,7 +34,7 @@ func TestCreate(t *testing.T) {
 	w := httptest.NewRecorder()
 	mux.ServeHTTP(w, r)
 
-	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, http.StatusCreated, w.Code)
 	assert.Contains(t, w.Body.String(), `{"status":"Created","record_id"`)
 }
 

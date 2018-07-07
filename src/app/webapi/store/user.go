@@ -8,15 +8,15 @@ import (
 )
 
 // NewUser returns a new query object.
-func NewUser(db component.IDatabase, q component.IQuery) *TUser {
-	return &TUser{
+func NewUser(db component.IDatabase, q component.IQuery) *User {
+	return &User{
 		IQuery: q,
 		db:     db,
 	}
 }
 
-// TUser represents a user.
-type TUser struct {
+// User is a user of the system.
+type User struct {
 	component.IQuery `json:"-"`
 	db               component.IDatabase
 
@@ -32,23 +32,23 @@ type TUser struct {
 }
 
 // Table returns the table name.
-func (x *TUser) Table() string {
+func (x *User) Table() string {
 	return "user"
 }
 
 // PrimaryKey returns the primary key field.
-func (x *TUser) PrimaryKey() string {
+func (x *User) PrimaryKey() string {
 	return "id"
 }
 
 // NewGroup returns an empty group.
-func (x *TUser) NewGroup() *TUserGroup {
+func (x *User) NewGroup() *TUserGroup {
 	group := make(TUserGroup, 0)
 	return &group
 }
 
-// TUserGroup represents a group of users.
-type TUserGroup []TUser
+// UserGroup represents a group of users.
+type TUserGroup []User
 
 // Table returns the table name.
 func (x TUserGroup) Table() string {
@@ -65,7 +65,7 @@ func (x TUserGroup) PrimaryKey() string {
 // *****************************************************************************
 
 // Create adds a new user.
-func (x *TUser) Create(firstName, lastName, email, password string) (string, error) {
+func (x *User) Create(firstName, lastName, email, password string) (string, error) {
 	// Generate a UUID.
 	uuid, err := securegen.UUID()
 	if err != nil {
@@ -89,7 +89,7 @@ func (x *TUser) Create(firstName, lastName, email, password string) (string, err
 // *****************************************************************************
 
 // Update makes changes to one entity.
-func (x *TUser) Update(ID, firstName, lastName, email, password string) (err error) {
+func (x *User) Update(ID, firstName, lastName, email, password string) (err error) {
 	// Update the entity.
 	_, err = x.db.Exec(`
 		UPDATE user

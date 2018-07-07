@@ -28,6 +28,11 @@ You must use Go 1.7 or newer because it uses the http context.
 
 ## Quick Start with MySQL
 
+Use one of the following commands to start a MySQL container with Docker:
+
+- Start MySQL without a password: `docker run -d -p 3306:3306 -e MYSQL_ALLOW_EMPTY_PASSWORD=yes mysql:5.7`
+- Start MySQL with a password: `docker run -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD=somepassword mysql:5.7`
+
 Start MySQL and import `migration/mysql.sql` to create the database and tables.
 
 Copy `config.json` to `src/app/webapi/cmd/webapi/config.json` and edit the

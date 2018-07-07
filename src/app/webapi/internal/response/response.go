@@ -22,6 +22,7 @@ func (o *Output) OK(w http.ResponseWriter, message string) (int, error) {
 	r.Body.Message = message
 
 	// Write the content.
+	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	err := json.NewEncoder(w).Encode(r.Body)
 	if err != nil {
@@ -37,6 +38,7 @@ func (o *Output) Created(w http.ResponseWriter, recordID string) (int, error) {
 	r.Body.RecordID = recordID
 
 	// Write the content.
+	w.WriteHeader(http.StatusCreated)
 	w.Header().Set("Content-Type", "application/json")
 	err := json.NewEncoder(w).Encode(r.Body)
 	if err != nil {
@@ -89,6 +91,7 @@ func (o *Output) Results(w http.ResponseWriter, body interface{}, data interface
 	}
 
 	// Write the content.
+	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	err := json.NewEncoder(w).Encode(body)
 	if err != nil {

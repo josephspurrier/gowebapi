@@ -294,7 +294,7 @@
   "definitions": {
     "TUser": {
       "type": "object",
-      "title": "TUser represents users.",
+      "title": "TUser is a user of the system.",
       "properties": {
         "created_at": {
           "type": "string",
@@ -337,7 +337,15 @@
           "x-go-name": "UpdatedAt"
         }
       },
-      "x-go-package": "app/webapi/component/user"
+      "x-go-package": "app/webapi/store"
+    },
+    "TUserGroup": {
+      "type": "array",
+      "title": "TUserGroup represents a group of users.",
+      "items": {
+        "$ref": "#/definitions/TUser"
+      },
+      "x-go-package": "app/webapi/store"
     }
   },
   "responses": {
@@ -506,11 +514,7 @@
         ],
         "properties": {
           "data": {
-            "type": "array",
-            "items": {
-              "$ref": "#/definitions/TUser"
-            },
-            "x-go-name": "Data"
+            "$ref": "#/definitions/TUserGroup"
           },
           "status": {
             "type": "string",
