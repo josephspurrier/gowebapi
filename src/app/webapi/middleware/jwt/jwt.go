@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"app/webapi/internal/response"
-	"app/webapi/internal/webtoken"
+	"app/webapi/pkg/webtoken"
 )
 
 // Config contains the dependencies for the handler.

@@ -9,7 +9,7 @@ import (
 
 	"app/webapi/component"
 	"app/webapi/component/user"
-	"app/webapi/internal/testdb"
+	"app/webapi/internal/testutil"
 	"app/webapi/pkg/router"
 	"app/webapi/store"
 
@@ -17,7 +17,7 @@ import (
 )
 
 func TestDestroy(t *testing.T) {
-	testdb.SetupTest(t)
+	testutil.LoadDatabase(t)
 	core, _ := component.NewCoreMock()
 
 	mux := router.New()

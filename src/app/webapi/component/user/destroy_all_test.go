@@ -7,7 +7,7 @@ import (
 
 	"app/webapi/component"
 	"app/webapi/component/user"
-	"app/webapi/internal/testdb"
+	"app/webapi/internal/testutil"
 	"app/webapi/pkg/router"
 	"app/webapi/store"
 
@@ -15,7 +15,7 @@ import (
 )
 
 func TestDestroyAll(t *testing.T) {
-	testdb.SetupTest(t)
+	testutil.LoadDatabase(t)
 	core, _ := component.NewCoreMock()
 
 	mux := router.New()
@@ -35,7 +35,7 @@ func TestDestroyAll(t *testing.T) {
 }
 
 func TestDestroyAllNoUsers(t *testing.T) {
-	testdb.SetupTest(t)
+	testutil.LoadDatabase(t)
 	core, _ := component.NewCoreMock()
 
 	mux := router.New()
@@ -47,5 +47,5 @@ func TestDestroyAllNoUsers(t *testing.T) {
 	mux.ServeHTTP(w, r)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
-	assert.Contains(t, w.Body.String(), `{"status":"Bad Request","message":"no users to delete"}`)
+	assert.Contains(t, w.Body.String(), `no users to delete`)
 }

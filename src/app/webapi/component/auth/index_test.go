@@ -50,5 +50,5 @@ func TestIndexError(t *testing.T) {
 	mux.ServeHTTP(w, r)
 
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
-	assert.Equal(t, `{"status":"Internal Server Error","message":"generate error"}`+"\n", w.Body.String())
+	assert.Equal(t, `generate error`+"\n", w.Body.String())
 }

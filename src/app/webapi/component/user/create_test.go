@@ -9,7 +9,7 @@ import (
 
 	"app/webapi/component"
 	"app/webapi/component/user"
-	"app/webapi/internal/testdb"
+	"app/webapi/internal/testutil"
 	"app/webapi/pkg/router"
 	"app/webapi/store"
 
@@ -17,7 +17,7 @@ import (
 )
 
 func TestCreate(t *testing.T) {
-	testdb.SetupTest(t)
+	testutil.LoadDatabase(t)
 	core, _ := component.NewCoreMock()
 
 	mux := router.New()
@@ -39,7 +39,7 @@ func TestCreate(t *testing.T) {
 }
 
 func TestCreateUserAlreadyExists(t *testing.T) {
-	testdb.SetupTest(t)
+	testutil.LoadDatabase(t)
 	core, _ := component.NewCoreMock()
 
 	mux := router.New()
@@ -61,11 +61,11 @@ func TestCreateUserAlreadyExists(t *testing.T) {
 	mux.ServeHTTP(w, r)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
-	assert.Contains(t, w.Body.String(), `{"status":"Bad Request","message":"user already exists"}`)
+	assert.Contains(t, w.Body.String(), `user already exists`)
 }
 
 func TestCreateBadEmail(t *testing.T) {
-	testdb.SetupTest(t)
+	testutil.LoadDatabase(t)
 	core, _ := component.NewCoreMock()
 
 	mux := router.New()

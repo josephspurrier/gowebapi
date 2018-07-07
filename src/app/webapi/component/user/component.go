@@ -18,10 +18,10 @@ type Endpoint struct {
 
 // Routes will set up the endpoints.
 func (p *Endpoint) Routes(router component.IRouter) {
-	router.Post("/v1/user", component.H(p.Create))
-	router.Get("/v1/user/:user_id", component.H(p.Show))
-	router.Get("/v1/user", component.H(p.Index))
-	router.Put("/v1/user/:user_id", component.H(p.Update))
-	router.Delete("/v1/user/:user_id", component.H(p.Destroy))
-	router.Delete("/v1/user", component.H(p.DestroyAll))
+	router.Post("/v1/user", p.Create)
+	router.Get("/v1/user/:user_id", p.Show)
+	router.Get("/v1/user", p.Index)
+	router.Put("/v1/user/:user_id", p.Update)
+	router.Delete("/v1/user/:user_id", p.Destroy)
+	router.Delete("/v1/user", p.DestroyAll)
 }

@@ -37,12 +37,12 @@ import (
 	"app/webapi/component/user"
 	"app/webapi/internal/bind"
 	"app/webapi/internal/response"
-	"app/webapi/internal/webtoken"
 	"app/webapi/pkg/database"
 	"app/webapi/pkg/logger"
 	"app/webapi/pkg/query"
 	"app/webapi/pkg/router"
 	"app/webapi/pkg/server"
+	"app/webapi/pkg/webtoken"
 )
 
 // *****************************************************************************
@@ -85,10 +85,38 @@ func Routes(config *AppConfig, appLogger logger.ILog) *router.Mux {
 	user.New(core).Routes(r)
 
 	// Set up the 404 page.
-	r.Instance().NotFound = component.H(
+	r.Instance().NotFound = router.Handler(
 		func(w http.ResponseWriter, r *http.Request) (int, error) {
 			return http.StatusNotFound, nil
 		})
+
+	// Set the handling of all responses.
+	router.ServeHTTP = func(w http.ResponseWriter, r *http.Request, status int, err error) {
+		// Handle only errors.
+		if status >= 400 {
+			resp := new(response.GenericResponse)
+			resp.Body.Status = http.StatusText(status)
+			if err != nil {
+				resp.Body.Message = err.Error()
+			}
+
+			// Write the content.
+			w.WriteHeader(status)
+			w.Header().Set("Content-Type", "application/json")
+			err := json.NewEncoder(w).Encode(resp.Body)
+			if err != nil {
+				w.Write([]byte(`{"status":"Internal Server Error","message":"problem encoding JSON"}`))
+				return
+			}
+		}
+
+		// Display server errors.
+		if status >= 500 {
+			if err != nil {
+				l.Printf("%v", err)
+			}
+		}
+	}
 
 	return r
 }

@@ -1,12 +1,12 @@
 package webtoken
 
 import (
+	"crypto/rand"
 	"encoding/base64"
 	"errors"
+	"fmt"
 	"strconv"
 	"time"
-
-	"app/webapi/pkg/securegen"
 
 	jwt "github.com/dgrijalva/jwt-go"
 )
@@ -69,6 +69,17 @@ func (c *Configuration) SetClock(clock IClock) {
 	c.clock = clock
 }
 
+// randomID generates a UUID for use as an ID.
+func randomID() (string, error) {
+	b := make([]byte, 16)
+	_, err := rand.Read(b)
+	if err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:]), nil
+}
+
 // Generate will generate a JWT.
 func (c *Configuration) Generate(userID string, duration time.Duration) (string, error) {
 	// Ensure a secret is present.
@@ -80,7 +91,7 @@ func (c *Configuration) Generate(userID string, duration time.Duration) (string,
 	now := c.clock.Now()
 
 	// Generate a unique ID.
-	unique, err := securegen.UUID()
+	unique, err := randomID()
 	if err != nil {
 		return "", err
 	}

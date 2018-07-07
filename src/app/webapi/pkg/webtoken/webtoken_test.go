@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"app/webapi/internal/webtoken"
+	"app/webapi/pkg/webtoken"
 
 	"github.com/stretchr/testify/assert"
 )

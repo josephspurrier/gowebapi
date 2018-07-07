@@ -18,8 +18,8 @@ func TestSuccess(t *testing.T) {
 
 	mux := router.New()
 
-	mux.Post("/user/:user_id", http.HandlerFunc(
-		func(w http.ResponseWriter, r *http.Request) {
+	mux.Post("/user/:user_id", router.Handler(
+		func(w http.ResponseWriter, r *http.Request) (status int, err error) {
 			called = true
 
 			// swagger:parameters UserCreate
@@ -43,6 +43,7 @@ func TestSuccess(t *testing.T) {
 			assert.Equal(t, "10", req.UserID)
 			assert.Equal(t, "john", req.FirstName)
 			assert.Equal(t, "smith", req.LastName)
+			return http.StatusOK, nil
 		}))
 
 	form := url.Values{}
@@ -62,8 +63,8 @@ func TestMissingPointer(t *testing.T) {
 
 	mux := router.New()
 
-	mux.Post("/user/:user_id", http.HandlerFunc(
-		func(w http.ResponseWriter, r *http.Request) {
+	mux.Post("/user/:user_id", router.Handler(
+		func(w http.ResponseWriter, r *http.Request) (status int, err error) {
 			called = true
 
 			// swagger:parameters UserCreate
@@ -86,6 +87,7 @@ func TestMissingPointer(t *testing.T) {
 			assert.Equal(t, "", req.UserID)
 			assert.Equal(t, "", req.FirstName)
 			assert.Equal(t, "", req.LastName)
+			return http.StatusOK, nil
 		}))
 
 	form := url.Values{}

@@ -7,7 +7,7 @@ import (
 
 	"app/webapi/component"
 	"app/webapi/component/user"
-	"app/webapi/internal/testdb"
+	"app/webapi/internal/testutil"
 	"app/webapi/pkg/router"
 	"app/webapi/store"
 
@@ -15,7 +15,7 @@ import (
 )
 
 func TestShowOne(t *testing.T) {
-	testdb.SetupTest(t)
+	testutil.LoadDatabase(t)
 	core, _ := component.NewCoreMock()
 
 	mux := router.New()
@@ -34,7 +34,7 @@ func TestShowOne(t *testing.T) {
 }
 
 func TestShowNotFound(t *testing.T) {
-	testdb.SetupTest(t)
+	testutil.LoadDatabase(t)
 	core, _ := component.NewCoreMock()
 
 	mux := router.New()
@@ -45,5 +45,5 @@ func TestShowNotFound(t *testing.T) {
 	mux.ServeHTTP(w, r)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
-	assert.Contains(t, w.Body.String(), `{"status":"Bad Request","message":"item not found"}`)
+	assert.Contains(t, w.Body.String(), `item not found`)
 }

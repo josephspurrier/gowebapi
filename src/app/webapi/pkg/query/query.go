@@ -1,7 +1,6 @@
 package query
 
 import (
-	"database/sql"
 	"fmt"
 )
 
@@ -17,24 +16,9 @@ type Q struct {
 	db IDatabase
 }
 
-// IDatabase provides data query capabilities.
-type IDatabase interface {
-	Get(dest interface{}, query string, args ...interface{}) error
-	Exec(query string, args ...interface{}) (sql.Result, error)
-	Select(dest interface{}, query string, args ...interface{}) error
-	QueryRowScan(dest interface{}, query string, args ...interface{}) error
-
-	Error(err error) error
-	AffectedRows(result sql.Result) int
-
-	ExistsString(err error, s string) (bool, string, error)
-}
-
-// IRecord provides table information.
-type IRecord interface {
-	Table() string
-	PrimaryKey() string
-}
+// *****************************************************************************
+// Find
+// *****************************************************************************
 
 // FindOneByID will find a record by string ID.
 func (q *Q) FindOneByID(dest IRecord, ID string) (exists bool, err error) {
@@ -43,7 +27,7 @@ func (q *Q) FindOneByID(dest IRecord, ID string) (exists bool, err error) {
 		WHERE %s = ?
 		LIMIT 1`, dest.Table(), dest.PrimaryKey()),
 		ID)
-	return (err != sql.ErrNoRows), q.db.Error(err)
+	return recordExists(err)
 }
 
 // FindAll returns all users.
@@ -57,7 +41,7 @@ func (q *Q) FindAll(dest IRecord) (total int, err error) {
 		`, dest.PrimaryKey(), dest.Table()))
 
 	if err != nil {
-		return total, q.db.Error(err)
+		return total, suppressNoRowsError(err)
 	}
 
 	err = q.db.Select(dest, fmt.Sprintf(`SELECT * FROM %s`, dest.Table()))
@@ -76,7 +60,7 @@ func (q *Q) DeleteOneByID(dest IRecord, ID string) (affected int, err error) {
 		return 0, err
 	}
 
-	return q.db.AffectedRows(result), err
+	return affectedRows(result), err
 }
 
 // DeleteAll removes all records.
@@ -86,7 +70,7 @@ func (q *Q) DeleteAll(dest IRecord) (affected int, err error) {
 		return 0, err
 	}
 
-	return q.db.AffectedRows(result), err
+	return affectedRows(result), err
 }
 
 // *****************************************************************************
@@ -112,28 +96,5 @@ func (q *Q) ExistsByField(db IRecord, field string, value string) (found bool, I
 		LIMIT 1`, db.PrimaryKey(), db.Table(), field),
 		value)
 
-	//TODO: Add this to a function so it can be reused.
-	if err == nil {
-		return true, ID, nil
-	} else if err == sql.ErrNoRows {
-		return false, "", nil
-	}
-	return false, "", err
-
-	/*err = q.db.Get(db, fmt.Sprintf(`
-		SELECT %s FROM %s
-		WHERE %s = ?
-		LIMIT 1`, db.PrimaryKey(), db.Table(), field),
-		value)
-	return recordExists(err)*/
-}
-
-// recordExists returns if the record exists or not.
-func recordExists(err error) (bool, error) {
-	if err == nil {
-		return true, nil
-	} else if err == sql.ErrNoRows {
-		return false, nil
-	}
-	return false, err
+	return recordExistsString(err, ID)
 }

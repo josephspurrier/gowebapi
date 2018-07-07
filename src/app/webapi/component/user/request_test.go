@@ -8,7 +8,7 @@ import (
 
 	"app/webapi/component"
 	"app/webapi/component/user"
-	"app/webapi/internal/testdb"
+	"app/webapi/internal/testutil"
 	"app/webapi/pkg/router"
 
 	"github.com/stretchr/testify/assert"
@@ -21,7 +21,7 @@ func TestRequestValidation(t *testing.T) {
 	} {
 		arr := strings.Split(v, " ")
 
-		testdb.SetupTest(t)
+		testutil.LoadDatabase(t)
 		core, _ := component.NewCoreMock()
 
 		mux := router.New()
