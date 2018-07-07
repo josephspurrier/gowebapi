@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestDatabase(t *testing.T) {
+func TestGenerate(t *testing.T) {
 	// Set the arguments.
 	os.Args = make([]string, 2)
 	os.Args[0] = "cliapp"

@@ -36,6 +36,7 @@ import (
 	"app/webapi/component/user"
 	"app/webapi/internal/bind"
 	"app/webapi/internal/response"
+	"app/webapi/middleware"
 	"app/webapi/pkg/database"
 	"app/webapi/pkg/logger"
 	"app/webapi/pkg/query"
@@ -65,7 +66,8 @@ func (c *AppConfig) ParseJSON(b []byte) error {
 // *****************************************************************************
 
 // Routes will set up the components and return the router.
-func Routes(config *AppConfig, appLogger logger.ILog) *router.Mux {
+func Routes(config *AppConfig, appLogger logger.ILog) (*router.Mux,
+	*http.Server, *http.Server) {
 	// Set up the dependencies.
 	l := logger.New(appLogger)
 	db := Database(config.Database, l)
@@ -117,7 +119,25 @@ func Routes(config *AppConfig, appLogger logger.ILog) *router.Mux {
 		}
 	}
 
-	return r
+	// Set up the HTTP listener.
+	httpServer := new(http.Server)
+	httpServer.Addr = config.Server.HTTPAddress()
+
+	// Determine if HTTP should redirect to HTTPS.
+	if config.Server.ForceHTTPSRedirect {
+		httpServer.Handler = http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+			http.Redirect(w, req, "https://"+req.Host, http.StatusMovedPermanently)
+		})
+	} else {
+		httpServer.Handler = middleware.Wrap(r, appLogger, config.JWT.Secret)
+	}
+
+	// Set up the HTTPS listener.
+	httpsServer := new(http.Server)
+	httpsServer.Addr = config.Server.HTTPSAddress()
+	httpsServer.Handler = middleware.Wrap(r, appLogger, config.JWT.Secret)
+
+	return r, httpServer, httpsServer
 }
 
 // Database returns the database connection.

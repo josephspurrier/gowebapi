@@ -92,7 +92,7 @@ func TestRoutes200(t *testing.T) {
 
 	c.Database = *dbc
 	ml := new(MockLogger)
-	mux := webapi.Routes(c, ml)
+	mux, _, _ := webapi.Routes(c, ml)
 
 	r := httptest.NewRequest("GET", "/v1", nil)
 	w := httptest.NewRecorder()
@@ -115,7 +115,7 @@ func TestRoutes404(t *testing.T) {
 
 	c.Database = *dbc
 	ml := new(MockLogger)
-	mux := webapi.Routes(c, ml)
+	mux, _, _ := webapi.Routes(c, ml)
 
 	r := httptest.NewRequest("GET", "/v1/nope", nil)
 	w := httptest.NewRecorder()
@@ -138,7 +138,7 @@ func TestRoutes500(t *testing.T) {
 
 	c.Database = *dbc
 	ml := new(MockLogger)
-	mux := webapi.Routes(c, ml)
+	mux, _, _ := webapi.Routes(c, ml)
 
 	r := httptest.NewRequest("GET", "/v1/user", nil)
 	w := httptest.NewRecorder()

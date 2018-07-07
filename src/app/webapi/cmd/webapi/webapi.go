@@ -2,12 +2,10 @@ package main
 
 import (
 	"log"
-	"net/http"
 	"os"
 	"runtime"
 
 	"app/webapi"
-	"app/webapi/middleware"
 	"app/webapi/pkg/jsonconfig"
 )
 
@@ -27,29 +25,11 @@ func main() {
 	config := new(webapi.AppConfig)
 	err := jsonconfig.Load("config.json", config)
 	if err != nil {
-		log.Fatal(err)
+		appLogger.Fatalf("%v", err)
 	}
 
 	// Set up the routes.
-	mux := webapi.Routes(config, appLogger)
-
-	// Set up the HTTP listener.
-	httpServer := new(http.Server)
-	httpServer.Addr = config.Server.HTTPAddress()
-
-	// Determine if HTTP should redirect to HTTPS.
-	if config.Server.ForceHTTPSRedirect {
-		httpServer.Handler = http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-			http.Redirect(w, req, "https://"+req.Host, http.StatusMovedPermanently)
-		})
-	} else {
-		httpServer.Handler = middleware.Wrap(mux, appLogger, config.JWT.Secret)
-	}
-
-	// Set up the HTTPS listener.
-	httpsServer := new(http.Server)
-	httpsServer.Addr = config.Server.HTTPSAddress()
-	httpsServer.Handler = middleware.Wrap(mux, appLogger, config.JWT.Secret)
+	_, httpServer, httpsServer := webapi.Routes(config, appLogger)
 
 	// Start the listeners based on the config.
 	config.Server.Run(httpServer, httpsServer, appLogger)
