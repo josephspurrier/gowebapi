@@ -130,6 +130,7 @@ In the `src/app/webapi` folder, you see a few top level folders:
 - **component** - contains sets of related endpoints and database code.
 - **internal** - contains project specific packages with dependencies.
 - **middleware** - contains http wrappers for logging and CORS.
+- **store** - contains the files with SQL in them.
 - **pkg** - contains generic packages withou project specific dependencies - these can be safely imported by other projects.
 
 ## Components
@@ -139,45 +140,109 @@ In the root of the `src/app/webapi/component` folder, you see:
 logger, database connection, request bind/validation, and the responses.
 - **core_mock.go** - contains the mocked dependencies which can be used by tests
 to modify all the mocked dependencies.
-- **handler.go** - contains the error handling code for all the http handlers.
 - **interface.go** - contains all the interfaces for the dependencies so you can
 easily mock out each one for testing purposes.
 
-Inside each component, you'll see:
-- **route.go** - contains the main struct and all the routes.
-- **endpoint.go** - conatins all the endpoint functions with Swagger
-annotations.
+Inside each component, you see a `component.go` file which contains the main
+struct and all the routes. You'll also see individual files for each endpoint
+with Swagger annotations.
 
-In the `user` folder, you see `user.go` which has the SQL queries. Notice how
-the `IDatabase` connection is passed into each function - this allows you to
-easily call database functions from other components as the complexity in your
-application grows.
+## Store
+
+In the `store` folder, you see `user.go` which has the SQL queries. Notice how
+`IDatabase` and the `IQuery` are passed into each store. This provides a unified
+way to run database queries and also provides a base set of simple SQL queries
+so you don't have to rewrite them for every table:
+- FindOneByID(dest query.IRecord, ID string) (found bool, err error)
+- FindAll(dest query.IRecord) (total int, err error)
+- ExistsByID(db query.IRecord, s string) (found bool, err error)
+- ExistsByField(db query.IRecord, field string, value string) (found bool, ID string, err error)
+- DeleteOneByID(dest query.IRecord, ID string) (affected int, err error)
+- DeleteAll(dest query.IRecord) (affected int, err error)
+
+This is not an ORM - it just provides you with a simple query builder. Since the
+struct has an anonymous field, `component.IQuery`, you can overwrite any of the
+functions.
+
+For instance, to retrieve a single user from the database, you would use this
+code:
+
+```go
+// Create the store.
+u := store.NewUser(p.DB, p.Q)
+
+// Get a user.
+exists, err := u.FindOneByID(u, req.UserID)
+```
+
+The code for the generic `FindOneByID()` is in the `pkg/query/query.go` file:
+
+```go
+// FindOneByID will find a record by string ID.
+func (q *Q) FindOneByID(dest IRecord, ID string) (exists bool, err error) {
+	err = q.db.Get(dest, fmt.Sprintf(`
+		SELECT * FROM %s
+		WHERE %s = ?
+		LIMIT 1`, dest.Table(), dest.PrimaryKey()),
+		ID)
+	return recordExists(err)
+}
+```
+
+If you wanted to change the query so it excludes deleted users, you could add a
+new function to the `store/user.go` file so it looks like this:
+
+```go
+// FindOneByID will find a record by string ID excluding deleted records.
+func (x *User) FindOneByID(dest query.IRecord, ID string) (exists bool, err error) {
+	err = x.db.Get(dest, fmt.Sprintf(`
+		SELECT * FROM %s
+		WHERE %s = ?
+		AND deleted_at  IS NULL
+		LIMIT 1`, dest.Table(), dest.PrimaryKey()),
+		ID)
+
+	if err == nil {
+		return true, nil
+	} else if err == sql.ErrNoRows {
+		return false, nil
+	}
+	return false, err
+}
+```
+
+This allows you to standardize on how to interact with your database models
+throughout the team.
 
 ## Endpoint HTTP Handlers
 
 In order to make the endpoints error driven, all the http handler functions must
 return an `int` and an `error`. This allows error handling to be centralized
-in the `component/handler.go` file. You can see in the `user/route.go` file, the
-functions are wrapped in `component.H()`:
+in the `webapi.go` file by setting the `router.ServeHTTP` variable. You can see
+the routes in the `component/user/component.go` file:
 
 ```go
 // Routes will set up the endpoints.
 func (p *Endpoint) Routes(router component.IRouter) {
-	router.Post("/v1/user", component.H(p.Create))
-	router.Get("/v1/user/:user_id", component.H(p.Show))
-	router.Get("/v1/user", component.H(p.Index))
-	router.Put("/v1/user/:user_id", component.H(p.Update))
-	router.Delete("/v1/user/:user_id", component.H(p.Destroy))
-	router.Delete("/v1/user", component.H(p.DestroyAll))
+	router.Post("/v1/user", p.Create)
+	router.Get("/v1/user/:user_id", p.Show)
+	router.Get("/v1/user", p.Index)
+	router.Put("/v1/user/:user_id", p.Update)
+	router.Delete("/v1/user/:user_id", p.Destroy)
+	router.Delete("/v1/user", p.DestroyAll)
 }
 ```
 
-Each http handler function looks like this:
+The endpoints are separated into files under each component folder and they look
+like this:
 
 ```go
 func (p *Endpoint) DestroyAll(w http.ResponseWriter, r *http.Request) (int, error) {
+	// Create the store.
+	u := store.NewUser(p.DB, p.Q)
+
 	// Delete all items.
-	count, err := DeleteAll(p.DB)
+	count, err := u.DeleteAll(u)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	} else if count < 1 {
@@ -192,7 +257,7 @@ func (p *Endpoint) DestroyAll(w http.ResponseWriter, r *http.Request) (int, erro
 
 The `app/webapi/internal/bind` is a wrapper around the
 `github.com/go-playground/validator` package so it can validate structs. You can
-view the `user/endpoint.go` file so see where the email validation and the
+view the `user/create.go` file to see where the email validation and the
 required validation is specified in the tags:
 
 ```go
@@ -238,8 +303,12 @@ will throw a 500 error.
 
 ```go
 func (p *Endpoint) Index(w http.ResponseWriter, r *http.Request) (int, error) {
+	// Create the store.
+	u := store.NewUser(p.DB, p.Q)
+
 	// Get all items.
-	group, err := All(p.DB)
+	results := make(store.TUserGroup, 0)
+	_, err := u.FindAll(&results)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
@@ -252,12 +321,12 @@ func (p *Endpoint) Index(w http.ResponseWriter, r *http.Request) (int, error) {
 			// Required: true
 			Status string `json:"status"`
 			// Required: true
-			Data []TUser `json:"data"`
+			Data store.TUserGroup `json:"data"`
 		}
 	}
 
 	resp := new(response)
-	return p.Response.Results(w, &resp.Body, group)
+	return p.Response.Results(w, &resp.Body, results)
 }
 ```
 

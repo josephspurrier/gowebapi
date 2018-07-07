@@ -21,8 +21,10 @@ import (
 //   401: UnauthorizedResponse
 //   500: InternalServerErrorResponse
 func (p *Endpoint) DestroyAll(w http.ResponseWriter, r *http.Request) (int, error) {
-	// Delete all items.
+	// Create the store.
 	u := store.NewUser(p.DB, p.Q)
+
+	// Delete all items.
 	count, err := u.DeleteAll(u)
 	if err != nil {
 		return http.StatusInternalServerError, err
