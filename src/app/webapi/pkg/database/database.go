@@ -2,9 +2,6 @@ package database
 
 import (
 	"database/sql"
-	"errors"
-	"reflect"
-	"time"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -40,68 +37,12 @@ func (d *DBW) Exec(query string, args ...interface{}) (sql.Result, error) {
 	return d.db.Exec(query, args...)
 }
 
-// LastInsertID returns the last inserted ID.
-func (d *DBW) LastInsertID(r sql.Result, err error) (int64, error) {
-	if err != nil {
-		return 0, err
-	}
-
-	return r.LastInsertId()
+// QueryRowScan returns a single result.
+func (d *DBW) QueryRowScan(dest interface{}, query string, args ...interface{}) error {
+	return d.db.QueryRow(query, args...).Scan(dest)
 }
 
-// MySQLTimestamp returns a MySQL timestamp.
-func (d *DBW) MySQLTimestamp(t time.Time) string {
-	return t.Format("2006-01-02 15:04:05")
-}
-
-// GoTimestamp returns a Go timestamp.
-func (d *DBW) GoTimestamp(s string) (time.Time, error) {
-	return time.Parse("2006-01-02 15:04:05", s)
-}
-
-// ExistsID returns the proper ID and other values based on the query results.
-func (d *DBW) ExistsID(err error, ID int64) (bool, int64, error) {
-	if err == nil {
-		return true, ID, nil
-	} else if err == sql.ErrNoRows {
-		return false, 0, nil
-	}
-	return false, 0, err
-}
-
-// ExistsString returns the proper string and other values based on the query results.
-func (d *DBW) ExistsString(err error, s string) (bool, string, error) {
-	if err == nil {
-		return true, s, nil
-	} else if err == sql.ErrNoRows {
-		return false, "", nil
-	}
-	return false, "", err
-}
-
-// Error will return nil if the error is sql.ErrNoRows.
-func (d *DBW) Error(err error) error {
-	if err == sql.ErrNoRows {
-		return nil
-	}
-	return err
-}
-
-// AffectedRows returns the number of rows affected by the query.
-func (d *DBW) AffectedRows(result sql.Result) int {
-	if result == nil {
-		return 0
-	}
-
-	// If successful, get the number of affected rows.
-	count, err := result.RowsAffected()
-	if err != nil {
-		return 0
-	}
-
-	return int(count)
-}
-
+/*
 // PaginatedResults returns the paginated results of a query.
 func (d *DBW) PaginatedResults(i interface{}, fn func() (interface{}, int,
 	error)) (int, error) {
@@ -121,31 +62,4 @@ func (d *DBW) PaginatedResults(i interface{}, fn func() (interface{}, int,
 	value.Set(itemPtr)
 
 	return d2, d3
-}
-
-// RecordExistsInt returns the ID if a record exists.
-func (d *DBW) RecordExistsInt(fn func() (exists bool, ID int64, err error)) (
-	exists bool, ID int64, err error) {
-	return fn()
-}
-
-// RecordExistsString returns the ID if a record exists.
-func (d *DBW) RecordExistsString(fn func() (exists bool, ID string, err error)) (
-	exists bool, ID string, err error) {
-	return fn()
-}
-
-// AddRecordInt returns the ID if the record is created.
-func (d *DBW) AddRecordInt(fn func() (ID int64, err error)) (ID int64, err error) {
-	return fn()
-}
-
-// AddRecordString returns the ID if the record is created.
-func (d *DBW) AddRecordString(fn func() (ID string, err error)) (ID string, err error) {
-	return fn()
-}
-
-// ExecQuery returns an error if the query failed.
-func (d *DBW) ExecQuery(fn func() (err error)) (err error) {
-	return fn()
-}
+}*/

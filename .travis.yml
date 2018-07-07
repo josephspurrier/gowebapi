@@ -2,6 +2,9 @@ language: go
 
 go_import_path: project-root
 
+services:
+  - mysql
+
 go:
   - "1.8"
   - "1.9"
@@ -9,6 +12,7 @@ go:
   - "tip"
 
 before_install:
+  - mysql -e 'CREATE DATABASE webapitest;'
   - export GOPATH=$HOME/gopath/src/project-root
   - export PATH=$HOME/gopath/src/project-root/bin:$PATH
   - cd $GOPATH/src/app/webapi

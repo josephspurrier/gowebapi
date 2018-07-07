@@ -9,17 +9,17 @@ import (
 	"app/webapi/component/user"
 	"app/webapi/internal/testutil"
 	"app/webapi/pkg/router"
+	"app/webapi/store"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestIndexEmpty(t *testing.T) {
-	core, m := component.NewCoreMock()
+	testutil.LoadDatabase(t)
+	core, _ := component.NewCoreMock()
 
 	mux := router.New()
 	user.New(core).Routes(mux)
-
-	m.DB.SetPaginatedResults(testutil.PaginatedResultsEmpty)
 
 	r := httptest.NewRequest("GET", "/v1/user", nil)
 	w := httptest.NewRecorder()
@@ -30,19 +30,15 @@ func TestIndexEmpty(t *testing.T) {
 }
 
 func TestIndexOne(t *testing.T) {
-	core, m := component.NewCoreMock()
+	testutil.LoadDatabase(t)
+	core, _ := component.NewCoreMock()
 
 	mux := router.New()
 	user.New(core).Routes(mux)
 
-	m.DB.SetPaginatedResults(func() (interface{}, int, error) {
-		results := make([]user.TUser, 0)
-		results = append(results, user.TUser{
-			FirstName: "John",
-			LastName:  "Smith",
-		})
-		return results, 1, nil
-	})
+	u := store.NewUser(core.DB, core.Q)
+	_, err := u.Create("John", "Smith", "jsmith@example.com", "password")
+	assert.Nil(t, err)
 
 	r := httptest.NewRequest("GET", "/v1/user", nil)
 	w := httptest.NewRecorder()

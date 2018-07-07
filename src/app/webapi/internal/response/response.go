@@ -22,6 +22,7 @@ func (o *Output) OK(w http.ResponseWriter, message string) (int, error) {
 	r.Body.Message = message
 
 	// Write the content.
+	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	err := json.NewEncoder(w).Encode(r.Body)
 	if err != nil {
@@ -37,6 +38,7 @@ func (o *Output) Created(w http.ResponseWriter, recordID string) (int, error) {
 	r.Body.RecordID = recordID
 
 	// Write the content.
+	w.WriteHeader(http.StatusCreated)
 	w.Header().Set("Content-Type", "application/json")
 	err := json.NewEncoder(w).Encode(r.Body)
 	if err != nil {
@@ -89,6 +91,7 @@ func (o *Output) Results(w http.ResponseWriter, body interface{}, data interface
 	}
 
 	// Write the content.
+	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	err := json.NewEncoder(w).Encode(body)
 	if err != nil {
@@ -97,9 +100,9 @@ func (o *Output) Results(w http.ResponseWriter, body interface{}, data interface
 	return http.StatusOK, nil
 }
 
-// OKResponse returns 200.
-// swagger:response OKResponse
-type OKResponse struct {
+// GenericResponse returns any status code.
+// swagger:response GenericResponse
+type GenericResponse struct {
 	// in: body
 	Body struct {
 		// Status contains the string of the HTTP status.
@@ -125,26 +128,32 @@ type CreatedResponse struct {
 	}
 }
 
+// OKResponse returns 200.
+// swagger:response OKResponse
+type OKResponse struct {
+	GenericResponse
+}
+
 // BadRequestResponse returns 400.
 // swagger:response BadRequestResponse
 type BadRequestResponse struct {
-	OKResponse
+	GenericResponse
 }
 
 // UnauthorizedResponse returns 401.
 // swagger:response UnauthorizedResponse
 type UnauthorizedResponse struct {
-	OKResponse
+	GenericResponse
 }
 
 // NotFoundResponse returns 404.
 // swagger:response NotFoundResponse
 type NotFoundResponse struct {
-	OKResponse
+	GenericResponse
 }
 
 // InternalServerErrorResponse returns 500.
 // swagger:response InternalServerErrorResponse
 type InternalServerErrorResponse struct {
-	OKResponse
+	GenericResponse
 }

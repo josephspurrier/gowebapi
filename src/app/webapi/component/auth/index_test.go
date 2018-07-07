@@ -18,11 +18,11 @@ import (
 func TestIndex(t *testing.T) {
 	core, m := component.NewCoreMock()
 
-	m.Token.SetGenerate(func(userID string, duration time.Duration) (string, error) {
+	m.Token.GenerateFunc = func(userID string, duration time.Duration) (string, error) {
 		b := []byte("0123456789ABCDEF0123456789ABCDEF")
 		enc := base64.StdEncoding.EncodeToString(b)
 		return enc, nil
-	})
+	}
 
 	mux := router.New()
 	auth.New(core).Routes(mux)
@@ -38,9 +38,9 @@ func TestIndex(t *testing.T) {
 func TestIndexError(t *testing.T) {
 	core, m := component.NewCoreMock()
 
-	m.Token.SetGenerate(func(userID string, duration time.Duration) (string, error) {
+	m.Token.GenerateFunc = func(userID string, duration time.Duration) (string, error) {
 		return "", errors.New("generate error")
-	})
+	}
 
 	mux := router.New()
 	auth.New(core).Routes(mux)
@@ -50,5 +50,5 @@ func TestIndexError(t *testing.T) {
 	mux.ServeHTTP(w, r)
 
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
-	assert.Equal(t, `{"status":"Internal Server Error","message":"generate error"}`+"\n", w.Body.String())
+	assert.Equal(t, `generate error`+"\n", w.Body.String())
 }
