@@ -27,7 +27,6 @@ package webapi
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"os"
 
@@ -68,9 +67,9 @@ func (c *AppConfig) ParseJSON(b []byte) error {
 // Routes will set up the components and return the router.
 func Routes(config *AppConfig, appLogger logger.ILog) *router.Mux {
 	// Set up the dependencies.
-	db := Database(config.Database)
-	q := query.New(db)
 	l := logger.New(appLogger)
+	db := Database(config.Database, l)
+	q := query.New(db)
 	b := bind.New()
 	resp := response.New()
 	t := webtoken.New(config.JWT.Secret)
@@ -122,7 +121,7 @@ func Routes(config *AppConfig, appLogger logger.ILog) *router.Mux {
 }
 
 // Database returns the database connection.
-func Database(dbc database.Connection) *database.DBW {
+func Database(dbc database.Connection, l logger.ILog) *database.DBW {
 	// Set the database password from an environment variable.
 	pwd := os.Getenv("DB_PASSWORD")
 	if len(pwd) > 0 {
@@ -132,7 +131,7 @@ func Database(dbc database.Connection) *database.DBW {
 	connection, err := dbc.Connect(true)
 	if err != nil {
 		// Don't fail here, just show an error message.
-		log.Println("DB Error:", err)
+		l.Printf("DB Error: %v", err)
 	}
 	// Wrap the DB connection.
 	db := database.New(connection)
