@@ -82,6 +82,7 @@ func (c *Config) HTTPSAddress() string {
 	return c.Hostname + ":" + fmt.Sprintf("%d", port)
 }
 
+// RedirectToHTTPS will redirect HTTP to HTTPS.
 func RedirectToHTTPS() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		http.Redirect(w, req, "https://"+req.Host, http.StatusMovedPermanently)

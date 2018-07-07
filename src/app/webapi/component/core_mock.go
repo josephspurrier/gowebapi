@@ -18,22 +18,22 @@ func NewCoreMock() (Core, *CoreMock) {
 
 	core := NewCore(ml, md, mq, binder, resp, mt)
 	m := &CoreMock{
-		Log:     ml,
-		DB:      md,
-		Q:       mq,
-		Bind:    binder,
-		Reponse: resp,
-		Token:   mt,
+		Log:      ml,
+		DB:       md,
+		Q:        mq,
+		Bind:     binder,
+		Response: resp,
+		Token:    mt,
 	}
 	return core, m
 }
 
 // CoreMock contains all the mocked dependencies.
 type CoreMock struct {
-	Log     *testutil.MockLogger
-	DB      IDatabase
-	Q       IQuery
-	Bind    IBind
-	Reponse IResponse
-	Token   *testutil.MockToken
+	Log      *testutil.MockLogger
+	DB       IDatabase
+	Q        IQuery
+	Bind     IBind
+	Response IResponse
+	Token    *testutil.MockToken
 }
