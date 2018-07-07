@@ -28,9 +28,8 @@ type IQuery interface {
 
 // ILogger provides logging capabilities.
 type ILogger interface {
-	//ControllerError(r *http.Request, err error, a ...interface{})
-	//Fatalf(format string, v ...interface{})
-	//Printf(format string, v ...interface{})
+	Fatalf(format string, v ...interface{})
+	Printf(format string, v ...interface{})
 }
 
 // IRouter provides routing capabilities.
