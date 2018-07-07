@@ -12,27 +12,23 @@ import (
 
 // Config contains the dependencies for the handler.
 type Config struct {
-	secret []byte
+	secret    []byte
+	whitelist []string
 }
 
 // New returns a new loq request middleware.
-func New(secret []byte) *Config {
+func New(secret []byte, whitelist []string) *Config {
 	return &Config{
-		secret: secret,
+		secret:    secret,
+		whitelist: whitelist,
 	}
 }
 
 // Handler will require a JWT.
 func (c *Config) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// JWT whitelist.
-		whitelist := []string{
-			"GET /v1",
-			"GET /v1/auth",
-		}
-
 		// Determine if the page is in the JWT whitelist.
-		if !isWhitelisted(r.Method, r.URL.Path, whitelist) {
+		if !IsWhitelisted(r.Method, r.URL.Path, c.whitelist) {
 			// Require JWT on all routes.
 			bearer := r.Header.Get("Authorization")
 
@@ -71,9 +67,9 @@ func (c *Config) Handler(next http.Handler) http.Handler {
 	})
 }
 
-// isWhitelisted returns true if the request is in the whitelist. If an
+// IsWhitelisted returns true if the request is in the whitelist. If an
 // asterisk is found in the whitelist, allow all routes.
-func isWhitelisted(method string, path string, arr []string) (found bool) {
+func IsWhitelisted(method string, path string, arr []string) (found bool) {
 	s := fmt.Sprintf("%v %v", method, path)
 	for _, i := range arr {
 		if i == "*" || s == i {

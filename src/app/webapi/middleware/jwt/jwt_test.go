@@ -1,6 +1,7 @@
-package jwt
+package jwt_test
 
 import (
+	"app/webapi/middleware/jwt"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -18,7 +19,12 @@ func TestWhitelistAllowed(t *testing.T) {
 
 		mux := http.NewServeMux()
 
-		token := New([]byte("secret"))
+		whitelist := []string{
+			"GET /v1",
+			"GET /v1/auth",
+		}
+
+		token := jwt.New([]byte("secret"), whitelist)
 		h := token.Handler(mux)
 
 		r := httptest.NewRequest(arr[0], arr[1], nil)
@@ -39,7 +45,12 @@ func TestWhitelistNotAllowed(t *testing.T) {
 
 		mux := http.NewServeMux()
 
-		token := New([]byte("secret"))
+		whitelist := []string{
+			"GET /v1",
+			"GET /v1/auth",
+		}
+
+		token := jwt.New([]byte("secret"), whitelist)
 		h := token.Handler(mux)
 
 		r := httptest.NewRequest(arr[0], arr[1], nil)
@@ -54,7 +65,12 @@ func TestWhitelistNotAllowed(t *testing.T) {
 func TestWhitelistBadBearer(t *testing.T) {
 	mux := http.NewServeMux()
 
-	token := New([]byte("secret"))
+	whitelist := []string{
+		"GET /v1",
+		"GET /v1/auth",
+	}
+
+	token := jwt.New([]byte("secret"), whitelist)
 	h := token.Handler(mux)
 
 	r := httptest.NewRequest("POST", "/v1/user", nil)
@@ -67,27 +83,27 @@ func TestWhitelistBadBearer(t *testing.T) {
 }
 
 func TestIsWhitelisted(t *testing.T) {
-	assert.Equal(t, true, isWhitelisted("GET", "/v1", []string{
+	assert.Equal(t, true, jwt.IsWhitelisted("GET", "/v1", []string{
 		"GET /v1",
 	}))
 
-	assert.Equal(t, true, isWhitelisted("GET", "/v1", []string{
+	assert.Equal(t, true, jwt.IsWhitelisted("GET", "/v1", []string{
 		"*",
 	}))
 
-	assert.Equal(t, true, isWhitelisted("GET", "/v1", []string{
+	assert.Equal(t, true, jwt.IsWhitelisted("GET", "/v1", []string{
 		"POST /v1",
 		"*",
 	}))
 
 	// Bad spacing.
-	assert.Equal(t, false, isWhitelisted("GET", "/v1", []string{
+	assert.Equal(t, false, jwt.IsWhitelisted("GET", "/v1", []string{
 		"POST /v1",
 		"* ",
 	}))
 
 	// Not in the list.
-	assert.Equal(t, false, isWhitelisted("GET", "/v2", []string{
+	assert.Equal(t, false, jwt.IsWhitelisted("GET", "/v2", []string{
 		"POST /v1",
 		"GET /v1",
 	}))
