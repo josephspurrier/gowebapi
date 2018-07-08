@@ -113,6 +113,9 @@ swagger serve -F=swagger ./swagger.json
 ### Dredd Configuration
 
 ```bash
+# Install dredd.
+npm install -g dredd
+
 # CD to the webapi folder.
 cd src/app/webapi
 
@@ -134,7 +137,7 @@ Install hooks handler and run Dredd test with:
   $ dredd
 
 # Start dredd.
-dredd --server=cmd/webapi/webapi --hookfiles=cmd/hook/hooks
+dredd
 ```
 
 ## Vendoring
