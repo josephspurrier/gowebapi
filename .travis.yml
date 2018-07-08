@@ -26,7 +26,7 @@ before_install:
   - go get github.com/go-swagger/go-swagger/cmd/swagger
   - swagger generate spec -o ./swagger.json
   - swagger validate ./swagger.json
-  - sed -i'' -e 's/example/x\-example/' ./swagger.json
+  - "sed -i'' -e 's/example/x\-example/' ./swagger.json"
   - go get github.com/snikch/goodman/cmd/goodman
   - npm install -g dredd@5.1.11
   - go build -o ./cmd/webapi/webapi app/webapi/cmd/webapi
