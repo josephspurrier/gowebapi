@@ -13,7 +13,7 @@ go:
 
 cache:
   directories:
-    - $HOME/gopath/src/project-root/src/app/webapi/node_modules
+    - $(npm config get prefix)/lib/node_modules
 
 before_install:
   - mysql -e 'CREATE DATABASE webapitest;'
