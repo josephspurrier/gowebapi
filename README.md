@@ -100,8 +100,11 @@ cd src/app/webapi
 # Generate the swagger spec.
 swagger generate spec -o ./swagger.json
 
-# Replace 'example' with 'x-example'.
-sed -i '' -e 's/example/x\-example/' swagger.json
+# Replace 'example' with 'x-example' in the swagger spec.
+sed -i '' -e 's/example/x\-example/' ./swagger.json
+
+# Validate the swagger spec.
+swagger validate ./swagger.json
 
 # Serve the spec for the browser.
 swagger serve -F=swagger ./swagger.json
