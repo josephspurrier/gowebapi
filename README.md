@@ -8,11 +8,7 @@
 
 ## Testable Web API in Go with Swagger
 
-This project demonstrates how to structure and build an API using the Go language without a framework.
-Only carefully chosen packages are included.
-The API is still a work-in-progress, but it's designed to be easy to troubleshoot and easy to modify.
-Everyone structures their API differently, but ultimately consistency is key. The more
-consistent your API is, the easier it will be for other people to interact with it.
+This project demonstrates how to structure and build an API using the Go language without a framework. Only carefully chosen packages are included. The API is designed to be easy to troubleshoot and easy to modify. Everyone structures their API differently, but ultimately consistency is key. The more consistent your API is, the easier it will be for other people to interact with it. Dredd is used to test the generated Swagger spec against the API to ensure it's correct.
 
 **Older Version:** The previous version that was around for a while was
 0.1-alpha. If you want to see that code, you can view the
@@ -88,13 +84,13 @@ This tool will generate the Swagger spec from annotations in the Go code. It
 will read the comments in the code and will pull types from structs.
 
 ```bash
-go get -u github.com/go-swagger/go-swagger/cmd/swagger
+go get github.com/go-swagger/go-swagger/cmd/swagger
 ```
 
 ### Generate Swagger Spec
 
 ```bash
-# Change to the proper directory.
+# CD to the webapi folder.
 cd src/app/webapi
 
 # Generate the swagger spec.
@@ -110,33 +106,25 @@ swagger validate ./swagger.json
 swagger serve -F=swagger ./swagger.json
 ```
 
-### Dredd Configuration
+## Dredd
+
+This projects uses [Dredd](https://github.com/apiaryio/dredd) to test the Swagger spec against the API. Since the Swagger spec is generated from annotations in the Go code, it's good to ensure there are no discrepancies.
+
+The Go documentation for Dredd is [here](https://dredd.readthedocs.io/en/latest/hooks-go.html).
+
+### Install Dredd
 
 ```bash
 # Install dredd.
 npm install -g dredd
 
+# Get the goodman package for Go hooks.
+go get github.com/snikch/goodman/cmd/goodman
+
 # CD to the webapi folder.
 cd src/app/webapi
 
-# Initialize dredd.
-dredd init
-? Location of the API description document apiary.apib
-? Command to start API backend server e.g. (bundle exec rails server) go run cmd/webapi/webapi.go
-? URL of tested API endpoint http://127.0.0.1:8080
-? Programming language of hooks go
-? Do you want to use Apiary test inspector? Yes
-? Please enter Apiary API key or leave empty for anonymous reporter
-? Dredd is best served with Continuous Integration. Create CircleCI config for Dredd? Yes
-
-Configuration saved to dredd.yml
-
-Install hooks handler and run Dredd test with:
-
-  $ go get github.com/snikch/goodman/cmd/goodman
-  $ dredd
-
-# Start dredd.
+# Run a test with dredd.
 dredd
 ```
 
