@@ -3,6 +3,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/josephspurrier/gowebapi)](https://goreportcard.com/report/github.com/josephspurrier/gowebapi)
 [![Build Status](https://travis-ci.org/josephspurrier/gowebapi.svg)](https://travis-ci.org/josephspurrier/gowebapi)
 [![Coverage Status](https://coveralls.io/repos/github/josephspurrier/gowebapi/badge.svg?branch=master&timestamp=20180707-02)](https://coveralls.io/github/josephspurrier/gowebapi?branch=master)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fjosephspurrier%2Fgowebapi.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fjosephspurrier%2Fgowebapi?ref=badge_shield)
 
 [![Swagger Validator](http://online.swagger.io/validator?url=https://raw.githubusercontent.com/josephspurrier/gowebapi/master/src/app/webapi/swagger.json)](http://petstore.swagger.io/?url=https://raw.githubusercontent.com/josephspurrier/gowebapi/master/src/app/webapi/swagger.json)
 
@@ -391,3 +392,7 @@ Custom HTTP Handlers:
 Package Layout:
 
 - https://medium.com/@benbjohnson/standard-package-layout-7cdbc8391fc1
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fjosephspurrier%2Fgowebapi.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fjosephspurrier%2Fgowebapi?ref=badge_large)
