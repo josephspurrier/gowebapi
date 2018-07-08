@@ -11,6 +11,10 @@ go:
   - "1.10"
   - "tip"
 
+cache:
+  directories:
+    - $HOME/gopath/src/project-root/src/app/webapi/node_modules
+
 before_install:
   - mysql -e 'CREATE DATABASE webapitest;'
   - export GOPATH=$HOME/gopath/src/project-root
@@ -21,6 +25,7 @@ before_install:
   - go get golang.org/x/tools/cmd/cover
   - npm install -g dredd@5.1.11
   - go build -o ./cmd/webapi/webapi app/webapi/cmd/webapi
+  - go build -o ./cmd/hooks/hooks app/webapi/cmd/hooks
   - cp testdata/config.json ./config.json
 
 before_script:
