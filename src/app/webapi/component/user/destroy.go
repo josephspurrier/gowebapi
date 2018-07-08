@@ -24,6 +24,7 @@ func (p *Endpoint) Destroy(w http.ResponseWriter, r *http.Request) (int, error) 
 	// swagger:parameters UserDestroy
 	type request struct {
 		// in: path
+		// x-example: USERID
 		UserID string `json:"user_id" validate:"required"`
 	}
 

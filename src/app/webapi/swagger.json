@@ -170,6 +170,7 @@
         "parameters": [
           {
             "type": "string",
+            "x-example": "USERID",
             "x-go-name": "UserID",
             "name": "user_id",
             "in": "path",
@@ -205,6 +206,7 @@
         "parameters": [
           {
             "type": "string",
+            "x-example": "USERID",
             "x-go-name": "UserID",
             "name": "user_id",
             "in": "path",
@@ -268,6 +270,7 @@
         "parameters": [
           {
             "type": "string",
+            "x-example": "USERID",
             "x-go-name": "UserID",
             "name": "user_id",
             "in": "path",
@@ -420,50 +423,8 @@
         }
       }
     },
-    "GenericResponse": {
-      "description": "GenericResponse returns any status code.",
-      "schema": {
-        "type": "object",
-        "required": [
-          "status"
-        ],
-        "properties": {
-          "message": {
-            "description": "Message can contain a user friendly message.",
-            "type": "string",
-            "x-go-name": "Message"
-          },
-          "status": {
-            "description": "Status contains the string of the HTTP status.",
-            "type": "string",
-            "x-go-name": "Status"
-          }
-        }
-      }
-    },
     "InternalServerErrorResponse": {
       "description": "InternalServerErrorResponse returns 500.",
-      "schema": {
-        "type": "object",
-        "required": [
-          "status"
-        ],
-        "properties": {
-          "message": {
-            "description": "Message can contain a user friendly message.",
-            "type": "string",
-            "x-go-name": "Message"
-          },
-          "status": {
-            "description": "Status contains the string of the HTTP status.",
-            "type": "string",
-            "x-go-name": "Status"
-          }
-        }
-      }
-    },
-    "NotFoundResponse": {
-      "description": "NotFoundResponse returns 404.",
       "schema": {
         "type": "object",
         "required": [

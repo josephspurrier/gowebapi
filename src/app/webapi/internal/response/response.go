@@ -22,8 +22,8 @@ func (o *Output) OK(w http.ResponseWriter, message string) (int, error) {
 	r.Body.Message = message
 
 	// Write the content.
-	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	err := json.NewEncoder(w).Encode(r.Body)
 	if err != nil {
 		return http.StatusInternalServerError, err
@@ -38,8 +38,8 @@ func (o *Output) Created(w http.ResponseWriter, recordID string) (int, error) {
 	r.Body.RecordID = recordID
 
 	// Write the content.
-	w.WriteHeader(http.StatusCreated)
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
 	err := json.NewEncoder(w).Encode(r.Body)
 	if err != nil {
 		return http.StatusInternalServerError, err
@@ -91,8 +91,8 @@ func (o *Output) Results(w http.ResponseWriter, body interface{}, data interface
 	}
 
 	// Write the content.
-	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	err := json.NewEncoder(w).Encode(body)
 	if err != nil {
 		return http.StatusInternalServerError, err
@@ -101,7 +101,6 @@ func (o *Output) Results(w http.ResponseWriter, body interface{}, data interface
 }
 
 // GenericResponse returns any status code.
-// swagger:response GenericResponse
 type GenericResponse struct {
 	// in: body
 	Body struct {
@@ -143,12 +142,6 @@ type BadRequestResponse struct {
 // UnauthorizedResponse returns 401.
 // swagger:response UnauthorizedResponse
 type UnauthorizedResponse struct {
-	GenericResponse
-}
-
-// NotFoundResponse returns 404.
-// swagger:response NotFoundResponse
-type NotFoundResponse struct {
 	GenericResponse
 }
 

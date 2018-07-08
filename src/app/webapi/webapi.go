@@ -102,8 +102,8 @@ func Routes(config *AppConfig, appLogger logger.ILog) (*router.Mux,
 			}
 
 			// Write the content.
-			w.WriteHeader(status)
 			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(status)
 			err := json.NewEncoder(w).Encode(resp.Body)
 			if err != nil {
 				w.Write([]byte(`{"status":"Internal Server Error","message":"problem encoding JSON"}`))

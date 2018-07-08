@@ -100,8 +100,38 @@ cd src/app/webapi
 # Generate the swagger spec.
 swagger generate spec -o ./swagger.json
 
+# Replace 'example' with 'x-example'.
+sed -i '' -e 's/example/x\-example/' swagger.json
+
 # Serve the spec for the browser.
 swagger serve -F=swagger ./swagger.json
+```
+
+### Dredd Configuration
+
+```bash
+# CD to the webapi folder.
+cd src/app/webapi
+
+# Initialize dredd.
+dredd init
+? Location of the API description document apiary.apib
+? Command to start API backend server e.g. (bundle exec rails server) go run cmd/webapi/webapi.go
+? URL of tested API endpoint http://127.0.0.1:8080
+? Programming language of hooks go
+? Do you want to use Apiary test inspector? Yes
+? Please enter Apiary API key or leave empty for anonymous reporter
+? Dredd is best served with Continuous Integration. Create CircleCI config for Dredd? Yes
+
+Configuration saved to dredd.yml
+
+Install hooks handler and run Dredd test with:
+
+  $ go get github.com/snikch/goodman/cmd/goodman
+  $ dredd
+
+# Start dredd.
+dredd --server=cmd/webapi/webapi --hookfiles=cmd/hook/hooks
 ```
 
 ## Vendoring

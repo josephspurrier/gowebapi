@@ -28,6 +28,7 @@ func (p *Endpoint) Show(w http.ResponseWriter, r *http.Request) (int, error) {
 	// swagger:parameters UserShow
 	type request struct {
 		// in: path
+		// x-example: USERID
 		UserID string `json:"user_id" validate:"required"`
 	}
 

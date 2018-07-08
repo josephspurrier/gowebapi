@@ -19,6 +19,10 @@ before_install:
   - go get github.com/axw/gocov/gocov
   - go get github.com/mattn/goveralls
   - go get golang.org/x/tools/cmd/cover
+  - npm install -g dredd@5.1.11
+
+before_script:
+  - dredd
 
 script:
   - $GOPATH/bin/goveralls
