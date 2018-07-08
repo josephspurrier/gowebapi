@@ -8,7 +8,7 @@ init: false
 custom: {}
 names: false
 only: []
-reporter: apiary
+reporter: []
 output: []
 header: []
 sorted: false

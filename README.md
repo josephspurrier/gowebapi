@@ -112,6 +112,8 @@ This projects uses [Dredd](https://github.com/apiaryio/dredd) to test the Swagge
 
 The Go documentation for Dredd is [here](https://dredd.readthedocs.io/en/latest/hooks-go.html).
 
+Sample output from Dredd is [here](https://github.com/josephspurrier/gowebapi/wiki/Dredd-Sample-Output).
+
 ### Install Dredd
 
 ```bash
@@ -353,6 +355,11 @@ func (p *Endpoint) Index(w http.ResponseWriter, r *http.Request) (int, error) {
 	return p.Response.Results(w, &resp.Body, results)
 }
 ```
+
+## Logging
+
+You can disable logging on the server by setting this environment variable:
+`WEBAPI_LOG_LEVEL=none`
 
 ## Test Coverage
 

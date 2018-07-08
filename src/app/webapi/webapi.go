@@ -66,10 +66,9 @@ func (c *AppConfig) ParseJSON(b []byte) error {
 // *****************************************************************************
 
 // Routes will set up the components and return the router.
-func Routes(config *AppConfig, appLogger logger.ILog) (*router.Mux,
+func Routes(config *AppConfig, l logger.ILog) (*router.Mux,
 	*http.Server, *http.Server) {
 	// Set up the dependencies.
-	l := logger.New(appLogger)
 	db := Database(config.Database, l)
 	q := query.New(db)
 	b := bind.New()
@@ -129,13 +128,13 @@ func Routes(config *AppConfig, appLogger logger.ILog) (*router.Mux,
 			http.Redirect(w, req, "https://"+req.Host, http.StatusMovedPermanently)
 		})
 	} else {
-		httpServer.Handler = middleware.Wrap(r, appLogger, config.JWT.Secret)
+		httpServer.Handler = middleware.Wrap(r, l, config.JWT.Secret)
 	}
 
 	// Set up the HTTPS listener.
 	httpsServer := new(http.Server)
 	httpsServer.Addr = config.Server.HTTPSAddress()
-	httpsServer.Handler = middleware.Wrap(r, appLogger, config.JWT.Secret)
+	httpsServer.Handler = middleware.Wrap(r, l, config.JWT.Secret)
 
 	return r, httpServer, httpsServer
 }
