@@ -3,6 +3,8 @@ package auth
 import (
 	"net/http"
 	"time"
+
+	"app/webapi/model"
 )
 
 // Index .
@@ -13,27 +15,13 @@ import (
 // Responses:
 //   200: AuthIndexResponse
 func (p *Endpoint) Index(w http.ResponseWriter, r *http.Request) (int, error) {
-	t, err := p.Token.Generate("jsmith", 8*time.Hour)
+	t, err := p.Token.Generate("1", 8*time.Hour)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
 
-	// Response returns 200.
-	// swagger:response AuthIndexResponse
-	type response struct {
-		// in: body
-		Body struct {
-			// Required: true
-			Status string `json:"status"`
-			// Required: true
-			Data struct {
-				// Required: true
-				Token string `json:"token"`
-			} `json:"data"`
-		}
-	}
-
-	resp := new(response)
+	resp := new(model.AuthIndexResponse)
+	resp.Body.Status = http.StatusText(http.StatusOK)
 	resp.Body.Data.Token = t
-	return p.Response.Results(w, &resp.Body, nil)
+	return p.Response.JSON(w, resp.Body)
 }

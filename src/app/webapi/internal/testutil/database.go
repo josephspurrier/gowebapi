@@ -39,8 +39,7 @@ func LoadDatabase(t *testing.T) {
 	db = ConnectDatabase(true)
 	b, err := ioutil.ReadFile("../../../../../migration/tables-only.sql")
 	if err != nil {
-		log.Println(err)
-		os.Exit(1)
+		t.Error(err)
 	}
 
 	// Split each statement.
@@ -51,7 +50,7 @@ func LoadDatabase(t *testing.T) {
 		}
 		_, err = db.Exec(s)
 		if err != nil {
-			log.Println(err)
+			t.Error(err)
 		}
 	}
 }

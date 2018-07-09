@@ -2,15 +2,15 @@ package auth_test
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 	"time"
 
 	"app/webapi/component"
-	"app/webapi/component/auth"
-	"app/webapi/pkg/router"
+	"app/webapi/internal/testrequest"
+	"app/webapi/model"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -24,15 +24,15 @@ func TestIndex(t *testing.T) {
 		return enc, nil
 	}
 
-	mux := router.New()
-	auth.New(core).Routes(mux)
+	w := testrequest.SendForm(t, core, "GET", "/v1/auth", nil)
 
-	r := httptest.NewRequest("GET", "/v1/auth", nil)
-	w := httptest.NewRecorder()
-	mux.ServeHTTP(w, r)
+	r := new(model.AuthIndexResponse)
+	err := json.Unmarshal(w.Body.Bytes(), &r.Body)
+	assert.Nil(t, err)
 
 	assert.Equal(t, http.StatusOK, w.Code)
-	assert.Equal(t, `{"status":"","data":{"token":"MDEyMzQ1Njc4OUFCQ0RFRjAxMjM0NTY3ODlBQkNERUY="}}`+"\n", w.Body.String())
+	assert.Equal(t, "OK", r.Body.Status)
+	assert.Equal(t, "MDEyMzQ1Njc4OUFCQ0RFRjAxMjM0NTY3ODlBQkNERUY=", r.Body.Data.Token)
 }
 
 func TestIndexError(t *testing.T) {
@@ -42,13 +42,13 @@ func TestIndexError(t *testing.T) {
 		return "", errors.New("generate error")
 	}
 
-	mux := router.New()
-	auth.New(core).Routes(mux)
+	w := testrequest.SendForm(t, core, "GET", "/v1/auth", nil)
 
-	r := httptest.NewRequest("GET", "/v1/auth", nil)
-	w := httptest.NewRecorder()
-	mux.ServeHTTP(w, r)
+	r := new(model.InternalServerErrorResponse)
+	err := json.Unmarshal(w.Body.Bytes(), &r.Body)
+	assert.Nil(t, err)
 
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
-	assert.Equal(t, `generate error`+"\n", w.Body.String())
+	assert.Equal(t, "Internal Server Error", r.Body.Status)
+	assert.Equal(t, "generate error", r.Body.Message)
 }

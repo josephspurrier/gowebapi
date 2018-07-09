@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strings"
 
-	"app/webapi/internal/response"
+	"app/webapi/model"
 	"app/webapi/pkg/webtoken"
 )
 
@@ -36,7 +36,7 @@ func (c *Config) Handler(next http.Handler) http.Handler {
 			if len(bearer) < 8 || !strings.HasPrefix(bearer, "Bearer ") {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusUnauthorized)
-				r := new(response.UnauthorizedResponse)
+				r := new(model.UnauthorizedResponse)
 				r.Body.Status = http.StatusText(http.StatusUnauthorized)
 				r.Body.Message = "authorization token is missing"
 				err := json.NewEncoder(w).Encode(r.Body)
@@ -52,7 +52,7 @@ func (c *Config) Handler(next http.Handler) http.Handler {
 			if err != nil {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusUnauthorized)
-				r := new(response.UnauthorizedResponse)
+				r := new(model.UnauthorizedResponse)
 				r.Body.Status = http.StatusText(http.StatusUnauthorized)
 				r.Body.Message = "authorization token is invalid"
 				err := json.NewEncoder(w).Encode(r.Body)

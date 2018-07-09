@@ -4,6 +4,8 @@ import (
 	"errors"
 	"net/http"
 
+	"app/webapi/model"
+	"app/webapi/pkg/structcopy"
 	"app/webapi/store"
 )
 
@@ -48,21 +50,20 @@ func (p *Endpoint) Show(w http.ResponseWriter, r *http.Request) (int, error) {
 	if err != nil {
 		return http.StatusInternalServerError, err
 	} else if !exists {
-		return http.StatusBadRequest, errors.New("item not found")
+		return http.StatusBadRequest, errors.New("user not found")
 	}
 
-	// Response returns 200.
-	// swagger:response UserShowResponse
-	type response struct {
-		// in: body
-		Body struct {
-			// Required: true
-			Status string `json:"status"`
-			// Required: true
-			Data []store.User `json:"data"`
-		}
+	// Copy to the response.
+	arr := make([]model.UserShowResponseData, 0)
+	item := new(model.UserShowResponseData)
+	err = structcopy.ByTag(u, "db", item, "json")
+	if err != nil {
+		return http.StatusInternalServerError, err
 	}
+	arr = append(arr, *item)
 
-	resp := new(response)
-	return p.Response.Results(w, &resp.Body, []store.User{*u})
+	resp := new(model.UserShowResponse)
+	resp.Body.Status = http.StatusText(http.StatusOK)
+	resp.Body.Data = arr
+	return p.Response.JSON(w, resp.Body)
 }

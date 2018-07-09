@@ -29,8 +29,10 @@ func main() {
 		l.Fatalf("%v", err)
 	}
 
-	// Set up the routes.
-	_, httpServer, httpsServer := webapi.Routes(config, l)
+	// Set up the service, routes, and the handlers.
+	core := webapi.Services(config, l)
+	mux := webapi.Routes(core)
+	httpServer, httpsServer := webapi.Handlers(config, l, mux)
 
 	// Start the listeners based on the config.
 	config.Server.Run(httpServer, httpsServer, l)

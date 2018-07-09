@@ -1,16 +1,15 @@
 package user_test
 
 import (
+	"encoding/json"
 	"net/http"
-	"net/http/httptest"
 	"net/url"
-	"strings"
 	"testing"
 
 	"app/webapi/component"
-	"app/webapi/component/user"
+	"app/webapi/internal/testrequest"
 	"app/webapi/internal/testutil"
-	"app/webapi/pkg/router"
+	"app/webapi/model"
 	"app/webapi/store"
 
 	"github.com/stretchr/testify/assert"
@@ -19,9 +18,6 @@ import (
 func TestDestroy(t *testing.T) {
 	testutil.LoadDatabase(t)
 	core, _ := component.NewCoreMock()
-
-	mux := router.New()
-	user.New(core).Routes(mux)
 
 	u := store.NewUser(core.DB, core.Q)
 	ID, err := u.Create("John", "Smith", "jsmith@example.com", "password")
@@ -33,13 +29,15 @@ func TestDestroy(t *testing.T) {
 	form.Add("email", "jsmith@example.com")
 	form.Add("password", "password")
 
-	r := httptest.NewRequest("DELETE", "/v1/user/"+ID, strings.NewReader(form.Encode()))
-	r.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	w := httptest.NewRecorder()
-	mux.ServeHTTP(w, r)
+	w := testrequest.SendForm(t, core, "DELETE", "/v1/user/"+ID, form)
+
+	r := new(model.OKResponse)
+	err = json.Unmarshal(w.Body.Bytes(), &r.Body)
+	assert.Nil(t, err)
 
 	assert.Equal(t, http.StatusOK, w.Code)
-	assert.Contains(t, w.Body.String(), `{"status":"OK","message":"user deleted"}`)
+	assert.Equal(t, "OK", r.Body.Status)
+	assert.Equal(t, "user deleted", r.Body.Message)
 
 	found, err := u.FindOneByID(u, ID)
 	assert.Nil(t, err)

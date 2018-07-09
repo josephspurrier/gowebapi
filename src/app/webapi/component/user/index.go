@@ -1,8 +1,10 @@
 package user
 
 import (
+	"app/webapi/pkg/structcopy"
 	"net/http"
 
+	"app/webapi/model"
 	"app/webapi/store"
 )
 
@@ -30,18 +32,19 @@ func (p *Endpoint) Index(w http.ResponseWriter, r *http.Request) (int, error) {
 		return http.StatusInternalServerError, err
 	}
 
-	// Response returns 200.
-	// swagger:response UserIndexResponse
-	type response struct {
-		// in: body
-		Body struct {
-			// Required: true
-			Status string `json:"status"`
-			// Required: true
-			Data store.UserGroup `json:"data"`
+	// Copy to the response.
+	arr := make([]model.UserIndexResponseData, 0)
+	for _, u := range results {
+		item := new(model.UserIndexResponseData)
+		err = structcopy.ByTag(&u, "db", item, "json")
+		if err != nil {
+			return http.StatusInternalServerError, err
 		}
+		arr = append(arr, *item)
 	}
 
-	resp := new(response)
-	return p.Response.Results(w, &resp.Body, results)
+	resp := new(model.UserIndexResponse)
+	resp.Body.Status = http.StatusText(http.StatusOK)
+	resp.Body.Data = arr
+	return p.Response.JSON(w, resp.Body)
 }
