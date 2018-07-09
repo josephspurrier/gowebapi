@@ -42,7 +42,7 @@ func ByTag(src interface{}, srcTag string, dst interface{}, dstTag string) (err 
 			fieldD := vd.Field(jD)
 			tagD := keysDst.Field(jD).Tag
 
-			// Set the "status" field.
+			// If the tags match, copy the value from src to dst field.
 			if tagS.Get(srcTag) == tagD.Get(dstTag) {
 				if fieldS.Type() != fieldD.Type() {
 					return fmt.Errorf("field types do not match - src type '%v' for tag '%v' do not match dst type '%v' for tag '%v'",
