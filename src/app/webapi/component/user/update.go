@@ -48,7 +48,7 @@ func (p *Endpoint) Update(w http.ResponseWriter, r *http.Request) (int, error) {
 		return http.StatusBadRequest, err
 	}
 
-	// Create the store.
+	// Create the DB store.
 	u := store.NewUser(p.DB, p.Q)
 
 	// Determine if the user exists.
@@ -59,7 +59,7 @@ func (p *Endpoint) Update(w http.ResponseWriter, r *http.Request) (int, error) {
 		return http.StatusBadRequest, errors.New("user not found")
 	}
 
-	// Update item.
+	// Update the item.
 	err = u.Update(u.ID, req.FirstName, req.LastName, req.Email, req.Password)
 	if err != nil {
 		return http.StatusInternalServerError, err

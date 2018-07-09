@@ -42,7 +42,7 @@ func (p *Endpoint) Show(w http.ResponseWriter, r *http.Request) (int, error) {
 		return http.StatusBadRequest, err
 	}
 
-	// Create the store.
+	// Create the DB store.
 	u := store.NewUser(p.DB, p.Q)
 
 	// Get a user.
@@ -53,7 +53,7 @@ func (p *Endpoint) Show(w http.ResponseWriter, r *http.Request) (int, error) {
 		return http.StatusBadRequest, errors.New("user not found")
 	}
 
-	// Copy to the response.
+	// Copy the items to the JSON model.
 	arr := make([]model.UserShowResponseData, 0)
 	item := new(model.UserShowResponseData)
 	err = structcopy.ByTag(u, "db", item, "json")
@@ -62,6 +62,7 @@ func (p *Endpoint) Show(w http.ResponseWriter, r *http.Request) (int, error) {
 	}
 	arr = append(arr, *item)
 
+	// Send the response.
 	resp := new(model.UserShowResponse)
 	resp.Body.Status = http.StatusText(http.StatusOK)
 	resp.Body.Data = arr

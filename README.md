@@ -10,15 +10,9 @@
 
 This project demonstrates how to structure and build an API using the Go language without a framework. Only carefully chosen packages are included. The API is designed to be easy to troubleshoot and easy to modify. Everyone structures their API differently, but ultimately consistency is key. The more consistent your API is, the easier it will be for other people to interact with it. Dredd is used to test the generated Swagger spec against the API to ensure it's correct.
 
-**Older Version:** The previous version that was around for a while was
-0.1-alpha. If you want to see that code, you can view the
-[tag](https://github.com/josephspurrier/gowebapi/releases/tag/0.1-alpha).
-The current version is a significant refactor that follows better practices.
+**Older Version:** The previous version that was around for a while was 0.1-alpha. If you want to see that code, you can view the [tag](https://github.com/josephspurrier/gowebapi/releases/tag/0.1-alpha). The current version is a significant refactor that follows better practices.
 
-You cannot use `go get` with this repository. You should perform a `git clone`
-then set your GOPATH to the folder that git clone created called `gowebapi`.
-This allows you to easily fork the repository and build your own applications
-without rewritting any import paths.
+You cannot use `go get` with this repository. You should perform a `git clone` then set your GOPATH to the folder that git clone created called `gowebapi`. This allows you to easily fork the repository and build your own applications without rewritting any import paths.
 
 You must use Go 1.7 or newer because it uses the http context.
 
@@ -31,27 +25,17 @@ Use one of the following commands to start a MySQL container with Docker:
 
 Start MySQL and import `migration/mysql.sql` to create the database and tables.
 
-Copy `config.json` to `src/app/webapi/cmd/webapi/config.json` and edit the
-**Database** section so the connection information matches your MySQL instance.
-Also add a base64 encoded `JWT.Secret` to the config. You can generate it using
-the command line app in the repo - run these commands:
+Copy `config.json` to `src/app/webapi/cmd/webapi/config.json` and edit the **Database** section so the connection information matches your MySQL instance. Also add a base64 encoded `JWT.Secret` to the config. You can generate it using the command line app in the repo - run these commands:
 - `cd src/app/webapi/cmd/cliapp`
 - `go run cliapp.go generate`
 
-The database password is read from the `config.json` first, but is overwritten
-by the environment variable, `DB_PASSWORD`, if it is set.
+The database password is read from the `config.json` first, but is overwritten by the environment variable, `DB_PASSWORD`, if it is set.
 
-Build and run from the root directory. Open your REST client to:
-http://localhost/v1. You should see the **welcome** message and status **OK**.
+Build and run from the root directory. Open your REST client to: http://localhost/v1. You should see the **welcome** message and status **OK**.
 
-You'll need to authenticate with at http://localhost/v1/auth before you can use
-any of the user endpoints. Once you have a token, add it to the request header
-with a name of `Authorization` and with a value of `Bearer {TOKEN HERE}`.
-To create a user, send a POST request to http://localhost/v1/user with the
-following fields: first_name, last_name, email, and password.
+You'll need to authenticate with at http://localhost/v1/auth before you can use any of the user endpoints. Once you have a token, add it to the request header with a name of `Authorization` and with a value of `Bearer {TOKEN HERE}`. To create a user, send a POST request to http://localhost/v1/user with the following fields: first_name, last_name, email, and password.
 
-Currently, only a Content-Type of `application/x-www-form-urlencoded` is
-supported when sending to the API.
+Currently, only a Content-Type of `application/x-www-form-urlencoded` is supported when sending to the API.
 
 ## Available Endpoints
 
@@ -68,9 +52,7 @@ The following endpoints are available:
 
 ## Swagger
 
-This projects uses [Swagger v2](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md)
-to document the API. The entire Swagger spec is generated from the code in this
-repository.
+This projects uses [Swagger v2](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md) to document the API. The entire Swagger spec is generated from the code in this repository.
 
 The Swagger UI linked back to this project can be viewed
 [here](http://petstore.swagger.io/?url=https://raw.githubusercontent.com/josephspurrier/gowebapi/master/src/app/webapi/swagger.json).
@@ -80,8 +62,7 @@ The Swagger spec JSON file is available
 
 ### Install Swagger
 
-This tool will generate the Swagger spec from annotations in the Go code. It
-will read the comments in the code and will pull types from structs.
+This tool will generate the Swagger spec from annotations in the Go code. It will read the comments in the code and will pull types from structs.
 
 ```bash
 go get github.com/go-swagger/go-swagger/cmd/swagger
@@ -97,7 +78,10 @@ cd src/app/webapi
 swagger generate spec -o ./swagger.json
 
 # Replace 'example' with 'x-example' in the swagger spec.
+## MacOS
 sed -i '' -e 's/example/x\-example/' ./swagger.json
+## Linux
+sed -i'' -e 's/example/x\-example/' ./swagger.json
 
 # Validate the swagger spec.
 swagger validate ./swagger.json
@@ -132,8 +116,7 @@ dredd
 
 ## Vendoring
 
-This project uses [dep](https://github.com/golang/dep). The `dep init` command
-was run from inside the `src/app/webapi` folder.
+This project uses [dep](https://github.com/golang/dep). The `dep init` command was run from inside the `src/app/webapi` folder.
 
 These packages are used in the project:
 - MySQL Driver: [github.com/go-sql-driver/mysql](http://github.com/go-sql-driver/mysql)
@@ -146,39 +129,29 @@ These packages are used in the project:
 
 ## Folder Structure
 
-All the Go code is inside the `src` folder. This allows you to easily fork this
-project to use and test it. You'll just need to set your GOPATH to the
-`gowebapi` folder after you do a `git clone` (don't do a `go get`, it will not
-work).
+All the Go code is inside the `src` folder. This allows you to easily fork this project to use and test it. You'll just need to set your GOPATH to the `gowebapi` folder after you do a `git clone` (don't do a `go get`, it will not work).
 
 In the `src/app/webapi` folder, you see a few top level folders:
 - **cmd** - contains the main function and a static folder for the favicon.
 - **component** - contains sets of related endpoints and database code.
 - **internal** - contains project specific packages with dependencies.
 - **middleware** - contains http wrappers for logging and CORS.
-- **store** - contains the files with SQL in them.
-- **pkg** - contains generic packages withou project specific dependencies - these can be safely imported by other projects.
+- **model** - contains the files with JSON structs that will outputted by the API.
+- **pkg** - contains generic packages without project specific dependencies - these can be safely moved to other projects without internal dependencies.
+- **store** - contains the files with SQL used to query the database.
 
 ## Components
 
 In the root of the `src/app/webapi/component` folder, you see:
-- **core.go** - contains the dependencies shared by all the components:
-logger, database connection, request bind/validation, and the responses.
-- **core_mock.go** - contains the mocked dependencies which can be used by tests
-to modify all the mocked dependencies.
-- **interface.go** - contains all the interfaces for the dependencies so you can
-easily mock out each one for testing purposes.
+- **core.go** - contains the dependencies shared by all the components: logger, database connection, request bind/validation, and the responses.
+- **core_mock.go** - contains the mocked dependencies which can be used by tests to modify the mocked dependencies.
+- **interface.go** - contains all the interfaces for the dependencies so you can easily mock out each one for testing purposes.
 
-Inside each component, you see a `component.go` file which contains the main
-struct and all the routes. You'll also see individual files for each endpoint
-with Swagger annotations.
+Inside each component, you see a `component.go` file which contains the main struct and all the routes. You'll also see individual files for each endpoint with Swagger annotations and the tests for each endpoint.
 
 ## Store
 
-In the `store` folder, you see `user.go` which has the SQL queries. Notice how
-`IDatabase` and the `IQuery` are passed into each store. This provides a unified
-way to run database queries and also provides a base set of simple SQL queries
-so you don't have to rewrite them for every table:
+In the `store` folder, you see `user.go` which has the SQL queries. Notice how `IDatabase` and the `IQuery` are passed into each store. This provides a unified way to run database queries and also provides a base set of simple SQL queries so you don't have to rewrite them for every table:
 - FindOneByID(dest query.IRecord, ID string) (found bool, err error)
 - FindAll(dest query.IRecord) (total int, err error)
 - ExistsByID(db query.IRecord, s string) (found bool, err error)
@@ -186,12 +159,9 @@ so you don't have to rewrite them for every table:
 - DeleteOneByID(dest query.IRecord, ID string) (affected int, err error)
 - DeleteAll(dest query.IRecord) (affected int, err error)
 
-This is not an ORM - it just provides you with a simple query builder. Since the
-struct has an anonymous field, `component.IQuery`, you can overwrite any of the
-functions.
+This is not an ORM - it just provides you with a simple query builder. Since the struct has an anonymous field, `component.IQuery`, you can overwrite any of the functions.
 
-For instance, to retrieve a single user from the database, you would use this
-code:
+For instance, to retrieve a single user from the database, you would use this code:
 
 ```go
 // Create the store.
@@ -215,8 +185,7 @@ func (q *Q) FindOneByID(dest IRecord, ID string) (exists bool, err error) {
 }
 ```
 
-If you wanted to change the query so it excludes deleted users, you could add a
-new function to the `store/user.go` file so it looks like this:
+If you wanted to change the query so it excludes deleted users, you could add a new function to the `store/user.go` file so it looks like this:
 
 ```go
 // FindOneByID will find a record by string ID excluding deleted records.
@@ -237,15 +206,11 @@ func (x *User) FindOneByID(dest query.IRecord, ID string) (exists bool, err erro
 }
 ```
 
-This allows you to standardize on how to interact with your database models
-throughout the team.
+This allows you to standardize on how to interact with your database models throughout the team.
 
 ## Endpoint HTTP Handlers
 
-In order to make the endpoints error driven, all the http handler functions must
-return an `int` and an `error`. This allows error handling to be centralized
-in the `webapi.go` file by setting the `router.ServeHTTP` variable. You can see
-the routes in the `component/user/component.go` file:
+In order to make the endpoints error driven, all the http handler functions must return an `int` and an `error`. This allows error handling to be centralized in the `webapi.go` file by setting the `router.ServeHTTP` variable. You can see the routes in the `component/user/component.go` file:
 
 ```go
 // Routes will set up the endpoints.
@@ -259,8 +224,7 @@ func (p *Endpoint) Routes(router component.IRouter) {
 }
 ```
 
-The endpoints are separated into files under each component folder and they look
-like this:
+The endpoints are separated into files under each component folder and they look like this:
 
 ```go
 func (p *Endpoint) DestroyAll(w http.ResponseWriter, r *http.Request) (int, error) {
@@ -281,10 +245,7 @@ func (p *Endpoint) DestroyAll(w http.ResponseWriter, r *http.Request) (int, erro
 
 ## Request Validation
 
-The `app/webapi/internal/bind` is a wrapper around the
-`github.com/go-playground/validator` package so it can validate structs. You can
-view the `user/create.go` file to see where the email validation and the
-required validation is specified in the tags:
+The `app/webapi/internal/bind` is a wrapper around the `github.com/go-playground/validator` package so it can validate structs. You can view the `user/create.go` file to see where the email validation and the required validation is specified in the tags:
 
 ```go
 // swagger:parameters UserCreate
@@ -314,22 +275,11 @@ if err := p.Bind.FormUnmarshal(req, r); err != nil {
 
 ## Reflection
 
-The `app/webapi/internal/bind` and the `app/webapi/internal/response` packages
-use reflection. The `bind` package will take the form parameters from the
-request object and map them to a struct. The `response` package will set the
-field values via the JSON tags: **status** and **data**.
-This helps reduce the code in the `endpoint.go` files.
-
-You'll notice when calling the `Results()` function, you'll pass in a struct
-pointer and the results from the data without setting these on the `response`
-struct - these will be set using reflection. Just make sure to set the JSON
-tags to `status` and `data`. The Status field must be a string and the data
-being passed in must match the type specified in the body of the struct or it
-will throw a 500 error.
+The `app/webapi/internal/bind` and the `app/webapi/pkg/structcopy` packages use reflection. The `bind` package will take the form parameters from the request object and map them to a struct. The `structcopy` package will copy the values from the SQL store structs and set the fields on the JSON model structs based on the JSON tags.
 
 ```go
 func (p *Endpoint) Index(w http.ResponseWriter, r *http.Request) (int, error) {
-	// Create the store.
+	// Create the DB store.
 	u := store.NewUser(p.DB, p.Q)
 
 	// Get all items.
@@ -339,27 +289,28 @@ func (p *Endpoint) Index(w http.ResponseWriter, r *http.Request) (int, error) {
 		return http.StatusInternalServerError, err
 	}
 
-	// Response returns 200.
-	// swagger:response UserIndexResponse
-	type response struct {
-		// in: body
-		Body struct {
-			// Required: true
-			Status string `json:"status"`
-			// Required: true
-			Data store.UserGroup `json:"data"`
+	// Copy the items to the JSON model.
+	arr := make([]model.UserIndexResponseData, 0)
+	for _, u := range results {
+		item := new(model.UserIndexResponseData)
+		err = structcopy.ByTag(&u, "db", item, "json")
+		if err != nil {
+			return http.StatusInternalServerError, err
 		}
+		arr = append(arr, *item)
 	}
 
-	resp := new(response)
-	return p.Response.Results(w, &resp.Body, results)
+	// Send the response.
+	resp := new(model.UserIndexResponse)
+	resp.Body.Status = http.StatusText(http.StatusOK)
+	resp.Body.Data = arr
+	return p.Response.JSON(w, resp.Body)
 }
 ```
 
 ## Logging
 
-You can disable logging on the server by setting this environment variable:
-`WEBAPI_LOG_LEVEL=none`
+You can disable logging on the server by setting an environment variable: `WEBAPI_LOG_LEVEL=none`
 
 ## Test Coverage
 

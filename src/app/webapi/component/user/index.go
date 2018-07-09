@@ -22,7 +22,7 @@ import (
 //   401: UnauthorizedResponse
 //   500: InternalServerErrorResponse
 func (p *Endpoint) Index(w http.ResponseWriter, r *http.Request) (int, error) {
-	// Create the store.
+	// Create the DB store.
 	u := store.NewUser(p.DB, p.Q)
 
 	// Get all items.
@@ -32,7 +32,7 @@ func (p *Endpoint) Index(w http.ResponseWriter, r *http.Request) (int, error) {
 		return http.StatusInternalServerError, err
 	}
 
-	// Copy to the response.
+	// Copy the items to the JSON model.
 	arr := make([]model.UserIndexResponseData, 0)
 	for _, u := range results {
 		item := new(model.UserIndexResponseData)
@@ -43,6 +43,7 @@ func (p *Endpoint) Index(w http.ResponseWriter, r *http.Request) (int, error) {
 		arr = append(arr, *item)
 	}
 
+	// Send the response.
 	resp := new(model.UserIndexResponse)
 	resp.Body.Status = http.StatusText(http.StatusOK)
 	resp.Body.Data = arr
