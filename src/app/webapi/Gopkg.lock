@@ -71,6 +71,15 @@
   version = "v1.0.0"
 
 [[projects]]
+  name = "github.com/snikch/goodman"
+  packages = [
+    "hooks",
+    "transaction"
+  ]
+  revision = "87fd9cdeb18985e2e3f79ee473d0dcabfef92b76"
+  version = "0.3.1"
+
+[[projects]]
   name = "github.com/stretchr/testify"
   packages = ["assert"]
   revision = "f35b8ab0b5a2cef36673838d662e249dd9c94686"
@@ -97,6 +106,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "e10cba8d895f1d8ca3b3aceb820d3c8d3f9aac010b11343308b81a15480e2b00"
+  inputs-digest = "b6ed6a5abf8fd0c1151da4df48dd79d45b23a29200348acf101b1e146f140855"
   solver-name = "gps-cdcl"
   solver-version = 1

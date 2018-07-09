@@ -13,7 +13,7 @@ import (
 // *****************************************************************************
 
 // Wrap will return the http.Handler wrapped in middleware.
-func Wrap(h http.Handler, logger logrequest.ILog, secret []byte) http.Handler {
+func Wrap(h http.Handler, l logrequest.ILog, secret []byte) http.Handler {
 	// JWT whitelist.
 	whitelist := []string{
 		"GET /v1",
@@ -29,6 +29,7 @@ func Wrap(h http.Handler, logger logrequest.ILog, secret []byte) http.Handler {
 
 	// Log every request.
 	lr := logrequest.New()
+	lr.SetLog(l)
 	h = lr.Handler(h)
 
 	return h

@@ -37,6 +37,7 @@ import (
 	"app/webapi/internal/bind"
 	"app/webapi/internal/response"
 	"app/webapi/middleware"
+	"app/webapi/model"
 	"app/webapi/pkg/database"
 	"app/webapi/pkg/logger"
 	"app/webapi/pkg/query"
@@ -65,11 +66,9 @@ func (c *AppConfig) ParseJSON(b []byte) error {
 // Application Logic
 // *****************************************************************************
 
-// Routes will set up the components and return the router.
-func Routes(config *AppConfig, appLogger logger.ILog) (*router.Mux,
-	*http.Server, *http.Server) {
+// Services will set up the production services.
+func Services(config *AppConfig, l logger.ILog) component.Core {
 	// Set up the dependencies.
-	l := logger.New(appLogger)
 	db := Database(config.Database, l)
 	q := query.New(db)
 	b := bind.New()
@@ -79,6 +78,11 @@ func Routes(config *AppConfig, appLogger logger.ILog) (*router.Mux,
 	// Create the component core.
 	core := component.NewCore(l, db, q, b, resp, t)
 
+	return core
+}
+
+// Routes will set up the components and return the router.
+func Routes(core component.Core) *router.Mux {
 	// Set up the routes.
 	r := router.New()
 	root.New(core).Routes(r)
@@ -95,15 +99,15 @@ func Routes(config *AppConfig, appLogger logger.ILog) (*router.Mux,
 	router.ServeHTTP = func(w http.ResponseWriter, r *http.Request, status int, err error) {
 		// Handle only errors.
 		if status >= 400 {
-			resp := new(response.GenericResponse)
+			resp := new(model.GenericResponse)
 			resp.Body.Status = http.StatusText(status)
 			if err != nil {
 				resp.Body.Message = err.Error()
 			}
 
 			// Write the content.
-			w.WriteHeader(status)
 			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(status)
 			err := json.NewEncoder(w).Encode(resp.Body)
 			if err != nil {
 				w.Write([]byte(`{"status":"Internal Server Error","message":"problem encoding JSON"}`))
@@ -114,11 +118,16 @@ func Routes(config *AppConfig, appLogger logger.ILog) (*router.Mux,
 		// Display server errors.
 		if status >= 500 {
 			if err != nil {
-				l.Printf("%v", err)
+				core.Log.Printf("%v", err)
 			}
 		}
 	}
 
+	return r
+}
+
+// Handlers returns the HTTP and HTTPS handlers.
+func Handlers(config *AppConfig, l logger.ILog, r *router.Mux) (*http.Server, *http.Server) {
 	// Set up the HTTP listener.
 	httpServer := new(http.Server)
 	httpServer.Addr = config.Server.HTTPAddress()
@@ -129,15 +138,15 @@ func Routes(config *AppConfig, appLogger logger.ILog) (*router.Mux,
 			http.Redirect(w, req, "https://"+req.Host, http.StatusMovedPermanently)
 		})
 	} else {
-		httpServer.Handler = middleware.Wrap(r, appLogger, config.JWT.Secret)
+		httpServer.Handler = middleware.Wrap(r, l, config.JWT.Secret)
 	}
 
 	// Set up the HTTPS listener.
 	httpsServer := new(http.Server)
 	httpsServer.Addr = config.Server.HTTPSAddress()
-	httpsServer.Handler = middleware.Wrap(r, appLogger, config.JWT.Secret)
+	httpsServer.Handler = middleware.Wrap(r, l, config.JWT.Secret)
 
-	return r, httpServer, httpsServer
+	return httpServer, httpsServer
 }
 
 // Database returns the database connection.

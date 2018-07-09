@@ -11,6 +11,10 @@ go:
   - "1.10"
   - "tip"
 
+cache:
+  directories:
+    - $(npm config get prefix)/lib/node_modules
+
 before_install:
   - mysql -e 'CREATE DATABASE webapitest;'
   - export GOPATH=$HOME/gopath/src/project-root
@@ -19,6 +23,18 @@ before_install:
   - go get github.com/axw/gocov/gocov
   - go get github.com/mattn/goveralls
   - go get golang.org/x/tools/cmd/cover
+  - go get github.com/go-swagger/go-swagger/cmd/swagger
+  - swagger generate spec -o ./swagger.json
+  - sed -i'' -e 's/example/x\-example/' ./swagger.json
+  - swagger validate ./swagger.json
+  - go get github.com/snikch/goodman/cmd/goodman
+  - npm install -g dredd@5.1.11
+  - go build -o ./cmd/webapi/webapi app/webapi/cmd/webapi
+  - go build -o ./cmd/hooks/hooks app/webapi/cmd/hooks
+  - cp testdata/config.json ./config.json
+
+before_script:
+  - dredd
 
 script:
   - $GOPATH/bin/goveralls

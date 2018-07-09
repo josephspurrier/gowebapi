@@ -45,7 +45,7 @@ func (p *Endpoint) Create(w http.ResponseWriter, r *http.Request) (int, error) {
 		return http.StatusBadRequest, err
 	}
 
-	// Create the store.
+	// Create the DB store.
 	u := store.NewUser(p.DB, p.Q)
 
 	// Check for existing user.
@@ -56,7 +56,7 @@ func (p *Endpoint) Create(w http.ResponseWriter, r *http.Request) (int, error) {
 		return http.StatusBadRequest, errors.New("user already exists")
 	}
 
-	// Create the user in the database.
+	// Create the item.
 	ID, err := u.Create(req.FirstName, req.LastName, req.Email, req.Password)
 	if err != nil {
 		return http.StatusInternalServerError, err

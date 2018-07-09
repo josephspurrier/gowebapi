@@ -1,13 +1,13 @@
 package root_test
 
 import (
+	"encoding/json"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	"app/webapi/component"
-	"app/webapi/component/root"
-	"app/webapi/pkg/router"
+	"app/webapi/internal/testrequest"
+	"app/webapi/model"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -15,13 +15,13 @@ import (
 func TestIndex(t *testing.T) {
 	core, _ := component.NewCoreMock()
 
-	mux := router.New()
-	root.New(core).Routes(mux)
+	w := testrequest.SendForm(t, core, "GET", "/v1", nil)
 
-	r := httptest.NewRequest("GET", "/v1", nil)
-	w := httptest.NewRecorder()
-	mux.ServeHTTP(w, r)
+	r := new(model.OKResponse)
+	err := json.Unmarshal(w.Body.Bytes(), &r.Body)
+	assert.Nil(t, err)
 
 	assert.Equal(t, http.StatusOK, w.Code)
-	assert.Equal(t, `{"status":"OK","message":"hello"}`+"\n", w.Body.String())
+	assert.Equal(t, "OK", r.Body.Status)
+	assert.Equal(t, "hello", r.Body.Message)
 }

@@ -1,12 +1,12 @@
 package component
 
 import (
-	"app/webapi/pkg/router"
 	"database/sql"
 	"net/http"
 	"time"
 
 	"app/webapi/pkg/query"
+	"app/webapi/pkg/router"
 )
 
 // IDatabase provides data query capabilities.
@@ -51,8 +51,8 @@ type IBind interface {
 
 // IResponse provides outputs for data.
 type IResponse interface {
+	JSON(w http.ResponseWriter, body interface{}) (int, error)
 	Created(w http.ResponseWriter, recordID string) (int, error)
-	Results(w http.ResponseWriter, body interface{}, data interface{}) (int, error)
 	OK(w http.ResponseWriter, message string) (int, error)
 }
 

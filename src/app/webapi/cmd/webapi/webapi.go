@@ -7,6 +7,7 @@ import (
 
 	"app/webapi"
 	"app/webapi/pkg/jsonconfig"
+	"app/webapi/pkg/logger"
 )
 
 func init() {
@@ -19,18 +20,20 @@ func init() {
 
 func main() {
 	// Create the logger.
-	appLogger := log.New(os.Stderr, "", log.LstdFlags)
+	l := logger.New(log.New(os.Stderr, "", log.LstdFlags))
 
 	// Load the configuration file.
 	config := new(webapi.AppConfig)
 	err := jsonconfig.Load("config.json", config)
 	if err != nil {
-		appLogger.Fatalf("%v", err)
+		l.Fatalf("%v", err)
 	}
 
-	// Set up the routes.
-	_, httpServer, httpsServer := webapi.Routes(config, appLogger)
+	// Set up the service, routes, and the handlers.
+	core := webapi.Services(config, l)
+	mux := webapi.Routes(core)
+	httpServer, httpsServer := webapi.Handlers(config, l, mux)
 
 	// Start the listeners based on the config.
-	config.Server.Run(httpServer, httpsServer, appLogger)
+	config.Server.Run(httpServer, httpsServer, l)
 }

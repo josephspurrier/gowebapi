@@ -170,6 +170,7 @@
         "parameters": [
           {
             "type": "string",
+            "x-example": "USERID",
             "x-go-name": "UserID",
             "name": "user_id",
             "in": "path",
@@ -205,6 +206,7 @@
         "parameters": [
           {
             "type": "string",
+            "x-example": "USERID",
             "x-go-name": "UserID",
             "name": "user_id",
             "in": "path",
@@ -268,6 +270,7 @@
         "parameters": [
           {
             "type": "string",
+            "x-example": "USERID",
             "x-go-name": "UserID",
             "name": "user_id",
             "in": "path",
@@ -292,20 +295,10 @@
     }
   },
   "definitions": {
-    "User": {
+    "UserIndexResponseData": {
       "type": "object",
-      "title": "User is a user of the system.",
+      "title": "UserIndexResponseData is the user data.",
       "properties": {
-        "created_at": {
-          "type": "string",
-          "format": "date-time",
-          "x-go-name": "CreatedAt"
-        },
-        "deleted_at": {
-          "type": "string",
-          "format": "date-time",
-          "x-go-name": "DeletedAt"
-        },
         "email": {
           "type": "string",
           "x-go-name": "Email"
@@ -322,35 +315,46 @@
           "type": "string",
           "x-go-name": "LastName"
         },
-        "password": {
+        "status_id": {
+          "type": "integer",
+          "format": "uint8",
+          "x-go-name": "StatusID"
+        }
+      },
+      "x-go-package": "app/webapi/model"
+    },
+    "UserShowResponseData": {
+      "type": "object",
+      "title": "UserShowResponseData is the user data.",
+      "properties": {
+        "email": {
           "type": "string",
-          "x-go-name": "Password"
+          "x-go-name": "Email"
+        },
+        "first_name": {
+          "type": "string",
+          "x-go-name": "FirstName"
+        },
+        "id": {
+          "type": "string",
+          "x-go-name": "ID"
+        },
+        "last_name": {
+          "type": "string",
+          "x-go-name": "LastName"
         },
         "status_id": {
           "type": "integer",
           "format": "uint8",
           "x-go-name": "StatusID"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time",
-          "x-go-name": "UpdatedAt"
         }
       },
-      "x-go-package": "app/webapi/store"
-    },
-    "UserGroup": {
-      "type": "array",
-      "title": "UserGroup represents a group of users.",
-      "items": {
-        "$ref": "#/definitions/User"
-      },
-      "x-go-package": "app/webapi/store"
+      "x-go-package": "app/webapi/model"
     }
   },
   "responses": {
     "AuthIndexResponse": {
-      "description": "Response returns 200.",
+      "description": "AuthIndexResponse returns 200.",
       "schema": {
         "type": "object",
         "required": [
@@ -420,50 +424,8 @@
         }
       }
     },
-    "GenericResponse": {
-      "description": "GenericResponse returns any status code.",
-      "schema": {
-        "type": "object",
-        "required": [
-          "status"
-        ],
-        "properties": {
-          "message": {
-            "description": "Message can contain a user friendly message.",
-            "type": "string",
-            "x-go-name": "Message"
-          },
-          "status": {
-            "description": "Status contains the string of the HTTP status.",
-            "type": "string",
-            "x-go-name": "Status"
-          }
-        }
-      }
-    },
     "InternalServerErrorResponse": {
       "description": "InternalServerErrorResponse returns 500.",
-      "schema": {
-        "type": "object",
-        "required": [
-          "status"
-        ],
-        "properties": {
-          "message": {
-            "description": "Message can contain a user friendly message.",
-            "type": "string",
-            "x-go-name": "Message"
-          },
-          "status": {
-            "description": "Status contains the string of the HTTP status.",
-            "type": "string",
-            "x-go-name": "Status"
-          }
-        }
-      }
-    },
-    "NotFoundResponse": {
-      "description": "NotFoundResponse returns 404.",
       "schema": {
         "type": "object",
         "required": [
@@ -526,26 +488,7 @@
       }
     },
     "UserIndexResponse": {
-      "description": "Response returns 200.",
-      "schema": {
-        "type": "object",
-        "required": [
-          "status",
-          "data"
-        ],
-        "properties": {
-          "data": {
-            "$ref": "#/definitions/UserGroup"
-          },
-          "status": {
-            "type": "string",
-            "x-go-name": "Status"
-          }
-        }
-      }
-    },
-    "UserShowResponse": {
-      "description": "Response returns 200.",
+      "description": "UserIndexResponse returns 200.",
       "schema": {
         "type": "object",
         "required": [
@@ -556,7 +499,30 @@
           "data": {
             "type": "array",
             "items": {
-              "$ref": "#/definitions/User"
+              "$ref": "#/definitions/UserIndexResponseData"
+            },
+            "x-go-name": "Data"
+          },
+          "status": {
+            "type": "string",
+            "x-go-name": "Status"
+          }
+        }
+      }
+    },
+    "UserShowResponse": {
+      "description": "UserShowResponse returns 200.",
+      "schema": {
+        "type": "object",
+        "required": [
+          "status",
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/UserShowResponseData"
             },
             "x-go-name": "Data"
           },

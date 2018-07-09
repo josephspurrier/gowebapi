@@ -1,8 +1,10 @@
 package logger_test
 
 import (
-	"app/webapi/pkg/logger"
+	"os"
 	"testing"
+
+	"app/webapi/pkg/logger"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -37,9 +39,18 @@ func TestPrintf(t *testing.T) {
 	arr = append(arr, 2)
 	arr = append(arr, "c")
 
-	l.Printf("test", arr[0], arr[1], arr[2])
+	l.Printf("test %v %v %v", arr[0], arr[1], arr[2])
 	assert.Equal(t, true, m.printfCalled)
 	assert.Equal(t, arr, m.printfV)
+
+	// Clear the logger.
+	m = new(mockLogger)
+
+	os.Setenv("WEBAPI_LOG_LEVEL", "none")
+	l.Printf("test %v %v %v", arr[0], arr[1], arr[2])
+	assert.Equal(t, false, m.printfCalled)
+	assert.Equal(t, "", m.printfFormat)
+	os.Unsetenv("WEBAPI_LOG_LEVEL")
 }
 
 func TestFatalf(t *testing.T) {
@@ -51,7 +62,16 @@ func TestFatalf(t *testing.T) {
 	arr = append(arr, 2)
 	arr = append(arr, "c")
 
-	l.Fatalf("test", arr[0], arr[1], arr[2])
+	l.Fatalf("test %v %v %v", arr[0], arr[1], arr[2])
 	assert.Equal(t, true, m.fatalfCalled)
 	assert.Equal(t, arr, m.fatalfV)
+
+	// Clear the logger.
+	m = new(mockLogger)
+
+	os.Setenv("WEBAPI_LOG_LEVEL", "none")
+	l.Fatalf("test %v %v %v", arr[0], arr[1], arr[2])
+	assert.Equal(t, false, m.fatalfCalled)
+	assert.Equal(t, "", m.fatalfFormat)
+	os.Unsetenv("WEBAPI_LOG_LEVEL")
 }

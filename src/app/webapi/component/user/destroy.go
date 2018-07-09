@@ -24,6 +24,7 @@ func (p *Endpoint) Destroy(w http.ResponseWriter, r *http.Request) (int, error) 
 	// swagger:parameters UserDestroy
 	type request struct {
 		// in: path
+		// x-example: USERID
 		UserID string `json:"user_id" validate:"required"`
 	}
 
@@ -35,10 +36,10 @@ func (p *Endpoint) Destroy(w http.ResponseWriter, r *http.Request) (int, error) 
 		return http.StatusBadRequest, err
 	}
 
-	// Create the store.
+	// Create the DB store.
 	u := store.NewUser(p.DB, p.Q)
 
-	// Delete an item.
+	// Delete the item.
 	count, err := u.DeleteOneByID(u, req.UserID)
 	if err != nil {
 		return http.StatusInternalServerError, err

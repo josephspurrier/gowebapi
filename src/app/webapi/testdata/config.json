@@ -1,0 +1,24 @@
+{
+    "Database": {
+        "Username": "root",
+        "Password": "",
+        "Database": "webapitest",
+        "Charset": "utf8mb4",
+        "Collation": "utf8mb4_unicode_ci",
+        "Hostname": "127.0.0.1",
+        "Port": 3306,
+        "Parameter": "parseTime=true&allowNativePasswords=true"
+    },
+    "JWT": {
+        "Secret": "TA8tALZAvLVLo4ToI44xF/nF6IyrRNOR6HSfpno/81M="
+    },
+    "Server": {
+        "Hostname": "",
+        "UseHTTP": true,
+        "UseHTTPS": false,
+        "HTTPPort": 8080,
+        "HTTPSPort": 443,
+        "CertFile": "tls/server.crt",
+        "KeyFile": "tls/server.key"
+    }
+}
