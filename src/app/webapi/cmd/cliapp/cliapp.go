@@ -1,6 +1,7 @@
 package main
 
 import (
+	"app/webapi/pkg/basemigrate"
 	"encoding/base64"
 	"fmt"
 	"log"
@@ -14,7 +15,11 @@ import (
 var (
 	app = kingpin.New("cliapp", "A command-line application to perform tasks for the webapi.")
 
-	cGenerate = app.Command("generate", "Generate 256 bit (32 byte) base64 encoded JWT.")
+	cGenerate  = app.Command("generate", "Generate 256 bit (32 byte) base64 encoded JWT.")
+	cDB        = app.Command("migrate", "Perform actions on the database.")
+	cDBAll     = cDB.Command("all", "Apply all changesets to the database.")
+	cDBReset   = cDB.Command("reset", "Run all rollbacks on the database.")
+	cDBAllFile = cDBAll.Arg("file", "Filename of the migration file.").Required().String()
 )
 
 func main() {
@@ -30,5 +35,7 @@ func main() {
 
 		enc := base64.StdEncoding.EncodeToString(b)
 		fmt.Println(enc)
+	case cDBAll.FullCommand():
+		basemigrate.Migrate(*cDBAllFile, true)
 	}
 }
