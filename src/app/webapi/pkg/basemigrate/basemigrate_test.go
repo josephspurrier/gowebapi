@@ -21,7 +21,7 @@ func TestMigrationFailDuplicate(t *testing.T) {
 func TestParse(t *testing.T) {
 	arr, err := basemigrate.ParseFile("testdata/success.sql")
 	assert.Nil(t, err)
-	assert.Equal(t, 5, len(arr))
+	assert.Equal(t, 3, len(arr))
 
 	//basemigrate.Debug(arr)
 

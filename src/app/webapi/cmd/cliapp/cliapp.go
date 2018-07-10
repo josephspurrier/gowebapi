@@ -36,6 +36,10 @@ func main() {
 		enc := base64.StdEncoding.EncodeToString(b)
 		fmt.Println(enc)
 	case cDBAll.FullCommand():
-		basemigrate.Migrate(*cDBAllFile, true)
+		err := basemigrate.Migrate(*cDBAllFile, true)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
 	}
 }

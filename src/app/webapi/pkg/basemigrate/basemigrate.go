@@ -85,7 +85,7 @@ func Migrate(filename string, verbose bool) (err error) {
 			}
 			continue
 		} else if err != nil && err != sql.ErrNoRows {
-			return err
+			return fmt.Errorf("internal error on changeset %v:%v - %v", cs.author, cs.id, err.Error())
 		}
 
 		arrQueries := strings.Split(cs.Changes(), ";")
@@ -98,7 +98,7 @@ func Migrate(filename string, verbose bool) (err error) {
 			// Execute the query.
 			_, err = db.Exec(q)
 			if err != nil {
-				return err
+				return fmt.Errorf("sql error on changeset %v:%v - %v", cs.author, cs.id, err.Error())
 			}
 		}
 

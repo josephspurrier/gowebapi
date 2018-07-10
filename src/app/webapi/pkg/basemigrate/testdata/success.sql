@@ -1,85 +1,43 @@
 --changeset josephspurrier:1
-CREATE TABLE player (
-    id BIGINT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-    steam_id VARCHAR(191) NOT NULL,
-    account_name VARCHAR(191) NOT NULL,
-
-    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP NULL DEFAULT NULL,
-
-    PRIMARY KEY (id),
-    CONSTRAINT u_player_account_name UNIQUE (account_name)
-);
---rollback DROP TABLE IF EXISTS player;
---changeset josephspurrier:2
-CREATE TABLE player_login (
-    id BIGINT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-    player_id BIGINT(10) UNSIGNED NOT NULL,
-    display_name VARCHAR(191) NOT NULL,
-    ip VARCHAR(191) NOT NULL,
-    login_at TIMESTAMP NOT NULL,
-
-    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP NULL DEFAULT NULL,
-
-    PRIMARY KEY (id),
-    FOREIGN KEY fk_player_login_player_id_player_id (player_id)
-        REFERENCES player(id) ON DELETE CASCADE
-);
---rollback DROP TABLE IF EXISTS player_login;
-
---changeset josephspurrier:3
-CREATE TABLE game (
-    id BIGINT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-    start_at TIMESTAMP NULL,
-    end_at TIMESTAMP NULL,
-
-    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP NULL DEFAULT NULL,
-
+SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
+CREATE TABLE user_status (
+    id TINYINT(1) UNSIGNED NOT NULL AUTO_INCREMENT,
+    
+    status VARCHAR(25) NOT NULL,
+    
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
+    
     PRIMARY KEY (id)
 );
---rollback DROP TABLE IF EXISTS game;
+--rollback DROP TABLE user_status;
 
---changeset josephspurrier:4
-CREATE TABLE game_winner (
-    id BIGINT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-    game_id BIGINT(10) UNSIGNED NOT NULL,
-    player_id BIGINT(10) UNSIGNED NOT NULL,
+--changeset josephspurrier:2
+INSERT INTO `user_status` (`id`, `status`, `created_at`, `updated_at`, `deleted`) VALUES
+(1, 'active',   CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0),
+(2, 'inactive', CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0);
+--rollback TRUNCATE TABLE user_status;
 
-    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP NULL DEFAULT NULL,
-
-    PRIMARY KEY (id),
-    FOREIGN KEY fk_game_winner_game_id_game_id (game_id)
-        REFERENCES game(id) ON DELETE CASCADE,
-    FOREIGN KEY fk_game_winner_player_id_player_id (player_id)
-        REFERENCES player(id) ON DELETE CASCADE
+--changeset josephspurrier:3
+SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
+CREATE TABLE user (
+    id VARCHAR(36) NOT NULL,
+    
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    password CHAR(60) NOT NULL,
+    
+    status_id TINYINT(1) UNSIGNED NOT NULL DEFAULT 1,
+    
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP DEFAULT 0,
+    
+    UNIQUE KEY (email),
+    CONSTRAINT `f_user_status` FOREIGN KEY (`status_id`) REFERENCES `user_status` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    
+    PRIMARY KEY (id)
 );
---rollback DROP TABLE IF EXISTS game_winner;
-
---changeset josephspurrier:5
-CREATE TABLE game_player (
-    id BIGINT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-    game_id BIGINT(10) UNSIGNED NOT NULL,
-    player_id BIGINT(10) UNSIGNED NOT NULL,
-    kills SMALLINT(10) UNSIGNED NOT NULL,
-    deaths SMALLINT(10) UNSIGNED NOT NULL,
-    assists SMALLINT(10) UNSIGNED NOT NULL,
-    damage_dealt MEDIUMINT(10) UNSIGNED NOT NULL,
-
-    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP NULL DEFAULT NULL,
-
-    PRIMARY KEY (id),
-    FOREIGN KEY fk_game_player_game_id_game_id (game_id)
-        REFERENCES game(id) ON DELETE CASCADE,
-    FOREIGN KEY fk_game_player_player_id_player_id (player_id)
-        REFERENCES player(id) ON DELETE CASCADE
-);
---rollback DROP TABLE IF EXISTS game_player;
+--rollback DROP TABLE user;
