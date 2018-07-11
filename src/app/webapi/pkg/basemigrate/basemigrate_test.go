@@ -3,22 +3,26 @@ package basemigrate_test
 import (
 	"testing"
 
+	"app/webapi/internal/testutil"
 	"app/webapi/pkg/basemigrate"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestMigration(t *testing.T) {
+	testutil.ResetDatabase()
 	err := basemigrate.Migrate("testdata/success.sql", false)
 	assert.Nil(t, err)
 }
 
 func TestMigrationFailDuplicate(t *testing.T) {
+	testutil.ResetDatabase()
 	err := basemigrate.Migrate("testdata/fail-duplicate.sql", false)
 	assert.Contains(t, err.Error(), "checksum does not match")
 }
 
 func TestParse(t *testing.T) {
+	testutil.ResetDatabase()
 	arr, err := basemigrate.ParseFile("testdata/success.sql")
 	assert.Nil(t, err)
 	assert.Equal(t, 3, len(arr))
