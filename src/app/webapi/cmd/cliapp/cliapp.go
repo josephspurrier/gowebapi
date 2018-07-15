@@ -15,11 +15,12 @@ import (
 var (
 	app = kingpin.New("cliapp", "A command-line application to perform tasks for the webapi.")
 
-	cGenerate  = app.Command("generate", "Generate 256 bit (32 byte) base64 encoded JWT.")
-	cDB        = app.Command("migrate", "Perform actions on the database.")
-	cDBAll     = cDB.Command("all", "Apply all changesets to the database.")
-	cDBReset   = cDB.Command("reset", "Run all rollbacks on the database.")
-	cDBAllFile = cDBAll.Arg("file", "Filename of the migration file.").Required().String()
+	cGenerate    = app.Command("generate", "Generate 256 bit (32 byte) base64 encoded JWT.")
+	cDB          = app.Command("migrate", "Perform actions on the database.")
+	cDBAll       = cDB.Command("all", "Apply all changesets to the database.")
+	cDBAllFile   = cDBAll.Arg("file", "Filename of the migration file.").Required().String()
+	cDBReset     = cDB.Command("reset", "Run all rollbacks on the database.")
+	cDBResetFile = cDBReset.Arg("file", "Filename of the migration file.").Required().String()
 )
 
 func main() {
@@ -37,6 +38,12 @@ func main() {
 		fmt.Println(enc)
 	case cDBAll.FullCommand():
 		err := basemigrate.Migrate(*cDBAllFile, true)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+	case cDBReset.FullCommand():
+		err := basemigrate.Reset(*cDBResetFile, true)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)

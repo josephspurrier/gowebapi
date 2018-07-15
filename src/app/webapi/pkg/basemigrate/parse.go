@@ -7,8 +7,8 @@ import (
 	"strings"
 )
 
-// parse will split the SQL migration into pieces.
-func parse(r io.Reader, filename string) ([]*Changeset, error) {
+// parseToOrderedArray will split the SQL migration into an ordered array.
+func parseToOrderedArray(r io.Reader, filename string) ([]*Changeset, error) {
 	scanner := bufio.NewScanner(r)
 	scanner.Split(bufio.ScanLines)
 

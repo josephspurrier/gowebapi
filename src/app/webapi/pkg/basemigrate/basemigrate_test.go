@@ -11,6 +11,8 @@ import (
 func TestMigration(t *testing.T) {
 	err := basemigrate.Migrate("testdata/success.sql", false)
 	assert.Nil(t, err)
+	err = basemigrate.Reset("testdata/success.sql", false)
+	assert.Nil(t, err)
 }
 
 func TestMigrationFailDuplicate(t *testing.T) {
@@ -18,8 +20,8 @@ func TestMigrationFailDuplicate(t *testing.T) {
 	assert.Contains(t, err.Error(), "checksum does not match")
 }
 
-func TestParse(t *testing.T) {
-	arr, err := basemigrate.ParseFile("testdata/success.sql")
+func TestParseArray(t *testing.T) {
+	arr, err := basemigrate.ParseFileArray("testdata/success.sql")
 	assert.Nil(t, err)
 	assert.Equal(t, 3, len(arr))
 
