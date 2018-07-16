@@ -3,10 +3,9 @@ package main
 import (
 	"encoding/base64"
 	"fmt"
-	"log"
 	"os"
 
-	"app/webapi/pkg/basemigrate"
+	"app/webapi/internal/basemigrate"
 	"app/webapi/pkg/securegen"
 
 	kingpin "gopkg.in/alecthomas/kingpin.v2"
@@ -40,7 +39,8 @@ func main() {
 	case cGenerate.FullCommand():
 		b, err := securegen.Bytes(32)
 		if err != nil {
-			log.Fatal(err)
+			fmt.Println(err)
+			os.Exit(1)
 		}
 
 		enc := base64.StdEncoding.EncodeToString(b)

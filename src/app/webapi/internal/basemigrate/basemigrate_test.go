@@ -4,8 +4,8 @@ import (
 	"os"
 	"testing"
 
+	"app/webapi/internal/basemigrate"
 	"app/webapi/internal/testutil"
-	"app/webapi/pkg/basemigrate"
 
 	"github.com/stretchr/testify/assert"
 )
