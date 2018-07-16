@@ -34,15 +34,14 @@ func ByTag(src interface{}, srcTag string, dst interface{}, dstTag string) (err 
 	// Loop through each field.
 	keysSrc := vs.Type()
 	keysDst := vd.Type()
-	for jS := 0; jS < vs.NumField(); jS++ {
-		fieldS := vs.Field(jS)
-		tagS := keysSrc.Field(jS).Tag
+	for jD := 0; jD < vd.NumField(); jD++ {
+		fieldD := vd.Field(jD)
+		tagD := keysDst.Field(jD).Tag
+		for jS := 0; jS < vs.NumField(); jS++ {
+			fieldS := vs.Field(jS)
+			tagS := keysSrc.Field(jS).Tag
 
-		for jD := 0; jD < vd.NumField(); jD++ {
-			fieldD := vd.Field(jD)
-			tagD := keysDst.Field(jD).Tag
-
-			// Set the "status" field.
+			// If the tags match, copy the value from src to dst field.
 			if tagS.Get(srcTag) == tagD.Get(dstTag) {
 				if fieldS.Type() != fieldD.Type() {
 					return fmt.Errorf("field types do not match - src type '%v' for tag '%v' do not match dst type '%v' for tag '%v'",

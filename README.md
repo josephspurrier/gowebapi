@@ -20,8 +20,8 @@ You must use Go 1.7 or newer because it uses the http context.
 
 Use one of the following commands to start a MySQL container with Docker:
 
-- Start MySQL without a password: `docker run -d -p 3306:3306 -e MYSQL_ALLOW_EMPTY_PASSWORD=yes mysql:5.7`
-- Start MySQL with a password: `docker run -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD=somepassword mysql:5.7`
+- Start MySQL without a password: `docker run -d --name=mysql57 -p 3306:3306 -e MYSQL_ALLOW_EMPTY_PASSWORD=yes mysql:5.7`
+- Start MySQL with a password: `docker run -d --name=mysql57 -p 3306:3306 -e MYSQL_ROOT_PASSWORD=somepassword mysql:5.7`
 
 Start MySQL and import `migration/mysql.sql` to create the database and tables.
 
@@ -312,7 +312,20 @@ func (p *Endpoint) Index(w http.ResponseWriter, r *http.Request) (int, error) {
 
 You can disable logging on the server by setting an environment variable: `WEBAPI_LOG_LEVEL=none`
 
-## Test Coverage
+## Testing
+
+All the tests use a database called: `webapitest`. The quickest way to get it set up is:
+
+```bash
+# Launch MySQL in docker container.
+docker run -d --name=mysql57 -p 3306:3306 -e MYSQL_ALLOW_EMPTY_PASSWORD=yes mysql:5.7
+
+# Create the database via docker exec.
+docker exec mysql57 sh -c 'exec mysql -uroot -e "CREATE DATABASE IF NOT EXISTS webapitest DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;"'
+
+# Or create the database manually.
+CREATE DATABASE webapitest DEFAULT CHARSET = utf8 COLLATE = utf8_unicode_ci;
+```
 
 You can use these commands to run tests:
 

@@ -30,8 +30,8 @@ func ConnectDatabase(dbSpecificDB bool) *database.DBW {
 	return dbw
 }
 
-// PrepDatabase will drop the test database and create a new test database.
-func PrepDatabase() {
+// ResetDatabase will drop and create the test database.
+func ResetDatabase() {
 	db := ConnectDatabase(false)
 	db.Exec(`DROP DATABASE IF EXISTS webapitest`)
 	db.Exec(`CREATE DATABASE webapitest DEFAULT CHARSET = utf8 COLLATE = utf8_unicode_ci`)
@@ -39,7 +39,7 @@ func PrepDatabase() {
 
 // LoadDatabase will set up the DB for the tests.
 func LoadDatabase(t *testing.T) {
-	PrepDatabase()
+	ResetDatabase()
 
 	db := ConnectDatabase(true)
 	b, err := ioutil.ReadFile("../../../../../migration/tables-only.sql")
@@ -62,7 +62,7 @@ func LoadDatabase(t *testing.T) {
 
 // LoadDatabaseFromFile will set up the DB for the tests.
 func LoadDatabaseFromFile(file string) {
-	PrepDatabase()
+	ResetDatabase()
 
 	db := ConnectDatabase(true)
 	b, err := ioutil.ReadFile(file)

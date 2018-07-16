@@ -31,7 +31,7 @@ func TestMigration(t *testing.T) {
 	setEnv()
 	defer unsetEnv()
 
-	testutil.PrepDatabase()
+	testutil.ResetDatabase()
 	db := testutil.ConnectDatabase(true)
 
 	// Run migration.
@@ -84,7 +84,7 @@ func TestMigrationFailDuplicate(t *testing.T) {
 	setEnv()
 	defer unsetEnv()
 
-	testutil.PrepDatabase()
+	testutil.ResetDatabase()
 	db := testutil.ConnectDatabase(true)
 
 	err := basemigrate.Migrate("testdata/fail-duplicate.sql", 0, false)
