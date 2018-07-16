@@ -14,8 +14,8 @@ type DBChangeset struct {
 	OrderExecuted int    `db:"orderexecuted"`
 }
 
-// Reset will remove all migrations.
-func Reset(filename string, verbose bool) (err error) {
+// Reset will remove all migrations.  If max is 0, all rollbacks are run.
+func Reset(filename string, max int, verbose bool) (err error) {
 	db, err := connect()
 	if err != nil {
 		return err
@@ -43,6 +43,8 @@ func Reset(filename string, verbose bool) (err error) {
 			return nil
 		}
 	}
+
+	maxCounter := 0
 
 	// Loop through each changeset.
 	for _, r := range results {
@@ -80,6 +82,14 @@ func Reset(filename string, verbose bool) (err error) {
 
 		if verbose {
 			fmt.Printf("Rollback applied: %v:%v\n", cs.author, cs.id)
+		}
+
+		// Only perform the maxium number of changes based on the max value.
+		maxCounter++
+		if max != 0 {
+			if maxCounter >= max {
+				break
+			}
 		}
 	}
 

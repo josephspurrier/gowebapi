@@ -6,8 +6,9 @@ import (
 	"strings"
 )
 
-// Migrate will migrate a file.
-func Migrate(filename string, verbose bool) (err error) {
+// Migrate will perform all the migrations in a file. If max is 0, all
+// migrations are run.
+func Migrate(filename string, max int, verbose bool) (err error) {
 	db, err := connect()
 	if err != nil {
 		return err
@@ -21,6 +22,8 @@ func Migrate(filename string, verbose bool) (err error) {
 	if err != nil {
 		return err
 	}
+
+	maxCounter := 0
 
 	// Loop through each changeset.
 	for _, cs := range arr {
@@ -81,6 +84,14 @@ func Migrate(filename string, verbose bool) (err error) {
 
 		if verbose {
 			fmt.Printf("Changeset applied: %v:%v\n", cs.author, cs.id)
+		}
+
+		// Only perform the maxium number of changes based on the max value.
+		maxCounter++
+		if max != 0 {
+			if maxCounter >= max {
+				break
+			}
 		}
 	}
 

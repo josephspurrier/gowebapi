@@ -7,6 +7,7 @@ import (
 	"io"
 
 	"app/webapi/pkg/database"
+	"app/webapi/pkg/env"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -14,12 +15,12 @@ import (
 // connect will connect to the database.
 func connect() (*sqlx.DB, error) {
 	dbc := new(database.Connection)
-	dbc.Hostname = "127.0.0.1"
-	dbc.Port = 3306
-	dbc.Username = "root"
-	dbc.Password = ""
-	dbc.Database = "webapitest"
-	dbc.Parameter = "parseTime=true&allowNativePasswords=true"
+
+	// Load the struct from environment variables.
+	err := env.Unmarshal(dbc)
+	if err != nil {
+		return nil, err
+	}
 
 	return dbc.Connect(true)
 }
