@@ -89,7 +89,7 @@ func main() {
 		t.Request.Headers["Authorization"] = "Bearer " + token
 
 		// Load the database with test data.
-		db, unique := testutil.LoadDatabaseFromFile("../../../migration/mysql-v0.sql", false)
+		db, _ := testutil.LoadDatabaseFromFile("../../../migration/mysql-v0.sql", false)
 		core, _ := component.NewCoreMock(db)
 
 		mux := router.New()
@@ -119,7 +119,7 @@ func main() {
 			t.FullPath = "/v1/user/" + id1
 		}
 
-		testutil.TeardownDatabase(unique)
+		//testutil.TeardownDatabase(unique)
 	})
 
 	if false {
