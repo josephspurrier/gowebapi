@@ -85,19 +85,29 @@ func TeardownDatabase(unique string) {
 
 // LoadDatabase will set up the DB and apply migrations for the tests.
 func LoadDatabase() (*database.DBW, string) {
-	db, unique := SetupDatabase()
-
-	err := basemigrate.Migrate("../../../../../migration/mysql-v0.sql", unique, 0, false)
-	if err != nil {
-		log.Println("DB Error:", err)
-	}
-
-	return db, unique
+	return LoadDatabaseFromFile("../../../../../migration/mysql-v0.sql", true)
 }
 
 // LoadDatabaseFromFile will set up the DB for the tests.
-func LoadDatabaseFromFile(file string) (*database.DBW, string) {
-	db, unique := SetupDatabase()
+func LoadDatabaseFromFile(file string, usePrefix bool) (*database.DBW, string) {
+	unique := ""
+	var db *database.DBW
+
+	if usePrefix {
+		db, unique = SetupDatabase()
+	} else {
+		db = connectDatabase(false, "")
+		_, err := db.Exec(`DROP DATABASE IF EXISTS webapitest`)
+		if err != nil {
+			fmt.Println("DB DROP SETUP Error:", err)
+		}
+		_, err = db.Exec(`CREATE DATABASE webapitest DEFAULT CHARSET = utf8 COLLATE = utf8_unicode_ci`)
+		if err != nil {
+			fmt.Println("DB CREATE Error:", err)
+		}
+
+		db = connectDatabase(true, unique)
+	}
 
 	err := basemigrate.Migrate(file, unique, 0, false)
 	if err != nil {
