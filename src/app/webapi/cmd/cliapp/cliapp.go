@@ -16,6 +16,7 @@ var (
 
 	cGenerate  = app.Command("generate", "Generate 256 bit (32 byte) base64 encoded JWT.")
 	cDB        = app.Command("migrate", "Perform actions on the database.")
+	cDBPrefix  = cDB.Flag("envprefix", "Prefix for environment variables.").String()
 	cDBAll     = cDB.Command("all", "Apply all changesets to the database.")
 	cDBAllFile = cDBAll.Arg("file", "Filename of the migration file [string].").Required().String()
 
@@ -46,26 +47,26 @@ func main() {
 		enc := base64.StdEncoding.EncodeToString(b)
 		fmt.Println(enc)
 	case cDBAll.FullCommand():
-		err := basemigrate.Migrate(*cDBAllFile, 0, true)
+		err := basemigrate.Migrate(*cDBAllFile, *cDBPrefix, 0, true)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
 	case cDBUp.FullCommand():
-		err := basemigrate.Migrate(*cDBUpFile, *cDBUpCount, true)
+		err := basemigrate.Migrate(*cDBUpFile, *cDBPrefix, *cDBUpCount, true)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
 	case cDBReset.FullCommand():
-		err := basemigrate.Reset(*cDBResetFile, 0, true)
+		err := basemigrate.Reset(*cDBResetFile, *cDBPrefix, 0, true)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
 
 	case cDBDown.FullCommand():
-		err := basemigrate.Reset(*cDBDownFile, *cDBDownCount, true)
+		err := basemigrate.Reset(*cDBDownFile, *cDBPrefix, *cDBDownCount, true)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)

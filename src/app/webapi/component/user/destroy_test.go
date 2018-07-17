@@ -16,8 +16,8 @@ import (
 )
 
 func TestDestroy(t *testing.T) {
-	testutil.LoadDatabase(t)
-	core, _ := component.NewCoreMock()
+	db, unique := testutil.LoadDatabase()
+	core, _ := component.NewCoreMock(db)
 
 	u := store.NewUser(core.DB, core.Q)
 	ID, err := u.Create("John", "Smith", "jsmith@example.com", "password")
@@ -42,4 +42,6 @@ func TestDestroy(t *testing.T) {
 	found, err := u.FindOneByID(u, ID)
 	assert.Nil(t, err)
 	assert.False(t, found)
+
+	testutil.TeardownDatabase(unique)
 }

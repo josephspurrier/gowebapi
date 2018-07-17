@@ -10,7 +10,7 @@ import (
 
 // Unmarshal will fill a struct from environment variables. It supports struct
 // values of string, int, and bool.
-func Unmarshal(dst interface{}) (err error) {
+func Unmarshal(dst interface{}, prefix string) (err error) {
 	// Ensure a pointer is passed in.
 	vdst := reflect.ValueOf(dst)
 	if vdst.Kind() != reflect.Ptr {
@@ -33,7 +33,7 @@ func Unmarshal(dst interface{}) (err error) {
 		envname := tag.Get("env")
 
 		// Get the environment variable from the tag.
-		val := os.Getenv(envname)
+		val := os.Getenv(prefix + envname)
 
 		// If the environment variable exists, set the value.
 		if len(val) > 0 {

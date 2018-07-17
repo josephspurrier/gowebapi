@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"app/webapi/internal/testutil"
+	"app/webapi/pkg/database"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -40,35 +41,22 @@ func TestGenerate(t *testing.T) {
 	assert.Equal(t, 32, len(s))
 }
 
-func setEnv() {
-	os.Setenv("DB_HOSTNAME", "127.0.0.1")
-	os.Setenv("DB_PORT", "3306")
-	os.Setenv("DB_USERNAME", "root")
-	os.Setenv("DB_PASSWORD", "")
-	os.Setenv("DB_DATABASE", "webapitest")
-	os.Setenv("DB_PARAMETER", "parseTime=true&allowNativePasswords=true")
-}
-
-func unsetEnv() {
-	os.Unsetenv("DB_HOSTNAME")
-	os.Unsetenv("DB_PORT")
-	os.Unsetenv("DB_USERNAME")
-	os.Unsetenv("DB_PASSWORD")
-	os.Unsetenv("DB_DATABASE")
-	os.Unsetenv("DB_PARAMETER")
-}
 func TestMigrationAll(t *testing.T) {
-	setEnv()
+	_, unique := migrateAll(t)
+	testutil.TeardownDatabase(unique)
+}
 
-	testutil.ResetDatabase()
-	db := testutil.ConnectDatabase(true)
+func migrateAll(t *testing.T) (*database.DBW, string) {
+	db, unique := testutil.SetupDatabase()
 
 	// Set the arguments.
-	os.Args = make([]string, 4)
+	os.Args = make([]string, 6)
 	os.Args[0] = "cliapp"
 	os.Args[1] = "migrate"
 	os.Args[2] = "all"
 	os.Args[3] = "testdata/success.sql"
+	os.Args[4] = "--envprefix"
+	os.Args[5] = unique
 
 	// Redirect stdout.
 	backupd := os.Stdout
@@ -91,21 +79,21 @@ func TestMigrationAll(t *testing.T) {
 	err = db.Get(&rows, `SELECT count(*) from databasechangelog`)
 	assert.Nil(t, err)
 	assert.Equal(t, 3, rows)
+
+	return db, unique
 }
 
 func TestMigrationReset(t *testing.T) {
-	TestMigrationAll(t)
-
-	setEnv()
-
-	db := testutil.ConnectDatabase(true)
+	db, unique := migrateAll(t)
 
 	// Set the arguments.
-	os.Args = make([]string, 4)
+	os.Args = make([]string, 6)
 	os.Args[0] = "cliapp"
 	os.Args[1] = "migrate"
 	os.Args[2] = "reset"
 	os.Args[3] = "testdata/success.sql"
+	os.Args[4] = "--envprefix"
+	os.Args[5] = unique
 
 	// Redirect stdout.
 	backupd := os.Stdout
@@ -128,21 +116,27 @@ func TestMigrationReset(t *testing.T) {
 	err = db.Get(&rows, `SELECT count(*) from databasechangelog`)
 	assert.Nil(t, err)
 	assert.Equal(t, 0, rows)
+
+	testutil.TeardownDatabase(unique)
 }
 
 func TestMigrationUp(t *testing.T) {
-	setEnv()
+	_, unique := migrateUp(t)
+	testutil.TeardownDatabase(unique)
+}
 
-	testutil.ResetDatabase()
-	db := testutil.ConnectDatabase(true)
+func migrateUp(t *testing.T) (*database.DBW, string) {
+	db, unique := testutil.SetupDatabase()
 
 	// Set the arguments.
-	os.Args = make([]string, 5)
+	os.Args = make([]string, 7)
 	os.Args[0] = "cliapp"
 	os.Args[1] = "migrate"
 	os.Args[2] = "up"
 	os.Args[3] = "2"
 	os.Args[4] = "testdata/success.sql"
+	os.Args[5] = "--envprefix"
+	os.Args[6] = unique
 
 	// Redirect stdout.
 	backupd := os.Stdout
@@ -165,22 +159,22 @@ func TestMigrationUp(t *testing.T) {
 	err = db.Get(&rows, `SELECT count(*) from databasechangelog`)
 	assert.Nil(t, err)
 	assert.Equal(t, 2, rows)
+
+	return db, unique
 }
 
 func TestMigrationDown(t *testing.T) {
-	TestMigrationUp(t)
-
-	setEnv()
-
-	db := testutil.ConnectDatabase(true)
+	db, unique := migrateUp(t)
 
 	// Set the arguments.
-	os.Args = make([]string, 5)
+	os.Args = make([]string, 7)
 	os.Args[0] = "cliapp"
 	os.Args[1] = "migrate"
 	os.Args[2] = "down"
 	os.Args[3] = "1"
 	os.Args[4] = "testdata/success.sql"
+	os.Args[5] = "--envprefix"
+	os.Args[6] = unique
 
 	// Redirect stdout.
 	backupd := os.Stdout
@@ -203,4 +197,6 @@ func TestMigrationDown(t *testing.T) {
 	err = db.Get(&rows, `SELECT count(*) from databasechangelog`)
 	assert.Nil(t, err)
 	assert.Equal(t, 1, rows)
+
+	testutil.TeardownDatabase(unique)
 }

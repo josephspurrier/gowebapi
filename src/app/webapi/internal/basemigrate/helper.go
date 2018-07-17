@@ -13,11 +13,11 @@ import (
 )
 
 // connect will connect to the database.
-func connect() (*sqlx.DB, error) {
+func connect(prefix string) (*sqlx.DB, error) {
 	dbc := new(database.Connection)
 
 	// Load the struct from environment variables.
-	err := env.Unmarshal(dbc)
+	err := env.Unmarshal(dbc, prefix)
 	if err != nil {
 		return nil, err
 	}

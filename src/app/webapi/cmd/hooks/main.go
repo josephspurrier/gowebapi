@@ -88,9 +88,9 @@ func main() {
 		// Set the Authorization header.
 		t.Request.Headers["Authorization"] = "Bearer " + token
 
-		// Load the tables.
-		testutil.LoadDatabaseFromFile("../../../migration/tables-only.sql")
-		core, _ := component.NewCoreMock()
+		// Load the database with test data.
+		db, unique := testutil.LoadDatabaseFromFile("../../../migration/tables-only.sql")
+		core, _ := component.NewCoreMock(db)
 
 		mux := router.New()
 		user.New(core).Routes(mux)
@@ -118,6 +118,8 @@ func main() {
 		if t.Request.URI == "/v1/user/USERID" {
 			t.FullPath = "/v1/user/" + id1
 		}
+
+		testutil.TeardownDatabase(unique)
 	})
 
 	if false {

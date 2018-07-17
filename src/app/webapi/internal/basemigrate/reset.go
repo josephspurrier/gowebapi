@@ -15,8 +15,8 @@ type DBChangeset struct {
 }
 
 // Reset will remove all migrations.  If max is 0, all rollbacks are run.
-func Reset(filename string, max int, verbose bool) (err error) {
-	db, err := connect()
+func Reset(filename string, prefix string, max int, verbose bool) (err error) {
+	db, err := connect(prefix)
 	if err != nil {
 		return err
 	}
