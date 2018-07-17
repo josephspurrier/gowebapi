@@ -96,6 +96,7 @@ func LoadDatabaseFromFile(file string, usePrefix bool) (*database.DBW, string) {
 	if usePrefix {
 		db, unique = SetupDatabase()
 	} else {
+		setEnv(unique)
 		db = connectDatabase(false, "")
 		_, err := db.Exec(`DROP DATABASE IF EXISTS webapitest`)
 		if err != nil {
