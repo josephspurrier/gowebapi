@@ -57,6 +57,11 @@ func Reset(filename string, prefix string, max int, verbose bool) (err error) {
 
 		arrQueries := strings.Split(cs.Rollbacks(), ";")
 
+		tx, err := db.Begin()
+		if err != nil {
+			return fmt.Errorf("sql error begin transaction - %v", err.Error())
+		}
+
 		// Loop through each rollback.
 		for _, q := range arrQueries {
 			if len(q) == 0 {
@@ -64,10 +69,19 @@ func Reset(filename string, prefix string, max int, verbose bool) (err error) {
 			}
 
 			// Execute the query.
-			_, err = db.Exec(q)
+			_, err = tx.Exec(q)
 			if err != nil {
 				return fmt.Errorf("sql error on rollback %v:%v - %v", cs.author, cs.id, err.Error())
 			}
+		}
+
+		err = tx.Commit()
+		if err != nil {
+			errr := tx.Rollback()
+			if errr != nil {
+				return fmt.Errorf("sql error on commit rollback %v:%v - %v", cs.author, cs.id, errr.Error())
+			}
+			return fmt.Errorf("sql error on commit %v:%v - %v", cs.author, cs.id, err.Error())
 		}
 
 		// Delete the record.

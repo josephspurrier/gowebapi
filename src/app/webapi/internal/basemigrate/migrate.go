@@ -79,9 +79,9 @@ func Migrate(filename string, prefix string, max int, verbose bool) error {
 		if err != nil {
 			errr := tx.Rollback()
 			if errr != nil {
-				return fmt.Errorf("sql error on rollback changeset %v:%v - %v", cs.author, cs.id, errr.Error())
+				return fmt.Errorf("sql error on commit rollback %v:%v - %v", cs.author, cs.id, errr.Error())
 			}
-			return fmt.Errorf("sql error on commit changeset %v:%v - %v", cs.author, cs.id, err.Error())
+			return fmt.Errorf("sql error on commit %v:%v - %v", cs.author, cs.id, err.Error())
 		}
 
 		// Count the number of rows.
