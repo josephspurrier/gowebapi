@@ -8,7 +8,7 @@ import (
 
 // Migrate will perform all the migrations in a file. If max is 0, all
 // migrations are run.
-func Migrate(filename string, prefix string, max int, verbose bool) (err error) {
+func Migrate(filename string, prefix string, max int, verbose bool) error {
 	db, err := connect(prefix)
 	if err != nil {
 		return err
@@ -16,6 +16,9 @@ func Migrate(filename string, prefix string, max int, verbose bool) (err error) 
 
 	// Create the DATABASECHANGELOG.
 	_, err = db.Exec(sqlChangelog)
+	if err != nil {
+		return err
+	}
 
 	// Get the changesets.
 	arr, err := parseFileToArray(filename)
@@ -54,6 +57,11 @@ func Migrate(filename string, prefix string, max int, verbose bool) (err error) 
 
 		arrQueries := strings.Split(cs.Changes(), ";")
 
+		tx, err := db.Begin()
+		if err != nil {
+			return fmt.Errorf("sql error begin transaction - %v", err.Error())
+		}
+
 		// Loop through each change.
 		for _, q := range arrQueries {
 			if len(q) == 0 {
@@ -61,10 +69,19 @@ func Migrate(filename string, prefix string, max int, verbose bool) (err error) 
 			}
 
 			// Execute the query.
-			_, err = db.Exec(q)
+			_, err = tx.Exec(q)
 			if err != nil {
 				return fmt.Errorf("sql error on changeset %v:%v - %v", cs.author, cs.id, err.Error())
 			}
+		}
+
+		err = tx.Commit()
+		if err != nil {
+			errr := tx.Rollback()
+			if errr != nil {
+				return fmt.Errorf("sql error on rollback changeset %v:%v - %v", cs.author, cs.id, errr.Error())
+			}
+			return fmt.Errorf("sql error on commit changeset %v:%v - %v", cs.author, cs.id, err.Error())
 		}
 
 		// Count the number of rows.
@@ -97,5 +114,5 @@ func Migrate(filename string, prefix string, max int, verbose bool) (err error) 
 		}
 	}
 
-	return
+	return nil
 }
