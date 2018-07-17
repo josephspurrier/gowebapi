@@ -53,6 +53,7 @@ func Migrate(filename string, prefix string, max int, verbose bool) (err error) 
 		}
 
 		arrQueries := strings.Split(cs.Changes(), ";")
+
 		// Loop through each change.
 		for _, q := range arrQueries {
 			if len(q) == 0 {
