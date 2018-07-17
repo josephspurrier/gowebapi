@@ -59,7 +59,6 @@ func unsetEnv() {
 }
 func TestMigrationAll(t *testing.T) {
 	setEnv()
-	defer unsetEnv()
 
 	testutil.ResetDatabase()
 	db := testutil.ConnectDatabase(true)
@@ -98,7 +97,6 @@ func TestMigrationReset(t *testing.T) {
 	TestMigrationAll(t)
 
 	setEnv()
-	defer unsetEnv()
 
 	db := testutil.ConnectDatabase(true)
 
@@ -134,7 +132,6 @@ func TestMigrationReset(t *testing.T) {
 
 func TestMigrationUp(t *testing.T) {
 	setEnv()
-	defer unsetEnv()
 
 	testutil.ResetDatabase()
 	db := testutil.ConnectDatabase(true)
@@ -174,7 +171,6 @@ func TestMigrationDown(t *testing.T) {
 	TestMigrationUp(t)
 
 	setEnv()
-	defer unsetEnv()
 
 	db := testutil.ConnectDatabase(true)
 

@@ -32,16 +32,3 @@ func md5sum(s string) string {
 	_, _ = io.Copy(h, r)
 	return fmt.Sprintf("%x", h.Sum(nil))
 }
-
-// Debug will return the SQL file.
-func Debug(arr []*Changeset) {
-	for _, cs := range arr {
-		fmt.Printf("%v%v:%v\n", elementChangeset, cs.author, cs.id)
-		fmt.Println(cs.Changes())
-		fmt.Printf("%v%v\n", elementRollback, cs.Rollbacks())
-		fmt.Println("--md5", cs.Checksum())
-		break
-	}
-
-	fmt.Println("Total:", len(arr))
-}

@@ -2,8 +2,6 @@ package basemigrate
 
 import (
 	"errors"
-	"fmt"
-	"os"
 )
 
 const (
@@ -24,6 +22,7 @@ const (
 	appVersion       = "1.0"
 	elementChangeset = "--changeset "
 	elementRollback  = "--rollback "
+	elementInclude   = "--include "
 )
 
 var (
@@ -32,41 +31,3 @@ var (
 	// ErrInvalidFormat is when a changeset is not found.
 	ErrInvalidFormat = errors.New("invalid changeset format")
 )
-
-// ParseFileArray will parse a file into changesets.
-func ParseFileArray(filename string) ([]*Changeset, error) {
-	f, err := os.Open(filename)
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-
-	return parseToOrderedArray(f, filename)
-}
-
-// ParseFileMap will parse a file into a map.
-func ParseFileMap(filename string) (map[string]Changeset, error) {
-	f, err := os.Open(filename)
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-
-	arr, err := parseToOrderedArray(f, filename)
-	if err != nil {
-		return nil, err
-	}
-
-	m := make(map[string]Changeset)
-
-	for _, cs := range arr {
-		id := fmt.Sprintf("%v:%v", cs.author, cs.id)
-		if _, found := m[id]; found {
-			return nil, errors.New("Duplicate entry found: " + id)
-		}
-
-		m[id] = *cs
-	}
-
-	return m, nil
-}

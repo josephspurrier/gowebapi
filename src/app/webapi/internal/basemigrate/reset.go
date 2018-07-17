@@ -22,7 +22,7 @@ func Reset(filename string, max int, verbose bool) (err error) {
 	}
 
 	// Get the changesets in a map.
-	m, err := ParseFileMap(filename)
+	m, err := parseFileToMap(filename)
 	if err != nil {
 		return err
 	}
@@ -48,7 +48,7 @@ func Reset(filename string, max int, verbose bool) (err error) {
 
 	// Loop through each changeset.
 	for _, r := range results {
-		id := fmt.Sprintf("%v:%v", r.Author, r.ID)
+		id := fmt.Sprintf("%v:%v:%v", r.Author, r.ID, r.Filename)
 
 		cs, ok := m[id]
 		if !ok {

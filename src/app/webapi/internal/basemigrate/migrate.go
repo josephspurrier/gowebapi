@@ -18,7 +18,7 @@ func Migrate(filename string, max int, verbose bool) (err error) {
 	_, err = db.Exec(sqlChangelog)
 
 	// Get the changesets.
-	arr, err := ParseFileArray(filename)
+	arr, err := parseFileToArray(filename)
 	if err != nil {
 		return err
 	}
@@ -35,7 +35,8 @@ func Migrate(filename string, max int, verbose bool) (err error) {
 		err = db.Get(&checksum, `SELECT md5sum
 			FROM databasechangelog
 			WHERE id = ?
-			AND author = ?`, cs.id, cs.author)
+			AND author = ?
+			AND filename = ?`, cs.id, cs.author, cs.filename)
 		if err == nil {
 			// Determine if the checksums match.
 			if checksum != newChecksum {
