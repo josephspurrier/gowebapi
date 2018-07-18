@@ -16,7 +16,26 @@ You cannot use `go get` with this repository. You should perform a `git clone` t
 
 You must use Go 1.7 or newer because it uses the http context.
 
-## Quick Start with MySQL
+## Quick Start with Docker Compose
+
+You can build a docker image from this repository and set it up along with a MySQL container using docker compose.
+
+```bash
+# Create a docker image.
+docker build -t webapi:latest .
+
+# Launch MySQL and the webapi with docker compose.
+docker-compose up
+
+# Open your browser to http://localhost:8080 and you should be able to access the API.
+# Try using the Swagger spec:
+# http://petstore.swagger.io/?url=https://raw.githubusercontent.com/josephspurrier/gowebapi/master/src/app/webapi/swagger.json
+
+# Shutdown the containers.
+docker-compose down
+```
+
+## Manual Start
 
 Use the following commands to start a MySQL container with Docker:
 
@@ -55,7 +74,7 @@ cp config.json src/app/webapi/cmd/webapi/config.json
 # Generate a base64 encoded secret.
 ./cliapp generate
 
-# Add the encoded secret above to the `JWT.Secret` section of the config.
+# Use the encoded secret above to replace the `JWT.Secret` value in the config.
 ```
 
 Now you can start the API.

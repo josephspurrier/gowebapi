@@ -27,13 +27,17 @@ package webapi
 
 import (
 	"encoding/json"
+	"fmt"
+	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"app/webapi/component"
 	"app/webapi/component/auth"
 	"app/webapi/component/root"
 	"app/webapi/component/user"
+	"app/webapi/internal/basemigrate"
 	"app/webapi/internal/bind"
 	"app/webapi/internal/response"
 	"app/webapi/middleware"
@@ -159,13 +163,55 @@ func Database(dbc database.Connection, l logger.ILog) *database.DBW {
 		dbc.Password = pwd
 	}
 
-	connection, err := dbc.Connect(true)
-	if err != nil {
-		// Don't fail here, just show an error message.
-		l.Printf("DB Error: %v", err)
+	var db *database.DBW
+
+	// Migrate the database automatically for docker.
+	if os.Getenv("DB_MIGRATE") == "true" {
+		// Wait for the database to connect.
+		for {
+			connection, err := dbc.Connect(false)
+			if err != nil {
+				l.Printf("DB waiting: %v", err)
+				time.Sleep(2 * time.Second)
+				continue
+			}
+
+			// Create the database.
+			_, err = connection.Exec(`CREATE DATABASE IF NOT EXISTS webapi DEFAULT CHARSET = utf8 COLLATE = utf8_unicode_ci`)
+			if err != nil {
+				fmt.Println("DB creating:", err)
+				time.Sleep(2 * time.Second)
+				continue
+			}
+
+			// Apply the database migrations.
+			err = basemigrate.Migrate("migration/mysql-v0.sql", "", 0, true)
+			if err != nil {
+				log.Println("DB migrating:", err)
+				time.Sleep(2 * time.Second)
+				continue
+			}
+
+			// Reconnect to the database.
+			connection, err = dbc.Connect(true)
+			if err != nil {
+				l.Printf("DB waiting: %v", err)
+				time.Sleep(2 * time.Second)
+				continue
+			}
+
+			// Wrap the DB connection.
+			db = database.New(connection)
+			break
+		}
+	} else {
+		connection, err := dbc.Connect(false)
+		if err != nil {
+			l.Printf("DB error: %v", err)
+		}
+		// Wrap the DB connection.
+		db = database.New(connection)
 	}
-	// Wrap the DB connection.
-	db := database.New(connection)
 
 	return db
 }

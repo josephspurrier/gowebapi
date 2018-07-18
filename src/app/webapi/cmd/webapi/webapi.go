@@ -22,9 +22,15 @@ func main() {
 	// Create the logger.
 	l := logger.New(log.New(os.Stderr, "", log.LstdFlags))
 
+	// Get the config file name from the first argument.
+	configFile := "config.json"
+	if len(os.Args) > 1 {
+		configFile = os.Args[1]
+	}
+
 	// Load the configuration file.
 	config := new(webapi.AppConfig)
-	err := jsonconfig.Load("config.json", config)
+	err := jsonconfig.Load(configFile, config)
 	if err != nil {
 		l.Fatalf("%v", err)
 	}

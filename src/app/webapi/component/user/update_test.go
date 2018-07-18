@@ -45,7 +45,7 @@ func TestUpdateUserAllFields(t *testing.T) {
 	assert.Equal(t, "John1", u.FirstName)
 	assert.Equal(t, "Smith2", u.LastName)
 	assert.Equal(t, "jsmith3@example.com", u.Email)
-	assert.Equal(t, "password4", u.Password)
+	assert.True(t, core.Password.MatchString(u.Password, "password4"))
 
 	testutil.TeardownDatabase(unique)
 }
