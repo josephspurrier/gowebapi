@@ -56,8 +56,14 @@ func (p *Endpoint) Create(w http.ResponseWriter, r *http.Request) (int, error) {
 		return http.StatusBadRequest, errors.New("user already exists")
 	}
 
+	// Encrypt the password.
+	password, err := p.Password.HashString(req.Password)
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+
 	// Create the item.
-	ID, err := u.Create(req.FirstName, req.LastName, req.Email, req.Password)
+	ID, err := u.Create(req.FirstName, req.LastName, req.Email, password)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}

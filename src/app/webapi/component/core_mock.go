@@ -5,6 +5,7 @@ import (
 	"app/webapi/internal/response"
 	"app/webapi/internal/testutil"
 	"app/webapi/pkg/database"
+	"app/webapi/pkg/passhash"
 	"app/webapi/pkg/query"
 )
 
@@ -15,8 +16,9 @@ func NewCoreMock(db *database.DBW) (Core, *CoreMock) {
 	mt := new(testutil.MockToken)
 	resp := response.New()
 	binder := bind.New()
+	p := passhash.New()
 
-	core := NewCore(ml, db, mq, binder, resp, mt)
+	core := NewCore(ml, db, mq, binder, resp, mt, p)
 	m := &CoreMock{
 		Log:      ml,
 		DB:       db,
@@ -24,6 +26,7 @@ func NewCoreMock(db *database.DBW) (Core, *CoreMock) {
 		Bind:     binder,
 		Response: resp,
 		Token:    mt,
+		Password: p,
 	}
 	return core, m
 }
@@ -36,4 +39,5 @@ type CoreMock struct {
 	Bind     IBind
 	Response IResponse
 	Token    *testutil.MockToken
+	Password IPassword
 }

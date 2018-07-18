@@ -59,8 +59,14 @@ func (p *Endpoint) Update(w http.ResponseWriter, r *http.Request) (int, error) {
 		return http.StatusBadRequest, errors.New("user not found")
 	}
 
+	// Encrypt the password.
+	password, err := p.Password.HashString(req.Password)
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+
 	// Update the item.
-	err = u.Update(u.ID, req.FirstName, req.LastName, req.Email, req.Password)
+	err = u.Update(u.ID, req.FirstName, req.LastName, req.Email, password)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}

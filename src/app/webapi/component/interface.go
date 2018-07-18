@@ -60,3 +60,9 @@ type IResponse interface {
 type IToken interface {
 	Generate(userID string, duration time.Duration) (string, error)
 }
+
+// IPassword provides password hashing.
+type IPassword interface {
+	HashString(password string) (string, error)
+	MatchString(hash, password string) bool
+}

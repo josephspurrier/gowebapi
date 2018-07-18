@@ -161,13 +161,13 @@ dredd
 This project uses [dep](https://github.com/golang/dep). The `dep init` command was run from inside the `src/app/webapi` folder.
 
 These packages are used in the project:
-- MySQL Driver: [github.com/go-sql-driver/mysql](http://github.com/go-sql-driver/mysql)
-- SQL to Struct: [github.com/jmoiron/sqlx](http://github.com/jmoiron/sqlx)
-- Routing: [github.com/matryer/way](http://github.com/matryer/way)
-- Request Validation: [github.com/go-playground/validator](http://github.com/go-playground/validator)
-- JSON Web Tokens (JWT): [github.com/dgrijalva/jwt-go](github.com/dgrijalva/jwt-go)
-- CLI and Flag Parser: [gopkg.in/alecthomas/kingpin.v2](gopkg.in/alecthomas/kingpin.v2)
-
+- MySQL Driver: [github.com/go-sql-driver/mysql](https://github.com/go-sql-driver/mysql)
+- SQL to Struct: [github.com/jmoiron/sqlx](https://github.com/jmoiron/sqlx)
+- Routing: [github.com/matryer/way](https://github.com/matryer/way)
+- Request Validation: [github.com/go-playground/validator](https://github.com/go-playground/validator)
+- JSON Web Tokens (JWT): [github.com/dgrijalva/jwt-go](https://github.com/dgrijalva/jwt-go)
+- CLI and Flag Parser: [gopkg.in/alecthomas/kingpin.v2](https://gopkg.in/alecthomas/kingpin.v2)
+- Password Hashing: [golang.org/x/crypto/bcrypt](https://golang.org/x/crypto/bcrypt)
 
 ## Folder Structure
 

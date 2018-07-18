@@ -40,6 +40,7 @@ import (
 	"app/webapi/model"
 	"app/webapi/pkg/database"
 	"app/webapi/pkg/logger"
+	"app/webapi/pkg/passhash"
 	"app/webapi/pkg/query"
 	"app/webapi/pkg/router"
 	"app/webapi/pkg/server"
@@ -74,9 +75,10 @@ func Services(config *AppConfig, l logger.ILog) component.Core {
 	b := bind.New()
 	resp := response.New()
 	t := webtoken.New(config.JWT.Secret)
+	p := passhash.New()
 
 	// Create the component core.
-	core := component.NewCore(l, db, q, b, resp, t)
+	core := component.NewCore(l, db, q, b, resp, t, p)
 
 	return core
 }
