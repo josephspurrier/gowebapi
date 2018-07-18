@@ -97,7 +97,7 @@ func LoadDatabaseFromFile(file string, usePrefix bool) (*database.DBW, string) {
 		db, unique = SetupDatabase()
 	} else {
 		setEnv(unique)
-		db = connectDatabase(false, "")
+		db = connectDatabase(false, unique)
 		_, err := db.Exec(`DROP DATABASE IF EXISTS webapitest`)
 		if err != nil {
 			fmt.Println("DB DROP SETUP Error:", err)

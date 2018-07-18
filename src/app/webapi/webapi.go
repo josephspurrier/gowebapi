@@ -205,7 +205,7 @@ func Database(dbc database.Connection, l logger.ILog) *database.DBW {
 			break
 		}
 	} else {
-		connection, err := dbc.Connect(false)
+		connection, err := dbc.Connect(true)
 		if err != nil {
 			l.Printf("DB error: %v", err)
 		}
