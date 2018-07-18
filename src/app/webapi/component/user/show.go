@@ -45,7 +45,7 @@ func (p *Endpoint) Show(w http.ResponseWriter, r *http.Request) (int, error) {
 	// Create the DB store.
 	u := store.NewUser(p.DB, p.Q)
 
-	// Get a user.
+	// Get an item by ID.
 	exists, err := u.FindOneByID(u, req.UserID)
 	if err != nil {
 		return http.StatusInternalServerError, err

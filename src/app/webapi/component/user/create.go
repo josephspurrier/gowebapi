@@ -48,7 +48,7 @@ func (p *Endpoint) Create(w http.ResponseWriter, r *http.Request) (int, error) {
 	// Create the DB store.
 	u := store.NewUser(p.DB, p.Q)
 
-	// Check for existing user.
+	// Check for existing item.
 	exists, _, err := u.ExistsByField(u, "email", req.Email)
 	if err != nil {
 		return http.StatusInternalServerError, err

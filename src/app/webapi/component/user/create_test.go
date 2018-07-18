@@ -17,8 +17,8 @@ import (
 )
 
 func TestCreate(t *testing.T) {
-	testutil.LoadDatabase(t)
-	core, _ := component.NewCoreMock()
+	db, unique := testutil.LoadDatabase()
+	core, _ := component.NewCoreMock(db)
 
 	form := url.Values{}
 	form.Add("first_name", "John")
@@ -35,11 +35,13 @@ func TestCreate(t *testing.T) {
 	assert.Equal(t, http.StatusCreated, w.Code)
 	assert.Equal(t, "Created", r.Body.Status)
 	assert.Equal(t, 36, len(r.Body.RecordID))
+
+	testutil.TeardownDatabase(unique)
 }
 
 func TestCreateUserAlreadyExists(t *testing.T) {
-	testutil.LoadDatabase(t)
-	core, _ := component.NewCoreMock()
+	db, unique := testutil.LoadDatabase()
+	core, _ := component.NewCoreMock(db)
 
 	u := store.NewUser(core.DB, core.Q)
 	_, err := u.Create("John", "Smith", "jsmith@example.com", "password")
@@ -60,11 +62,13 @@ func TestCreateUserAlreadyExists(t *testing.T) {
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 	assert.Equal(t, "Bad Request", r.Body.Status)
 	assert.Equal(t, "user already exists", r.Body.Message)
+
+	testutil.TeardownDatabase(unique)
 }
 
 func TestCreateBadEmail(t *testing.T) {
-	testutil.LoadDatabase(t)
-	core, _ := component.NewCoreMock()
+	db, unique := testutil.LoadDatabase()
+	core, _ := component.NewCoreMock(db)
 
 	form := url.Values{}
 	form.Add("first_name", "John")
@@ -81,19 +85,23 @@ func TestCreateBadEmail(t *testing.T) {
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 	assert.Equal(t, "Bad Request", r.Body.Status)
 	assert.Contains(t, w.Body.String(), `failed`)
+
+	testutil.TeardownDatabase(unique)
 }
 
 func TestCreateValidation(t *testing.T) {
 	for _, v := range []string{
 		"POST /v1/user",
 	} {
-		testutil.LoadDatabase(t)
-		core, _ := component.NewCoreMock()
+		db, unique := testutil.LoadDatabase()
+		core, _ := component.NewCoreMock(db)
 
 		arr := strings.Split(v, " ")
 
 		w := testrequest.SendForm(t, core, arr[0], arr[1], nil)
 
 		assert.Equal(t, http.StatusBadRequest, w.Code)
+
+		testutil.TeardownDatabase(unique)
 	}
 }

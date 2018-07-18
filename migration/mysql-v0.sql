@@ -1,10 +1,6 @@
-SET NAMES utf8 COLLATE 'utf8_unicode_ci';
-SET foreign_key_checks = 1;
-SET time_zone = '+00:00';
+--changeset josephspurrier:1
 SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
-SET CHARACTER SET utf8;
-
-CREATE TABLE IF NOT EXISTS user_status (
+CREATE TABLE user_status (
     id TINYINT(1) UNSIGNED NOT NULL AUTO_INCREMENT,
     
     status VARCHAR(25) NOT NULL,
@@ -15,8 +11,17 @@ CREATE TABLE IF NOT EXISTS user_status (
     
     PRIMARY KEY (id)
 );
+--rollback DROP TABLE user_status;
 
-CREATE TABLE IF NOT EXISTS user (
+--changeset josephspurrier:2
+INSERT INTO `user_status` (`id`, `status`, `created_at`, `updated_at`, `deleted`) VALUES
+(1, 'active',   CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0),
+(2, 'inactive', CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0);
+--rollback TRUNCATE TABLE user_status;
+
+--changeset josephspurrier:3
+SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
+CREATE TABLE user (
     id VARCHAR(36) NOT NULL,
     
     first_name VARCHAR(50) NOT NULL,
@@ -35,7 +40,4 @@ CREATE TABLE IF NOT EXISTS user (
     
     PRIMARY KEY (id)
 );
-
-INSERT INTO `user_status` (`id`, `status`, `created_at`, `updated_at`, `deleted`) VALUES
-(1, 'active',   CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0),
-(2, 'inactive', CURRENT_TIMESTAMP,  CURRENT_TIMESTAMP,  0);
+--rollback DROP TABLE user;

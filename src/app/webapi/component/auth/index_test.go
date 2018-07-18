@@ -10,13 +10,15 @@ import (
 
 	"app/webapi/component"
 	"app/webapi/internal/testrequest"
+	"app/webapi/internal/testutil"
 	"app/webapi/model"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestIndex(t *testing.T) {
-	core, m := component.NewCoreMock()
+	db, unique := testutil.LoadDatabase()
+	core, m := component.NewCoreMock(db)
 
 	m.Token.GenerateFunc = func(userID string, duration time.Duration) (string, error) {
 		b := []byte("0123456789ABCDEF0123456789ABCDEF")
@@ -33,10 +35,13 @@ func TestIndex(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 	assert.Equal(t, "OK", r.Body.Status)
 	assert.Equal(t, "MDEyMzQ1Njc4OUFCQ0RFRjAxMjM0NTY3ODlBQkNERUY=", r.Body.Data.Token)
+
+	testutil.TeardownDatabase(unique)
 }
 
 func TestIndexError(t *testing.T) {
-	core, m := component.NewCoreMock()
+	db, unique := testutil.LoadDatabase()
+	core, m := component.NewCoreMock(db)
 
 	m.Token.GenerateFunc = func(userID string, duration time.Duration) (string, error) {
 		return "", errors.New("generate error")
@@ -51,4 +56,6 @@ func TestIndexError(t *testing.T) {
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
 	assert.Equal(t, "Internal Server Error", r.Body.Status)
 	assert.Equal(t, "generate error", r.Body.Message)
+
+	testutil.TeardownDatabase(unique)
 }

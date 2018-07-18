@@ -60,19 +60,13 @@ func (x UserGroup) PrimaryKey() string {
 	return "id"
 }
 
-// *****************************************************************************
-// Create
-// *****************************************************************************
-
 // Create adds a new user.
 func (x *User) Create(firstName, lastName, email, password string) (string, error) {
-	// Generate a UUID.
 	uuid, err := securegen.UUID()
 	if err != nil {
 		return "", err
 	}
 
-	// Create the user.
 	_, err = x.db.Exec(`
 		INSERT INTO user
 		(id, first_name, last_name, email, password, status_id)
@@ -84,13 +78,8 @@ func (x *User) Create(firstName, lastName, email, password string) (string, erro
 	return uuid, err
 }
 
-// *****************************************************************************
-// Update
-// *****************************************************************************
-
-// Update makes changes to one entity.
+// Update makes changes to a user.
 func (x *User) Update(ID, firstName, lastName, email, password string) (err error) {
-	// Update the entity.
 	_, err = x.db.Exec(`
 		UPDATE user
 		SET

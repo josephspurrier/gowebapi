@@ -1,10 +1,10 @@
 package user
 
 import (
-	"app/webapi/pkg/structcopy"
 	"net/http"
 
 	"app/webapi/model"
+	"app/webapi/pkg/structcopy"
 	"app/webapi/store"
 )
 

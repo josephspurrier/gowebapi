@@ -16,8 +16,8 @@ import (
 )
 
 func TestUpdateUserAllFields(t *testing.T) {
-	testutil.LoadDatabase(t)
-	core, _ := component.NewCoreMock()
+	db, unique := testutil.LoadDatabase()
+	core, _ := component.NewCoreMock(db)
 
 	u := store.NewUser(core.DB, core.Q)
 	ID, err := u.Create("John", "Smith", "jsmith@example.com", "password")
@@ -46,11 +46,13 @@ func TestUpdateUserAllFields(t *testing.T) {
 	assert.Equal(t, "Smith2", u.LastName)
 	assert.Equal(t, "jsmith3@example.com", u.Email)
 	assert.Equal(t, "password4", u.Password)
+
+	testutil.TeardownDatabase(unique)
 }
 
 func TestUpdateMissingFields(t *testing.T) {
-	testutil.LoadDatabase(t)
-	core, _ := component.NewCoreMock()
+	db, unique := testutil.LoadDatabase()
+	core, _ := component.NewCoreMock(db)
 
 	u := store.NewUser(core.DB, core.Q)
 	ID, err := u.Create("John", "Smith", "jsmith@example.com", "password")
@@ -76,4 +78,6 @@ func TestUpdateMissingFields(t *testing.T) {
 	assert.Equal(t, "Smith", u.LastName)
 	assert.Equal(t, "jsmith@example.com", u.Email)
 	assert.Equal(t, "password", u.Password)
+
+	testutil.TeardownDatabase(unique)
 }

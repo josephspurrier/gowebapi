@@ -18,20 +18,62 @@ You must use Go 1.7 or newer because it uses the http context.
 
 ## Quick Start with MySQL
 
-Use one of the following commands to start a MySQL container with Docker:
+Use the following commands to start a MySQL container with Docker:
 
-- Start MySQL without a password: `docker run -d -p 3306:3306 -e MYSQL_ALLOW_EMPTY_PASSWORD=yes mysql:5.7`
-- Start MySQL with a password: `docker run -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD=somepassword mysql:5.7`
+```bash
+# Start MySQL without a password.
+docker run -d --name=mysql57 -p 3306:3306 -e MYSQL_ALLOW_EMPTY_PASSWORD=yes mysql:5.7
+# or start MySQL with a password.
+docker run -d --name=mysql57 -p 3306:3306 -e MYSQL_ROOT_PASSWORD=somepassword mysql:5.7
 
-Start MySQL and import `migration/mysql.sql` to create the database and tables.
+# Create the database via docker exec.
+docker exec mysql57 sh -c 'exec mysql -uroot -e "CREATE DATABASE IF NOT EXISTS webapi DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;"'
+# Or create the database manually.
+CREATE DATABASE webapi DEFAULT CHARSET = utf8 COLLATE = utf8_unicode_ci;
 
-Copy `config.json` to `src/app/webapi/cmd/webapi/config.json` and edit the **Database** section so the connection information matches your MySQL instance. Also add a base64 encoded `JWT.Secret` to the config. You can generate it using the command line app in the repo - run these commands:
-- `cd src/app/webapi/cmd/cliapp`
-- `go run cliapp.go generate`
+# CD to the CLI tool.
+cd src/app/webapi/cmd/cliapp
 
-The database password is read from the `config.json` first, but is overwritten by the environment variable, `DB_PASSWORD`, if it is set.
+# Build the CLI tool.
+go build
 
-Build and run from the root directory. Open your REST client to: http://localhost/v1. You should see the **welcome** message and status **OK**.
+# Apply the database migrations without a password.
+DB_USERNAME=root DB_HOSTNAME=127.0.0.1 DB_PORT=3306 DB_DATABASE=webapi ./cliapp migrate all ../../../../../migration/mysql-v0.sql
+# or apply the database migrations with a password.
+DB_USERNAME=root DB_PASSWORD=somepassword DB_HOSTNAME=127.0.0.1 DB_PORT=3306 DB_DATABASE=webapi ./cliapp migrate all ../../../../../migration/mysql-v0.sql
+```
+
+Using the database connection information above, follow the steps to set up the `config.json` file:
+
+```bash
+# Copy the config.json from the root of the project to the CLI app folder.
+cp config.json src/app/webapi/cmd/webapi/config.json
+
+# Edit the `Database` section so the connection information matches your MySQL instance.
+# The database password is read from the `config.json` file, but is overwritten by the environment variable, `DB_PASSWORD`, if it is set.
+
+# Generate a base64 encoded secret.
+./cliapp generate
+
+# Add the encoded secret above to the `JWT.Secret` section of the config.
+```
+
+Now you can start the API.
+
+```bash
+# CD to the webapi app folder.
+cd src/app/webapi/cmd/webapi
+
+# Build the app.
+go build
+
+# Run the app.
+./webapi
+
+# Open your browser to this URL to see the **welcome** message and status **OK**: http://localhost/v1
+```
+
+To interact with the API, open your favorite REST client.
 
 You'll need to authenticate with at http://localhost/v1/auth before you can use any of the user endpoints. Once you have a token, add it to the request header with a name of `Authorization` and with a value of `Bearer {TOKEN HERE}`. To create a user, send a POST request to http://localhost/v1/user with the following fields: first_name, last_name, email, and password.
 
@@ -312,7 +354,20 @@ func (p *Endpoint) Index(w http.ResponseWriter, r *http.Request) (int, error) {
 
 You can disable logging on the server by setting an environment variable: `WEBAPI_LOG_LEVEL=none`
 
-## Test Coverage
+## Testing
+
+All the tests use a database called: `webapitest`. The quickest way to get it set up is:
+
+```bash
+# Launch MySQL in docker container.
+docker run -d --name=mysql57 -p 3306:3306 -e MYSQL_ALLOW_EMPTY_PASSWORD=yes mysql:5.7
+
+# Create the database via docker exec.
+docker exec mysql57 sh -c 'exec mysql -uroot -e "CREATE DATABASE IF NOT EXISTS webapitest DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;"'
+
+# Or create the database manually.
+CREATE DATABASE webapitest DEFAULT CHARSET = utf8 COLLATE = utf8_unicode_ci;
+```
 
 You can use these commands to run tests:
 

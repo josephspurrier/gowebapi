@@ -4,22 +4,22 @@ import (
 	"app/webapi/internal/bind"
 	"app/webapi/internal/response"
 	"app/webapi/internal/testutil"
+	"app/webapi/pkg/database"
 	"app/webapi/pkg/query"
 )
 
 // NewCoreMock returns all mocked dependencies.
-func NewCoreMock() (Core, *CoreMock) {
+func NewCoreMock(db *database.DBW) (Core, *CoreMock) {
 	ml := new(testutil.MockLogger)
-	md := testutil.ConnectDatabase(true)
-	mq := query.New(md)
+	mq := query.New(db)
 	mt := new(testutil.MockToken)
 	resp := response.New()
 	binder := bind.New()
 
-	core := NewCore(ml, md, mq, binder, resp, mt)
+	core := NewCore(ml, db, mq, binder, resp, mt)
 	m := &CoreMock{
 		Log:      ml,
-		DB:       md,
+		DB:       db,
 		Q:        mq,
 		Bind:     binder,
 		Response: resp,

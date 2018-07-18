@@ -15,8 +15,8 @@ import (
 )
 
 func TestShowOne(t *testing.T) {
-	testutil.LoadDatabase(t)
-	core, _ := component.NewCoreMock()
+	db, unique := testutil.LoadDatabase()
+	core, _ := component.NewCoreMock(db)
 
 	u := store.NewUser(core.DB, core.Q)
 	ID, err := u.Create("John", "Smith", "jsmith@example.com", "password")
@@ -34,11 +34,13 @@ func TestShowOne(t *testing.T) {
 	assert.Equal(t, "John", r.Body.Data[0].FirstName)
 	assert.Equal(t, "Smith", r.Body.Data[0].LastName)
 	assert.Equal(t, "jsmith@example.com", r.Body.Data[0].Email)
+
+	testutil.TeardownDatabase(unique)
 }
 
 func TestShowNotFound(t *testing.T) {
-	testutil.LoadDatabase(t)
-	core, _ := component.NewCoreMock()
+	db, unique := testutil.LoadDatabase()
+	core, _ := component.NewCoreMock(db)
 
 	w := testrequest.SendForm(t, core, "GET", "/v1/user/1", nil)
 
@@ -49,4 +51,6 @@ func TestShowNotFound(t *testing.T) {
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 	assert.Equal(t, "Bad Request", r.Body.Status)
 	assert.Equal(t, "user not found", r.Body.Message)
+
+	testutil.TeardownDatabase(unique)
 }

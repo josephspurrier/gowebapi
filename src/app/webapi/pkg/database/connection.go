@@ -10,14 +10,14 @@ import (
 
 // Connection holds the details for the MySQL connection.
 type Connection struct {
-	Username  string `json:"Username"`
-	Password  string `json:"Password"`
-	Database  string `json:"Database"`
-	Charset   string `json:"Charset"`
-	Collation string `json:"Collation"`
-	Hostname  string `json:"Hostname"`
-	Port      int    `json:"Port"`
-	Parameter string `json:"Parameter"`
+	Username  string `json:"Username" env:"DB_USERNAME"`
+	Password  string `json:"Password" env:"DB_PASSWORD"`
+	Database  string `json:"Database" env:"DB_DATABASE"`
+	Charset   string `json:"Charset" env:"DB_CHARSET"`
+	Collation string `json:"Collation" env:"DB_COLLATION"`
+	Hostname  string `json:"Hostname" env:"DB_HOSTNAME"`
+	Port      int    `json:"Port" env:"DB_PORT"`
+	Parameter string `json:"Parameter" env:"DB_PARAMETER"`
 }
 
 // *****************************************************************************

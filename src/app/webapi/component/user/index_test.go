@@ -15,8 +15,8 @@ import (
 )
 
 func TestIndexEmpty(t *testing.T) {
-	testutil.LoadDatabase(t)
-	core, _ := component.NewCoreMock()
+	db, unique := testutil.LoadDatabase()
+	core, _ := component.NewCoreMock(db)
 
 	w := testrequest.SendForm(t, core, "GET", "/v1/user", nil)
 
@@ -27,11 +27,13 @@ func TestIndexEmpty(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 	assert.Equal(t, "OK", r.Body.Status)
 	assert.Equal(t, 0, len(r.Body.Data))
+
+	testutil.TeardownDatabase(unique)
 }
 
 func TestIndexOne(t *testing.T) {
-	testutil.LoadDatabase(t)
-	core, _ := component.NewCoreMock()
+	db, unique := testutil.LoadDatabase()
+	core, _ := component.NewCoreMock(db)
 
 	u := store.NewUser(core.DB, core.Q)
 	_, err := u.Create("John", "Smith", "jsmith@example.com", "password")
@@ -48,4 +50,6 @@ func TestIndexOne(t *testing.T) {
 	assert.Equal(t, "John", r.Body.Data[0].FirstName)
 	assert.Equal(t, "Smith", r.Body.Data[0].LastName)
 	assert.Equal(t, "jsmith@example.com", r.Body.Data[0].Email)
+
+	testutil.TeardownDatabase(unique)
 }
