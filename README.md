@@ -161,6 +161,8 @@ Sample output from Dredd is [here](https://github.com/josephspurrier/gowebapi/wi
 
 ### Install Dredd
 
+You must have MySQL running for these tests to pass.
+
 ```bash
 # Install dredd.
 npm install -g dredd
@@ -170,6 +172,15 @@ go get github.com/snikch/goodman/cmd/goodman
 
 # CD to the webapi folder.
 cd src/app/webapi
+
+# Copy the testdata/config.json to the current directory.
+cp testdata/config.json ./config.json
+
+# Build the hooks app to load the test data.
+go build -o ./cmd/hooks/hooks app/webapi/cmd/hooks
+
+# Start MySQL without a password.
+docker run -d --name=mysql57 -p 3306:3306 -e MYSQL_ALLOW_EMPTY_PASSWORD=yes mysql:5.7
 
 # Run a test with dredd.
 dredd
