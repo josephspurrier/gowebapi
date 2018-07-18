@@ -89,12 +89,12 @@ go build
 # Run the app.
 ./webapi
 
-# Open your browser to this URL to see the **welcome** message and status **OK**: http://localhost/v1
+# Open your browser to this URL to see the **welcome** message and status **OK**: http://localhost:8080/v1
 ```
 
 To interact with the API, open your favorite REST client.
 
-You'll need to authenticate with at http://localhost/v1/auth before you can use any of the user endpoints. Once you have a token, add it to the request header with a name of `Authorization` and with a value of `Bearer {TOKEN HERE}`. To create a user, send a POST request to http://localhost/v1/user with the following fields: first_name, last_name, email, and password.
+You'll need to authenticate with at http://localhost:8080/v1/auth before you can use any of the user endpoints. Once you have a token, add it to the request header with a name of `Authorization` and with a value of `Bearer {TOKEN HERE}`. To create a user, send a POST request to http://localhost:8080/v1/user with the following fields: first_name, last_name, email, and password.
 
 Currently, only a Content-Type of `application/x-www-form-urlencoded` is supported when sending to the API.
 
@@ -103,12 +103,12 @@ Currently, only a Content-Type of `application/x-www-form-urlencoded` is support
 The following endpoints are available:
 
 ```
-* POST   http://localhost/v1/user           - Create a new user
-* GET	 http://localhost/v1/user/{user_id} - Retrieve a user by ID
-* GET	 http://localhost/v1/user           - Retrieve a list of all users
-* PUT	 http://localhost/v1/user/{user_id} - Update a user by ID
-* DELETE http://localhost/v1/user/{user_id} - Delete a user by ID
-* DELETE http://localhost/v1/user           - Delete all users
+* POST   /v1/user           - Create a new user
+* GET	 /v1/user/{user_id} - Retrieve a user by ID
+* GET	 /v1/user           - Retrieve a list of all users
+* PUT	 /v1/user/{user_id} - Update a user by ID
+* DELETE /v1/user/{user_id} - Delete a user by ID
+* DELETE /v1/user           - Delete all users
 ```
 
 ## Swagger
