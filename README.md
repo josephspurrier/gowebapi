@@ -426,6 +426,10 @@ go test ./... -coverprofile cover.out; go tool cover -func cover.out
 
 This code allows you to generate code from a template. This code below will generate all the files for a component includes the files for the store folder and the model folder.
 
+There is also a template migration in migration/template.sql that you can add to the mysql-v0.sql migration file once you change the following values:
+- `username:id` to your name and an integer.
+- `tablename` to the name of the component which is `note` in the example below.
+
 ```bash
 # Set the environment variables.
 export GOGEN_PROJECT_DIR=$GOPATH/src/app/webapi
