@@ -422,6 +422,25 @@ go test -coverprofile cover.out ./... && go tool cover -html=cover.out -o cover.
 go test ./... -coverprofile cover.out; go tool cover -func cover.out
 ```
 
+## Code Generation
+
+This code allows you to generate a template using find and replace.
+
+```bash
+# Set the environment variables.
+export GOGEN_PROJECT_DIR=$GOPATH/src/app/webapi
+export GOGEN_TEMPLATE_DIR=$GOPATH/src/app/webapi/template
+
+# CD to the correct folder.
+cd src/app/gogen/cmd/gogen
+
+# Generate templates from the user component.
+go run main.go template component/user component itemUpper:User itemLower:user allUpper:USER
+
+# Generate new component code from the template.
+go run main.go generate component/default itemUpper:Note itemLower:note allUpper:NOTE
+```
+
 ## Conventions
 
 Rules for mapping HTTP methods to CRUD:
