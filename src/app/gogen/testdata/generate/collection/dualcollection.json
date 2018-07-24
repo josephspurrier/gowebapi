@@ -3,9 +3,9 @@
 	"config.collection": [
 		{
 			"collection/default": {
-				"model": "{{.model}}",
-				"package": "{{.package}}",
-				"view": "{{.view}}"
+				"model": "[[.model]]",
+				"package": "[[.package]]",
+				"view": "[[.view]]"
 			}
 		}
 	],

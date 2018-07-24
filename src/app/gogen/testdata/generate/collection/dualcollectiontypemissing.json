@@ -3,8 +3,8 @@
 	"config.collection": [
 		{
 			"single/missingtype": {
-				"table": "{{.table}}",
-				"package": "{{.package}}"
+				"table": "[[.table]]",
+				"package": "[[.package]]"
 			}
 		}
 	],

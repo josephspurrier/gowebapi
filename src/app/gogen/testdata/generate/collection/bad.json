@@ -3,8 +3,8 @@
 	"config.collection": [
 		{
 			"single/default": {
-				"package": "{{.package}}",
-				"table": "{{.model}}"
+				"package": "[[.package]]",
+				"table": "[[.model]]"
 			}
 		}
 	],

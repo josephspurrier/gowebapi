@@ -1,7 +1,7 @@
-// Package {{.package}}.
-package {{.package}}
+// Package [[.package]].
+package [[.package]]
 
 var (
 	// table name.
-	table = "{{.table}}"
+	table = "[[.table]]"
 )

@@ -3,13 +3,13 @@
 	"config.collectionz": [
 		{
 			"single/default": {
-				"package": "{{.package}}",
-				"table": "{{.model}}"
+				"package": "[[.package]]",
+				"table": "[[.model]]"
 			}
 		},
 		{
 			"single/noparse": {
-				"model": "{{.view}}"
+				"model": "[[.view]]"
 			}
 		}
 	],
