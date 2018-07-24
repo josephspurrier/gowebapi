@@ -1,0 +1,27 @@
+package [[.itemLower]]
+
+import (
+	"app/webapi/component"
+)
+
+// New returns a new instance of the endpoint.
+func New(bc component.Core) *Endpoint {
+	return &Endpoint{
+		Core: bc,
+	}
+}
+
+// Endpoint contains the dependencies.
+type Endpoint struct {
+	component.Core
+}
+
+// Routes will set up the endpoints.
+func (p *Endpoint) Routes(router component.IRouter) {
+	router.Post("/v1/[[.itemLower]]", p.Create)
+	router.Get("/v1/[[.itemLower]]/:[[.itemLower]]_id", p.Show)
+	router.Get("/v1/[[.itemLower]]", p.ShowAll)
+	router.Put("/v1/[[.itemLower]]/:[[.itemLower]]_id", p.Update)
+	router.Delete("/v1/[[.itemLower]]/:[[.itemLower]]_id", p.Destroy)
+	router.Delete("/v1/[[.itemLower]]", p.DestroyAll)
+}

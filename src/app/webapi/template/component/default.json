@@ -1,0 +1,117 @@
+{
+    "config.collection": [
+        {
+            "component/component/default": {
+                "allUpper": "[[.allUpper]]",
+                "itemLower": "[[.itemLower]]",
+                "itemUpper": "[[.itemUpper]]"
+            }
+        },
+        {
+            "component/create/default": {
+                "allUpper": "[[.allUpper]]",
+                "itemLower": "[[.itemLower]]",
+                "itemUpper": "[[.itemUpper]]"
+            }
+        },
+        {
+            "component/create_test/default": {
+                "allUpper": "[[.allUpper]]",
+                "itemLower": "[[.itemLower]]",
+                "itemUpper": "[[.itemUpper]]"
+            }
+        },
+        {
+            "component/destroy/default": {
+                "allUpper": "[[.allUpper]]",
+                "itemLower": "[[.itemLower]]",
+                "itemUpper": "[[.itemUpper]]"
+            }
+        },
+        {
+            "component/destroy_all/default": {
+                "allUpper": "[[.allUpper]]",
+                "itemLower": "[[.itemLower]]",
+                "itemUpper": "[[.itemUpper]]"
+            }
+        },
+        {
+            "component/destroy_all_test/default": {
+                "allUpper": "[[.allUpper]]",
+                "itemLower": "[[.itemLower]]",
+                "itemUpper": "[[.itemUpper]]"
+            }
+        },
+        {
+            "component/destroy_test/default": {
+                "allUpper": "[[.allUpper]]",
+                "itemLower": "[[.itemLower]]",
+                "itemUpper": "[[.itemUpper]]"
+            }
+        },
+        {
+            "component/show/default": {
+                "allUpper": "[[.allUpper]]",
+                "itemLower": "[[.itemLower]]",
+                "itemUpper": "[[.itemUpper]]"
+            }
+        },
+        {
+            "component/show_all/default": {
+                "allUpper": "[[.allUpper]]",
+                "itemLower": "[[.itemLower]]",
+                "itemUpper": "[[.itemUpper]]"
+            }
+        },
+        {
+            "component/show_all_test/default": {
+                "allUpper": "[[.allUpper]]",
+                "itemLower": "[[.itemLower]]",
+                "itemUpper": "[[.itemUpper]]"
+            }
+        },
+        {
+            "component/show_test/default": {
+                "allUpper": "[[.allUpper]]",
+                "itemLower": "[[.itemLower]]",
+                "itemUpper": "[[.itemUpper]]"
+            }
+        },
+        {
+            "component/update/default": {
+                "allUpper": "[[.allUpper]]",
+                "itemLower": "[[.itemLower]]",
+                "itemUpper": "[[.itemUpper]]"
+            }
+        },
+        {
+            "component/update_test/default": {
+                "allUpper": "[[.allUpper]]",
+                "itemLower": "[[.itemLower]]",
+                "itemUpper": "[[.itemUpper]]"
+            }
+        },
+        {
+            "component/model/show/default": {
+                "allUpper": "[[.allUpper]]",
+                "itemLower": "[[.itemLower]]",
+                "itemUpper": "[[.itemUpper]]"
+            }
+        },
+        {
+            "component/model/show_all/default": {
+                "allUpper": "[[.allUpper]]",
+                "itemLower": "[[.itemLower]]",
+                "itemUpper": "[[.itemUpper]]"
+            }
+        },
+        {
+            "component/store/default": {
+                "allUpper": "[[.allUpper]]",
+                "itemLower": "[[.itemLower]]",
+                "itemUpper": "[[.itemUpper]]"
+            }
+        }
+    ],
+    "config.type": "collection"
+}

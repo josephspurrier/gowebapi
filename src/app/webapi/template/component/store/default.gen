@@ -1,0 +1,88 @@
+package store
+
+import (
+	"fmt"
+	"time"
+
+	"app/webapi/component"
+	"app/webapi/pkg/securegen"
+)
+
+// New[[.itemUpper]] returns a new query object.
+func New[[.itemUpper]](db component.IDatabase, q component.IQuery) *[[.itemUpper]] {
+	return &[[.itemUpper]]{
+		IQuery: q,
+		db:     db,
+	}
+}
+
+// [[.itemUpper]] represents a [[.itemLower]] in the database.
+type [[.itemUpper]] struct {
+	component.IQuery
+	db component.IDatabase
+
+	ID        string     `db:"id"`
+	Name      string     `db:"name"`
+	CreatedAt *time.Time `db:"created_at"`
+	UpdatedAt *time.Time `db:"updated_at"`
+	DeletedAt *time.Time `db:"deleted_at"`
+}
+
+// Table returns the table name.
+func (x *[[.itemUpper]]) Table() string {
+	return "[[.itemLower]]"
+}
+
+// PrimaryKey returns the primary key field.
+func (x *[[.itemUpper]]) PrimaryKey() string {
+	return "id"
+}
+
+// NewGroup returns an empty group.
+func (x *[[.itemUpper]]) NewGroup() *[[.itemUpper]]Group {
+	group := make([[.itemUpper]]Group, 0)
+	return &group
+}
+
+// [[.itemUpper]]Group represents a group of [[.itemUpper]]s.
+type [[.itemUpper]]Group [][[.itemUpper]]
+
+// Table returns the table name.
+func (x [[.itemUpper]]Group) Table() string {
+	return "[[.itemLower]]"
+}
+
+// PrimaryKey returns the primary key field.
+func (x [[.itemUpper]]Group) PrimaryKey() string {
+	return "id"
+}
+
+// Create adds a new [[.itemLower]].
+func (x *[[.itemUpper]]) Create(name string) (string, error) {
+	uuid, err := securegen.UUID()
+	if err != nil {
+		return "", err
+	}
+
+	_, err = x.db.Exec(fmt.Sprintf(`
+		INSERT INTO %v
+		(id, name)
+		VALUES
+		(?, ?)
+		`, x.Table()),
+		uuid, name)
+
+	return uuid, err
+}
+
+// Update makes changes to an existing [[.itemLower]].
+func (x *[[.itemUpper]]) Update(ID, name string) (err error) {
+	_, err = x.db.Exec(fmt.Sprintf(`
+		UPDATE %v
+		SET
+			name = ?
+		WHERE id = ?
+		`, x.Table()),
+		name, ID)
+	return
+}

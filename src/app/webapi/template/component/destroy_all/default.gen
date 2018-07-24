@@ -1,4 +1,4 @@
-package user
+package [[.itemLower]]
 
 import (
 	"errors"
@@ -7,10 +7,10 @@ import (
 	"app/webapi/store"
 )
 
-// DestroyAll will: Delete all users.
-// swagger:route DELETE /v1/user user UserDestroyAll
+// DestroyAll will: Delete all [[.itemLower]]s.
+// swagger:route DELETE /v1/[[.itemLower]] [[.itemLower]] [[.itemUpper]]DestroyAll
 //
-// Delete all users.
+// Delete all [[.itemLower]]s.
 //
 // Security:
 //   token:
@@ -22,15 +22,15 @@ import (
 //   500: InternalServerErrorResponse
 func (p *Endpoint) DestroyAll(w http.ResponseWriter, r *http.Request) (int, error) {
 	// Create the DB store.
-	u := store.NewUser(p.DB, p.Q)
+	u := store.New[[.itemUpper]](p.DB, p.Q)
 
 	// Delete all items.
 	count, err := u.DeleteAll(u)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	} else if count < 1 {
-		return http.StatusBadRequest, errors.New("no users to delete")
+		return http.StatusBadRequest, errors.New("no [[.itemLower]]s to delete")
 	}
 
-	return p.Response.OK(w, "users deleted")
+	return p.Response.OK(w, "[[.itemLower]]s deleted")
 }

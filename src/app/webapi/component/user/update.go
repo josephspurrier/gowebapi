@@ -7,10 +7,10 @@ import (
 	"app/webapi/store"
 )
 
-// Update .
+// Update will: Update a user.
 // swagger:route PUT /v1/user/{user_id} user UserUpdate
 //
-// Make changes to a user.
+// Update a user.
 //
 // Security:
 //   token:

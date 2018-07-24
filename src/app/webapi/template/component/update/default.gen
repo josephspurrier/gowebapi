@@ -1,0 +1,60 @@
+package [[.itemLower]]
+
+import (
+	"errors"
+	"net/http"
+
+	"app/webapi/store"
+)
+
+// Update will: Update a [[.itemLower]].
+// swagger:route PUT /v1/[[.itemLower]]/{[[.itemLower]]_id} [[.itemLower]] [[.itemUpper]]Update
+//
+// Update a [[.itemLower]].
+//
+// Security:
+//   token:
+//
+// Responses:
+//   200: OKResponse
+//   400: BadRequestResponse
+//   401: UnauthorizedResponse
+//   500: InternalServerErrorResponse
+func (p *Endpoint) Update(w http.ResponseWriter, r *http.Request) (int, error) {
+	// swagger:parameters [[.itemUpper]]Update
+	type request struct {
+		// in: path
+		// x-example: [[.allUpper]]ID
+		[[.itemUpper]]ID string `json:"[[.itemLower]]_id" validate:"required"`
+		// in: formData
+		// Required: true
+		Name string `json:"name" validate:"required"`
+	}
+
+	// Request validation.
+	req := new(request)
+	if err := p.Bind.FormUnmarshal(req, r); err != nil {
+		return http.StatusBadRequest, err
+	} else if err = p.Bind.Validate(req); err != nil {
+		return http.StatusBadRequest, err
+	}
+
+	// Create the DB store.
+	u := store.New[[.itemUpper]](p.DB, p.Q)
+
+	// Determine if the item exists.
+	exists, err := u.ExistsByID(u, req.[[.itemUpper]]ID)
+	if err != nil {
+		return http.StatusInternalServerError, err
+	} else if !exists {
+		return http.StatusBadRequest, errors.New("[[.itemLower]] not found")
+	}
+
+	// Update the item.
+	err = u.Update(u.ID, req.Name)
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	return p.Response.OK(w, "[[.itemLower]] updated")
+}

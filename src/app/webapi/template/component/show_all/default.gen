@@ -1,4 +1,4 @@
-package user
+package [[.itemLower]]
 
 import (
 	"net/http"
@@ -8,34 +8,34 @@ import (
 	"app/webapi/store"
 )
 
-// Index .
-// swagger:route GET /v1/user user UserIndex
+// ShowAll will: Show all [[.itemLower]]s.
+// swagger:route GET /v1/[[.itemLower]] [[.itemLower]] [[.itemUpper]]ShowAll
 //
-// Return all users.
+// Show all [[.itemLower]]s.
 //
 // Security:
 //   token:
 //
 // Responses:
-//   200: UserIndexResponse
+//   200: [[.itemUpper]]ShowAllResponse
 //   400: BadRequestResponse
 //   401: UnauthorizedResponse
 //   500: InternalServerErrorResponse
-func (p *Endpoint) Index(w http.ResponseWriter, r *http.Request) (int, error) {
+func (p *Endpoint) ShowAll(w http.ResponseWriter, r *http.Request) (int, error) {
 	// Create the DB store.
-	u := store.NewUser(p.DB, p.Q)
+	u := store.New[[.itemUpper]](p.DB, p.Q)
 
 	// Get all items.
-	results := make(store.UserGroup, 0)
+	results := make(store.[[.itemUpper]]Group, 0)
 	_, err := u.FindAll(&results)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
 
 	// Copy the items to the JSON model.
-	arr := make([]model.UserIndexResponseData, 0)
+	arr := make([]model.[[.itemUpper]]ShowAllResponseData, 0)
 	for _, u := range results {
-		item := new(model.UserIndexResponseData)
+		item := new(model.[[.itemUpper]]ShowAllResponseData)
 		err = structcopy.ByTag(&u, "db", item, "json")
 		if err != nil {
 			return http.StatusInternalServerError, err
@@ -44,7 +44,7 @@ func (p *Endpoint) Index(w http.ResponseWriter, r *http.Request) (int, error) {
 	}
 
 	// Send the response.
-	resp := new(model.UserIndexResponse)
+	resp := new(model.[[.itemUpper]]ShowAllResponse)
 	resp.Body.Status = http.StatusText(http.StatusOK)
 	resp.Body.Data = arr
 	return p.Response.JSON(w, resp.Body)

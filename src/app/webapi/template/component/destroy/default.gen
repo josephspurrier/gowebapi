@@ -1,4 +1,4 @@
-package user
+package [[.itemLower]]
 
 import (
 	"errors"
@@ -7,10 +7,10 @@ import (
 	"app/webapi/store"
 )
 
-// Destroy will: Delete a user.
-// swagger:route DELETE /v1/user/{user_id} user UserDestroy
+// Destroy will: Delete a [[.itemLower]].
+// swagger:route DELETE /v1/[[.itemLower]]/{[[.itemLower]]_id} [[.itemLower]] [[.itemUpper]]Destroy
 //
-// Delete a user.
+// Delete a [[.itemLower]].
 //
 // Security:
 //   token:
@@ -21,11 +21,11 @@ import (
 //   401: UnauthorizedResponse
 //   500: InternalServerErrorResponse
 func (p *Endpoint) Destroy(w http.ResponseWriter, r *http.Request) (int, error) {
-	// swagger:parameters UserDestroy
+	// swagger:parameters [[.itemUpper]]Destroy
 	type request struct {
 		// in: path
-		// x-example: USERID
-		UserID string `json:"user_id" validate:"required"`
+		// x-example: [[.allUpper]]ID
+		[[.itemUpper]]ID string `json:"[[.itemLower]]_id" validate:"required"`
 	}
 
 	// Request validation.
@@ -37,15 +37,15 @@ func (p *Endpoint) Destroy(w http.ResponseWriter, r *http.Request) (int, error) 
 	}
 
 	// Create the DB store.
-	u := store.NewUser(p.DB, p.Q)
+	u := store.New[[.itemUpper]](p.DB, p.Q)
 
 	// Delete the item.
-	count, err := u.DeleteOneByID(u, req.UserID)
+	count, err := u.DeleteOneByID(u, req.[[.itemUpper]]ID)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	} else if count < 1 {
-		return http.StatusBadRequest, errors.New("user does not exist")
+		return http.StatusBadRequest, errors.New("[[.itemLower]] does not exist")
 	}
 
-	return p.Response.OK(w, "user deleted")
+	return p.Response.OK(w, "[[.itemLower]] deleted")
 }

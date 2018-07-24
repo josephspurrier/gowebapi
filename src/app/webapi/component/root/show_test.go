@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestIndex(t *testing.T) {
+func TestShow(t *testing.T) {
 	db, unique := testutil.LoadDatabase()
 	core, _ := component.NewCoreMock(db)
 

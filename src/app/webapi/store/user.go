@@ -1,6 +1,7 @@
 package store
 
 import (
+	"fmt"
 	"time"
 
 	"app/webapi/component"
@@ -67,28 +68,28 @@ func (x *User) Create(firstName, lastName, email, password string) (string, erro
 		return "", err
 	}
 
-	_, err = x.db.Exec(`
-		INSERT INTO user
+	_, err = x.db.Exec(fmt.Sprintf(`
+		INSERT INTO %v
 		(id, first_name, last_name, email, password, status_id)
 		VALUES
-		(?,?,?,?,?,?)
-		`,
+		(?, ?, ?, ?, ?, ?)
+		`, x.Table()),
 		uuid, firstName, lastName, email, password, 1)
 
 	return uuid, err
 }
 
-// Update makes changes to a user.
+// Update makes changes to an existing user.
 func (x *User) Update(ID, firstName, lastName, email, password string) (err error) {
-	_, err = x.db.Exec(`
-		UPDATE user
+	_, err = x.db.Exec(fmt.Sprintf(`
+		UPDATE %v
 		SET
 			first_name = ?,
 			last_name = ?,
 			email = ?,
 			password = ?
 		WHERE id = ?
-		`,
+		`, x.Table()),
 		firstName, lastName, email, password, ID)
 	return
 }

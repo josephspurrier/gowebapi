@@ -1,0 +1,88 @@
+package [[.itemLower]]_test
+
+import (
+	"encoding/json"
+	"net/http"
+	"net/url"
+	"strings"
+	"testing"
+
+	"app/webapi/component"
+	"app/webapi/internal/testrequest"
+	"app/webapi/internal/testutil"
+	"app/webapi/model"
+	"app/webapi/store"
+
+	"github.com/stretchr/testify/assert"
+)
+
+func form() url.Values {
+	form := url.Values{}
+	form.Add("name", "Foo")
+	return form
+}
+
+func formVariation() url.Values {
+	form := url.Values{}
+	form.Add("name", "Bar")
+	return form
+}
+
+func TestCreate(t *testing.T) {
+	db, unique := testutil.LoadDatabase()
+	core, _ := component.NewCoreMock(db)
+
+	form := form()
+
+	w := testrequest.SendForm(t, core, "POST", "/v1/[[.itemLower]]", form)
+
+	r := new(model.CreatedResponse)
+	err := json.Unmarshal(w.Body.Bytes(), &r.Body)
+	assert.Nil(t, err)
+
+	assert.Equal(t, http.StatusCreated, w.Code)
+	assert.Equal(t, "Created", r.Body.Status)
+	assert.Equal(t, 36, len(r.Body.RecordID))
+
+	testutil.TeardownDatabase(unique)
+}
+
+func TestCreate[[.itemUpper]]AlreadyExists(t *testing.T) {
+	db, unique := testutil.LoadDatabase()
+	core, _ := component.NewCoreMock(db)
+
+	u := store.New[[.itemUpper]](core.DB, core.Q)
+	_, err := u.Create("Foo")
+	assert.Nil(t, err)
+
+	form := form()
+
+	w := testrequest.SendForm(t, core, "POST", "/v1/[[.itemLower]]", form)
+
+	r := new(model.BadRequestResponse)
+	err = json.Unmarshal(w.Body.Bytes(), &r.Body)
+	assert.Nil(t, err)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+	assert.Equal(t, "Bad Request", r.Body.Status)
+	assert.Equal(t, "[[.itemLower]] already exists", r.Body.Message)
+
+	testutil.TeardownDatabase(unique)
+}
+
+func TestCreateValidation(t *testing.T) {
+	for _, v := range []string{
+		"POST /v1/[[.itemLower]]",
+	} {
+		db, unique := testutil.LoadDatabase()
+		core, _ := component.NewCoreMock(db)
+
+		arr := strings.Split(v, " ")
+
+		w := testrequest.SendForm(t, core, arr[0], arr[1], nil)
+
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+
+		testutil.TeardownDatabase(unique)
+	}
+}

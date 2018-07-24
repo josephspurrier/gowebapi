@@ -1,0 +1,19 @@
+package model
+
+// [[.itemUpper]]ShowResponse returns 200.
+// swagger:response [[.itemUpper]]ShowResponse
+type [[.itemUpper]]ShowResponse struct {
+	// in: body
+	Body struct {
+		// Required: true
+		Status string `json:"status"`
+		// Required: true
+		Data [][[.itemUpper]]ShowResponseData `json:"data"`
+	}
+}
+
+// [[.itemUpper]]ShowResponseData is the [[.itemUpper]] data.
+type [[.itemUpper]]ShowResponseData struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}

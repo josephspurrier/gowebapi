@@ -7,20 +7,20 @@ import (
 	"app/webapi/model"
 )
 
-// Index .
-// swagger:route GET /v1/auth auth AuthIndex
+// Show will: Show an access token.
+// swagger:route GET /v1/auth auth AuthShow
 //
-// Get an access token.
+// Show an access token.
 //
 // Responses:
-//   200: AuthIndexResponse
-func (p *Endpoint) Index(w http.ResponseWriter, r *http.Request) (int, error) {
+//   200: AuthShowResponse
+func (p *Endpoint) Show(w http.ResponseWriter, r *http.Request) (int, error) {
 	t, err := p.Token.Generate("1", 8*time.Hour)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
 
-	resp := new(model.AuthIndexResponse)
+	resp := new(model.AuthShowResponse)
 	resp.Body.Status = http.StatusText(http.StatusOK)
 	resp.Body.Data.Token = t
 	return p.Response.JSON(w, resp.Body)

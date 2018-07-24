@@ -1,4 +1,4 @@
-package user
+package [[.itemLower]]
 
 import (
 	"errors"
@@ -7,10 +7,10 @@ import (
 	"app/webapi/store"
 )
 
-// Create will: Create a user.
-// swagger:route POST /v1/user user UserCreate
+// Create will: Create a [[.itemLower]].
+// swagger:route POST /v1/[[.itemLower]] [[.itemLower]] [[.itemUpper]]Create
 //
-// Create a user.
+// Create a [[.itemLower]].
 //
 // Security:
 //   token:
@@ -21,20 +21,11 @@ import (
 //   401: UnauthorizedResponse
 //   500: InternalServerErrorResponse
 func (p *Endpoint) Create(w http.ResponseWriter, r *http.Request) (int, error) {
-	// swagger:parameters UserCreate
+	// swagger:parameters [[.itemUpper]]Create
 	type request struct {
 		// in: formData
 		// Required: true
-		FirstName string `json:"first_name" validate:"required"`
-		// in: formData
-		// Required: true
-		LastName string `json:"last_name" validate:"required"`
-		// in: formData
-		// Required: true
-		Email string `json:"email" validate:"required,email"`
-		// in: formData
-		// Required: true
-		Password string `json:"password" validate:"required"`
+		Name string `json:"name" validate:"required"`
 	}
 
 	// Request validation.
@@ -46,24 +37,18 @@ func (p *Endpoint) Create(w http.ResponseWriter, r *http.Request) (int, error) {
 	}
 
 	// Create the DB store.
-	u := store.NewUser(p.DB, p.Q)
+	u := store.New[[.itemUpper]](p.DB, p.Q)
 
 	// Check for existing item.
-	exists, _, err := u.ExistsByField(u, "email", req.Email)
+	exists, _, err := u.ExistsByField(u, "name", req.Name)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	} else if exists {
-		return http.StatusBadRequest, errors.New("user already exists")
-	}
-
-	// Encrypt the password.
-	password, err := p.Password.HashString(req.Password)
-	if err != nil {
-		return http.StatusInternalServerError, err
+		return http.StatusBadRequest, errors.New("[[.itemLower]] already exists")
 	}
 
 	// Create the item.
-	ID, err := u.Create(req.FirstName, req.LastName, req.Email, password)
+	ID, err := u.Create(req.Name)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}

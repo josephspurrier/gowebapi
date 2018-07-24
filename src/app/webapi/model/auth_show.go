@@ -1,8 +1,8 @@
 package model
 
-// AuthIndexResponse returns 200.
-// swagger:response AuthIndexResponse
-type AuthIndexResponse struct {
+// AuthShowResponse returns 200.
+// swagger:response AuthShowResponse
+type AuthShowResponse struct {
 	// in: body
 	Body struct {
 		// Required: true

@@ -1,0 +1,54 @@
+package [[.itemLower]]_test
+
+import (
+	"encoding/json"
+	"net/http"
+	"testing"
+
+	"app/webapi/component"
+	"app/webapi/internal/testrequest"
+	"app/webapi/internal/testutil"
+	"app/webapi/model"
+	"app/webapi/store"
+
+	"github.com/stretchr/testify/assert"
+)
+
+func TestShowOne(t *testing.T) {
+	db, unique := testutil.LoadDatabase()
+	core, _ := component.NewCoreMock(db)
+
+	u := store.New[[.itemUpper]](core.DB, core.Q)
+	ID, err := u.Create("Foo")
+	assert.Nil(t, err)
+
+	w := testrequest.SendForm(t, core, "GET", "/v1/[[.itemLower]]/"+ID, nil)
+
+	r := new(model.[[.itemUpper]]ShowResponse)
+	err = json.Unmarshal(w.Body.Bytes(), &r.Body)
+	assert.Nil(t, err)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, "OK", r.Body.Status)
+	assert.Equal(t, 1, len(r.Body.Data))
+	assert.Equal(t, "Foo", r.Body.Data[0].Name)
+
+	testutil.TeardownDatabase(unique)
+}
+
+func TestShowNotFound(t *testing.T) {
+	db, unique := testutil.LoadDatabase()
+	core, _ := component.NewCoreMock(db)
+
+	w := testrequest.SendForm(t, core, "GET", "/v1/[[.itemLower]]/1", nil)
+
+	r := new(model.BadRequestResponse)
+	err := json.Unmarshal(w.Body.Bytes(), &r.Body)
+	assert.Nil(t, err)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+	assert.Equal(t, "Bad Request", r.Body.Status)
+	assert.Equal(t, "[[.itemLower]] not found", r.Body.Message)
+
+	testutil.TeardownDatabase(unique)
+}

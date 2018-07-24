@@ -1,4 +1,4 @@
-package user
+package [[.itemLower]]
 
 import (
 	"errors"
@@ -9,25 +9,25 @@ import (
 	"app/webapi/store"
 )
 
-// Show will: Show one user.
-// swagger:route GET /v1/user/{user_id} user UserShow
+// Show will: Show one [[.itemLower]].
+// swagger:route GET /v1/[[.itemLower]]/{[[.itemLower]]_id} [[.itemLower]] [[.itemUpper]]Show
 //
-// Show one user.
+// Show one [[.itemLower]].
 //
 // Security:
 //   token:
 //
 // Responses:
-//   200: UserShowResponse
+//   200: [[.itemUpper]]ShowResponse
 //   400: BadRequestResponse
 //   401: UnauthorizedResponse
 //   500: InternalServerErrorResponse
 func (p *Endpoint) Show(w http.ResponseWriter, r *http.Request) (int, error) {
-	// swagger:parameters UserShow
+	// swagger:parameters [[.itemUpper]]Show
 	type request struct {
 		// in: path
-		// x-example: USERID
-		UserID string `json:"user_id" validate:"required"`
+		// x-example: [[.allUpper]]ID
+		[[.itemUpper]]ID string `json:"[[.itemLower]]_id" validate:"required"`
 	}
 
 	// Request validation.
@@ -39,19 +39,19 @@ func (p *Endpoint) Show(w http.ResponseWriter, r *http.Request) (int, error) {
 	}
 
 	// Create the DB store.
-	u := store.NewUser(p.DB, p.Q)
+	u := store.New[[.itemUpper]](p.DB, p.Q)
 
 	// Get an item by ID.
-	exists, err := u.FindOneByID(u, req.UserID)
+	exists, err := u.FindOneByID(u, req.[[.itemUpper]]ID)
 	if err != nil {
 		return http.StatusInternalServerError, err
 	} else if !exists {
-		return http.StatusBadRequest, errors.New("user not found")
+		return http.StatusBadRequest, errors.New("[[.itemLower]] not found")
 	}
 
 	// Copy the items to the JSON model.
-	arr := make([]model.UserShowResponseData, 0)
-	item := new(model.UserShowResponseData)
+	arr := make([]model.[[.itemUpper]]ShowResponseData, 0)
+	item := new(model.[[.itemUpper]]ShowResponseData)
 	err = structcopy.ByTag(u, "db", item, "json")
 	if err != nil {
 		return http.StatusInternalServerError, err
@@ -59,7 +59,7 @@ func (p *Endpoint) Show(w http.ResponseWriter, r *http.Request) (int, error) {
 	arr = append(arr, *item)
 
 	// Send the response.
-	resp := new(model.UserShowResponse)
+	resp := new(model.[[.itemUpper]]ShowResponse)
 	resp.Body.Status = http.StatusText(http.StatusOK)
 	resp.Body.Data = arr
 	return p.Response.JSON(w, resp.Body)

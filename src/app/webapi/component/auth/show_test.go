@@ -16,7 +16,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestIndex(t *testing.T) {
+func TestShow(t *testing.T) {
 	db, unique := testutil.LoadDatabase()
 	core, m := component.NewCoreMock(db)
 
@@ -28,7 +28,7 @@ func TestIndex(t *testing.T) {
 
 	w := testrequest.SendForm(t, core, "GET", "/v1/auth", nil)
 
-	r := new(model.AuthIndexResponse)
+	r := new(model.AuthShowResponse)
 	err := json.Unmarshal(w.Body.Bytes(), &r.Body)
 	assert.Nil(t, err)
 

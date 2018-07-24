@@ -20,7 +20,7 @@ func TestIndexEmpty(t *testing.T) {
 
 	w := testrequest.SendForm(t, core, "GET", "/v1/user", nil)
 
-	r := new(model.UserIndexResponse)
+	r := new(model.UserShowAllResponse)
 	err := json.Unmarshal(w.Body.Bytes(), &r.Body)
 	assert.Nil(t, err)
 
@@ -41,7 +41,7 @@ func TestIndexOne(t *testing.T) {
 
 	w := testrequest.SendForm(t, core, "GET", "/v1/user", nil)
 
-	r := new(model.UserIndexResponse)
+	r := new(model.UserShowAllResponse)
 	err = json.Unmarshal(w.Body.Bytes(), &r.Body)
 	assert.Nil(t, err)
 

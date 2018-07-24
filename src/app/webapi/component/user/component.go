@@ -20,7 +20,7 @@ type Endpoint struct {
 func (p *Endpoint) Routes(router component.IRouter) {
 	router.Post("/v1/user", p.Create)
 	router.Get("/v1/user/:user_id", p.Show)
-	router.Get("/v1/user", p.Index)
+	router.Get("/v1/user", p.ShowAll)
 	router.Put("/v1/user/:user_id", p.Update)
 	router.Delete("/v1/user/:user_id", p.Destroy)
 	router.Delete("/v1/user", p.DestroyAll)

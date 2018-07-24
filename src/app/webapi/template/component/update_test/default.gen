@@ -1,0 +1,72 @@
+package [[.itemLower]]_test
+
+import (
+	"encoding/json"
+	"net/http"
+	"net/url"
+	"testing"
+
+	"app/webapi/component"
+	"app/webapi/internal/testrequest"
+	"app/webapi/internal/testutil"
+	"app/webapi/model"
+	"app/webapi/store"
+
+	"github.com/stretchr/testify/assert"
+)
+
+func TestUpdate[[.itemUpper]]AllFields(t *testing.T) {
+	db, unique := testutil.LoadDatabase()
+	core, _ := component.NewCoreMock(db)
+
+	u := store.New[[.itemUpper]](core.DB, core.Q)
+	ID, err := u.Create("Foo")
+	assert.Nil(t, err)
+
+	form := formVariation()
+
+	w := testrequest.SendForm(t, core, "PUT", "/v1/[[.itemLower]]/"+ID, form)
+
+	r := new(model.OKResponse)
+	err = json.Unmarshal(w.Body.Bytes(), &r.Body)
+	assert.Nil(t, err)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, "OK", r.Body.Status)
+	assert.Equal(t, "[[.itemLower]] updated", r.Body.Message)
+
+	found, err := u.FindOneByID(u, ID)
+	assert.Nil(t, err)
+	assert.True(t, found)
+	assert.Equal(t, "Bar", u.Name)
+
+	testutil.TeardownDatabase(unique)
+}
+
+func TestUpdateMissingFields(t *testing.T) {
+	db, unique := testutil.LoadDatabase()
+	core, _ := component.NewCoreMock(db)
+
+	u := store.New[[.itemUpper]](core.DB, core.Q)
+	ID, err := u.Create("Foo")
+	assert.Nil(t, err)
+
+	form := url.Values{}
+
+	w := testrequest.SendForm(t, core, "PUT", "/v1/[[.itemLower]]/"+ID, form)
+
+	r := new(model.BadRequestResponse)
+	err = json.Unmarshal(w.Body.Bytes(), &r.Body)
+	assert.Nil(t, err)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+	assert.Equal(t, "Bad Request", r.Body.Status)
+	assert.Contains(t, r.Body.Message, "failed")
+
+	found, err := u.FindOneByID(u, ID)
+	assert.Nil(t, err)
+	assert.True(t, found)
+	assert.Equal(t, "Foo", u.Name)
+
+	testutil.TeardownDatabase(unique)
+}

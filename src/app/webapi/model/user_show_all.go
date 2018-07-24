@@ -1,19 +1,19 @@
 package model
 
-// UserIndexResponse returns 200.
-// swagger:response UserIndexResponse
-type UserIndexResponse struct {
+// UserShowAllResponse returns 200.
+// swagger:response UserShowAllResponse
+type UserShowAllResponse struct {
 	// in: body
 	Body struct {
 		// Required: true
 		Status string `json:"status"`
 		// Required: true
-		Data []UserIndexResponseData `json:"data"`
+		Data []UserShowAllResponseData `json:"data"`
 	}
 }
 
-// UserIndexResponseData is the user data.
-type UserIndexResponseData struct {
+// UserShowAllResponseData is the user data.
+type UserShowAllResponseData struct {
 	ID        string `json:"id"`
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`

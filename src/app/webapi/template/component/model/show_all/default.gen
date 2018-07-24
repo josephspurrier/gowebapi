@@ -1,0 +1,19 @@
+package model
+
+// [[.itemUpper]]ShowAllResponse returns 200.
+// swagger:response [[.itemUpper]]ShowAllResponse
+type [[.itemUpper]]ShowAllResponse struct {
+	// in: body
+	Body struct {
+		// Required: true
+		Status string `json:"status"`
+		// Required: true
+		Data [][[.itemUpper]]ShowAllResponseData `json:"data"`
+	}
+}
+
+// [[.itemUpper]]ShowAllResponseData is the [[.itemLower]] data.
+type [[.itemUpper]]ShowAllResponseData struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
