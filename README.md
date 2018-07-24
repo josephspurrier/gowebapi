@@ -424,7 +424,7 @@ go test ./... -coverprofile cover.out; go tool cover -func cover.out
 
 ## Code Generation
 
-This code allows you to generate a template using find and replace.
+This code allows you to generate code from a template. This code below will generate all the files for a component includes the files for the store folder and the model folder.
 
 ```bash
 # Set the environment variables.
@@ -434,11 +434,15 @@ export GOGEN_TEMPLATE_DIR=$GOPATH/src/app/webapi/template
 # CD to the correct folder.
 cd src/app/gogen/cmd/gogen
 
-# Generate templates from the user component.
-go run main.go template component/user component itemUpper:User itemLower:user allUpper:USER
-
-# Generate new component code from the template.
+# Generate a new component from the component template.
+# Using the component/default template, it will replace the template variables
+# (itemUpper,itemLower,allUpper) with the values (Note,note,NOTE).
 go run main.go generate component/default itemUpper:Note itemLower:note allUpper:NOTE
+
+# Generate a template from the user component.
+# Using the component/user code, it will generate template that will replace the
+# values (Note,note,NOTE) with template variables (itemUpper,itemLower,allUpper).
+go run main.go template component/user newcomponent itemUpper:User itemLower:user allUpper:USER
 ```
 
 ## Conventions
