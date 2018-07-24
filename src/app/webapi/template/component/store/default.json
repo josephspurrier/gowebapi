@@ -1,1 +1,7 @@
-{"allUpper":"","config.output":"store/[[.itemLower]].go","config.type":"single","itemLower":"","itemUpper":""}
+{
+    "allUpper": "",
+    "config.output": "store/[[.itemLower]].go",
+    "config.type": "single",
+    "itemLower": "",
+    "itemUpper": ""
+}

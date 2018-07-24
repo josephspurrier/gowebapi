@@ -1,1 +1,7 @@
-{"allUpper":"","config.output":"model/[[.itemLower]]_show_all.go","config.type":"single","itemLower":"","itemUpper":""}
+{
+    "allUpper": "",
+    "config.output": "model/[[.itemLower]]_show_all.go",
+    "config.type": "single",
+    "itemLower": "",
+    "itemUpper": ""
+}
