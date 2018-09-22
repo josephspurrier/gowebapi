@@ -12,6 +12,11 @@ import (
 	"app/webapi/pkg/env"
 )
 
+const (
+	// TestDatabaseName is the name of the test database.
+	TestDatabaseName = "webapitest"
+)
+
 func init() {
 	rand.Seed(time.Now().UnixNano())
 }
@@ -21,7 +26,7 @@ func setEnv(unique string) {
 	os.Setenv(unique+"DB_PORT", "3306")
 	os.Setenv(unique+"DB_USERNAME", "root")
 	os.Setenv(unique+"DB_PASSWORD", "")
-	os.Setenv(unique+"DB_DATABASE", "webapitest"+unique)
+	os.Setenv(unique+"DB_DATABASE", TestDatabaseName+unique)
 	os.Setenv(unique+"DB_PARAMETER", "parseTime=true&allowNativePasswords=true")
 }
 
@@ -59,11 +64,11 @@ func SetupDatabase() (*database.DBW, string) {
 	setEnv(unique)
 
 	db := connectDatabase(false, unique)
-	_, err := db.Exec(`DROP DATABASE IF EXISTS webapitest` + unique)
+	_, err := db.Exec(`DROP DATABASE IF EXISTS ` + TestDatabaseName + unique)
 	if err != nil {
 		fmt.Println("DB DROP SETUP Error:", err)
 	}
-	_, err = db.Exec(`CREATE DATABASE webapitest` + unique + ` DEFAULT CHARSET = utf8 COLLATE = utf8_unicode_ci`)
+	_, err = db.Exec(`CREATE DATABASE ` + TestDatabaseName + unique + ` DEFAULT CHARSET = utf8 COLLATE = utf8_unicode_ci`)
 	if err != nil {
 		fmt.Println("DB CREATE Error:", err)
 	}
@@ -75,7 +80,7 @@ func SetupDatabase() (*database.DBW, string) {
 // variables.
 func TeardownDatabase(unique string) {
 	db := connectDatabase(false, unique)
-	_, err := db.Exec(`DROP DATABASE IF EXISTS webapitest` + unique)
+	_, err := db.Exec(`DROP DATABASE IF EXISTS ` + TestDatabaseName + unique)
 	if err != nil {
 		fmt.Println("DB DROP TEARDOWN Error:", err)
 	}
@@ -98,11 +103,11 @@ func LoadDatabaseFromFile(file string, usePrefix bool) (*database.DBW, string) {
 	} else {
 		setEnv(unique)
 		db = connectDatabase(false, unique)
-		_, err := db.Exec(`DROP DATABASE IF EXISTS webapitest`)
+		_, err := db.Exec(`DROP DATABASE IF EXISTS ` + TestDatabaseName)
 		if err != nil {
 			fmt.Println("DB DROP SETUP Error:", err)
 		}
-		_, err = db.Exec(`CREATE DATABASE webapitest DEFAULT CHARSET = utf8 COLLATE = utf8_unicode_ci`)
+		_, err = db.Exec(`CREATE DATABASE ` + TestDatabaseName + ` DEFAULT CHARSET = utf8 COLLATE = utf8_unicode_ci`)
 		if err != nil {
 			fmt.Println("DB CREATE Error:", err)
 		}

@@ -198,18 +198,19 @@ These packages are used in the project:
 - JSON Web Tokens (JWT): [github.com/dgrijalva/jwt-go](https://github.com/dgrijalva/jwt-go)
 - CLI and Flag Parser: [gopkg.in/alecthomas/kingpin.v2](https://gopkg.in/alecthomas/kingpin.v2)
 - Password Hashing: [golang.org/x/crypto/bcrypt](https://golang.org/x/crypto/bcrypt)
+- CORS: [github.com/heppu/simple-cors](https://github.com/heppu/simple-cors)
 
 ## Folder Structure
 
 All the Go code is inside the `src` folder. This allows you to easily fork this project to use and test it. You'll just need to set your GOPATH to the `gowebapi` folder after you do a `git clone` (don't do a `go get`, it will not work).
 
 In the `src/app/webapi` folder, you see a few top level folders:
-- **cmd** - contains the main function and a static folder for the favicon.
-- **component** - contains sets of related endpoints and database code.
+- **cmd** - contains the webapi, cliapp, and the hooks (for Dredd) main functions.
+- **component** - contains all the endpoints.
 - **internal** - contains project specific packages with dependencies.
 - **middleware** - contains http wrappers for logging and CORS.
 - **model** - contains the files with JSON structs that will outputted by the API.
-- **pkg** - contains generic packages without project specific dependencies - these can be safely moved to other projects without internal dependencies.
+- **pkg** - contains generic packages without project specific dependencies - these can be safely moved to other projects because they don't contain any internal dependencies.
 - **store** - contains the files with SQL used to query the database.
 
 ## Components
